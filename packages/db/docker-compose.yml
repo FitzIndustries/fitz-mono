@@ -1,0 +1,35 @@
+services:
+  postgres:
+    container_name: fitz-mono-postgres
+    image: postgres:18-alpine
+    restart: unless-stopped
+    command:
+      [
+        "postgres",
+        "-c",
+        "wal_level=logical",
+        "-c",
+        "max_wal_senders=10",
+        "-c",
+        "max_replication_slots=5",
+        "-c",
+        "hot_standby=true",
+        "-c",
+        "hot_standby_feedback=on",
+      ]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d fitz-mono_postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_DB: fitz-mono_postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
