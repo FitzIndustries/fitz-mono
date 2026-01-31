@@ -18,7 +18,7 @@ services:
         "hot_standby_feedback=on",
       ]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d fitz-mono_postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d fitz-mono-postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
