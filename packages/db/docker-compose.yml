@@ -23,7 +23,7 @@ services:
       timeout: 5s
       retries: 5
     environment:
-      POSTGRES_DB: fitz-mono_postgres
+      POSTGRES_DB: fitz-mono-postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
