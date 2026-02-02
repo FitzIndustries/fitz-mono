@@ -100,25 +100,149 @@ function CreatePost() {
 
 function MobileAuth() {
   const { data: session } = authClient.useSession();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validateSignIn = (value: {
+    email: string;
+    password: string;
+  }): string | null => {
+    if (!value.email.trim()) {
+      return "Email is required.";
+    }
+
+    if (!value.password.trim()) {
+      return "Password is required.";
+    }
+
+    return null;
+  };
+
+  const validateSignUp = (value: {
+    name: string;
+    email: string;
+    password: string;
+  }): string | null => {
+    if (!value.name.trim()) {
+      return "Name is required.";
+    }
+
+    return validateSignIn({ email: value.email, password: value.password });
+  };
+
+  const handleSignIn = async () => {
+    const validationMessage = validateSignIn({ email, password });
+    if (validationMessage) {
+      setErrorMessage(validationMessage);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    try {
+      const response = await authClient.signIn.email({
+        email: email.trim(),
+        password,
+        callbackURL: "/",
+      });
+
+      if (response.error) {
+        setErrorMessage(response.error.message ?? "Unable to sign in.");
+      }
+    } catch (error) {
+      console.error("Sign in failed", error);
+      setErrorMessage("Unable to sign in right now.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSignUp = async () => {
+    const validationMessage = validateSignUp({ name, email, password });
+    if (validationMessage) {
+      setErrorMessage(validationMessage);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    try {
+      const response = await authClient.signUp.email({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+        callbackURL: "/",
+      });
+
+      if (response.error) {
+        setErrorMessage(response.error.message ?? "Unable to sign up.");
+      }
+    } catch (error) {
+      console.error("Sign up failed", error);
+      setErrorMessage("Unable to sign up right now.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
       <Text className="text-foreground pb-2 text-center text-xl font-semibold">
         {session?.user.name ? `Hello, ${session.user.name}` : "Not logged in"}
       </Text>
-      <Pressable
-        onPress={() =>
-          session
-            ? authClient.signOut()
-            : authClient.signIn.social({
-                provider: "discord",
-                callbackURL: "/",
-              })
-        }
-        className="bg-primary flex items-center rounded-sm p-2"
-      >
-        <Text>{session ? "Sign Out" : "Sign In With Discord"}</Text>
-      </Pressable>
+      {session ? (
+        <Pressable
+          onPress={() => authClient.signOut()}
+          className="bg-primary flex items-center rounded-sm p-2"
+        >
+          <Text>Sign Out</Text>
+        </Pressable>
+      ) : (
+        <View className="flex gap-2">
+          <TextInput
+            className="border-input bg-background text-foreground items-center rounded-md border px-3 text-lg leading-tight"
+            value={name}
+            onChangeText={setName}
+            placeholder="Name"
+            autoCapitalize="words"
+          />
+          <TextInput
+            className="border-input bg-background text-foreground items-center rounded-md border px-3 text-lg leading-tight"
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Email"
+            autoCapitalize="none"
+            keyboardType="email-address"
+          />
+          <TextInput
+            className="border-input bg-background text-foreground items-center rounded-md border px-3 text-lg leading-tight"
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Password"
+            secureTextEntry
+          />
+          {errorMessage && (
+            <Text className="text-destructive">{errorMessage}</Text>
+          )}
+          <Pressable
+            onPress={handleSignIn}
+            className="bg-primary flex items-center rounded-sm p-2"
+            disabled={isSubmitting}
+          >
+            <Text>Sign In With Email</Text>
+          </Pressable>
+          <Pressable
+            onPress={handleSignUp}
+            className="bg-primary flex items-center rounded-sm p-2"
+            disabled={isSubmitting}
+          >
+            <Text>Create Account</Text>
+          </Pressable>
+        </View>
+      )}
     </>
   );
 }

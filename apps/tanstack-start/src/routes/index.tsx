@@ -1,13 +1,5 @@
-import { Suspense } from "react";
-import { useForm } from "@tanstack/react-form";
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-
 import type { RouterOutputs } from "@fitzindustries/api";
+import { Suspense } from "react";
 import { CreatePostSchema } from "@fitzindustries/db/schema";
 import { cn } from "@fitzindustries/ui";
 import { Button } from "@fitzindustries/ui/button";
@@ -20,6 +12,13 @@ import {
 } from "@fitzindustries/ui/field";
 import { Input } from "@fitzindustries/ui/input";
 import { toast } from "@fitzindustries/ui/toast";
+import { useForm } from "@tanstack/react-form";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { AuthShowcase } from "~/component/auth-showcase";
 import { useTRPC } from "~/lib/trpc";
