@@ -1,0 +1,26 @@
+// zero/mutators.ts
+import { defineMutator, defineMutators } from "@rocicorp/zero";
+import { z } from "zod/v4";
+
+export const mutators = defineMutators({
+  albums: {
+    create: defineMutator(
+      z.object({
+        id: z.string(),
+        artistID: z.string(),
+        title: z.string(),
+        year: z.number(),
+        createdAt: z.number(),
+      }),
+      async ({ args, tx }) => {
+        await tx.mutate.albums.insert({
+          id: args.id,
+          artistId: args.artistID,
+          title: args.title,
+          releaseYear: args.year,
+          createdAt: args.createdAt,
+        });
+      },
+    ),
+  },
+});
