@@ -11,9 +11,10 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import type { AppRouter } from "@fitzindustries/api";
-import { ThemeProvider, ThemeToggle } from "@fitzindustries/ui/theme";
+import { ThemeToggle } from "@fitzindustries/ui/theme";
 import { Toaster } from "@fitzindustries/ui/toast";
 
+import { Providers } from "~/providers";
 import appCss from "~/styles.css?url";
 
 export const Route = createRootRouteWithContext<{
@@ -36,7 +37,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider>
+    <Providers>
       <html lang="en" suppressHydrationWarning>
         <head>
           <HeadContent />
@@ -51,6 +52,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <Scripts />
         </body>
       </html>
-    </ThemeProvider>
+    </Providers>
   );
 }
