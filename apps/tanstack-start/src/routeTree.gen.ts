@@ -10,12 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiQueryRouteImport } from './routes/api/query'
+import { Route as ApiMutateRouteImport } from './routes/api/mutate'
 import { Route as ApiTrpcSplatRouteImport } from './routes/api/trpc.$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiQueryRoute = ApiQueryRouteImport.update({
+  id: '/api/query',
+  path: '/api/query',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMutateRoute = ApiMutateRouteImport.update({
+  id: '/api/mutate',
+  path: '/api/mutate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
@@ -31,30 +43,44 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/mutate': typeof ApiMutateRoute
+  '/api/query': typeof ApiQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/mutate': typeof ApiMutateRoute
+  '/api/query': typeof ApiQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/mutate': typeof ApiMutateRoute
+  '/api/query': typeof ApiQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/auth/$' | '/api/trpc/$'
+  fullPaths: '/' | '/api/mutate' | '/api/query' | '/api/auth/$' | '/api/trpc/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/auth/$' | '/api/trpc/$'
-  id: '__root__' | '/' | '/api/auth/$' | '/api/trpc/$'
+  to: '/' | '/api/mutate' | '/api/query' | '/api/auth/$' | '/api/trpc/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/mutate'
+    | '/api/query'
+    | '/api/auth/$'
+    | '/api/trpc/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiMutateRoute: typeof ApiMutateRoute
+  ApiQueryRoute: typeof ApiQueryRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
 }
@@ -66,6 +92,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/query': {
+      id: '/api/query'
+      path: '/api/query'
+      fullPath: '/api/query'
+      preLoaderRoute: typeof ApiQueryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/mutate': {
+      id: '/api/mutate'
+      path: '/api/mutate'
+      fullPath: '/api/mutate'
+      preLoaderRoute: typeof ApiMutateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/trpc/$': {
@@ -87,6 +127,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiMutateRoute: ApiMutateRoute,
+  ApiQueryRoute: ApiQueryRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,
 }
