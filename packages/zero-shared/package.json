@@ -17,7 +17,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@rocicorp/zero": "catalog:"
+    "@rocicorp/zero": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@fitzindustries/eslint-config": "workspace:*",
