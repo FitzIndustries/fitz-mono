@@ -14,6 +14,10 @@
       "cache": false,
       "persistent": false
     },
+    "zero-cache-dev": {
+      "cache": false,
+      "persistent": true
+    },
     "format": {
       "outputs": [".cache/.prettiercache"],
       "outputLogs": "new-only"
@@ -45,7 +49,7 @@
       "interactive": true
     }
   },
-  "globalEnv": ["POSTGRES_URL", "AUTH_SECRET", "PORT"],
+  "globalEnv": ["POSTGRES_URL", "ZERO_UPSTREAM_DB", "AUTH_SECRET", "PORT"],
   "globalPassThroughEnv": [
     "NODE_ENV",
     "CI",

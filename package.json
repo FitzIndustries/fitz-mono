@@ -12,6 +12,7 @@
     "clean:workspaces": "turbo run clean",
     "auth:generate": "pnpm -F @fitzindustries/auth generate",
     "dev": "turbo watch dev --continue",
+    "zero-cache:dev": "turbo run zero-cache-dev --filter @fitzindustries/zero-cache",
     "dev:next": "turbo watch dev -F @fitzindustries/nextjs...",
     "postinstall": "pnpm lint:ws",
     "ui-add": "turbo run ui-add",

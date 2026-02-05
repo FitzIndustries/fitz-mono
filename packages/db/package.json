@@ -30,11 +30,14 @@
     "destroy-db": "pnpm run stop-db && rimraf .sst/storage/postgres",
     "start-db": "docker compose up -d",
     "start-db-hard": "docker compose up -d --build",
-    "stop-db": "docker compose down"
+    "stop-db": "docker compose down",
+    "generate": "drizzle-zero generate --output ../zero-shared/src/schems.ts --format",
+    "postinstall": "pnpm generate"
   },
   "dependencies": {
     "@vercel/postgres": "^0.10.0",
     "drizzle-orm": "^0.44.7",
+    "drizzle-zero": "^0.17.3",
     "drizzle-zod": "^0.8.3",
     "pg": "^8.18.0",
     "zod": "catalog:"

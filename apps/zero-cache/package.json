@@ -1,0 +1,25 @@
+{
+  "name": "@fitzindustries/zero-cache",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm zero-cache-dev",
+    "zero-cache-dev": "dotenv -e ../../.env -- pnpm exec zero-cache-dev",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint --no-error-on-unmatched-pattern .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rocicorp/zero": "catalog:"
+  },
+  "devDependencies": {
+    "@fitzindustries/eslint-config": "workspace:*",
+    "@fitzindustries/prettier-config": "workspace:*",
+    "@fitzindustries/tsconfig": "workspace:*",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@fitzindustries/prettier-config"
+}
