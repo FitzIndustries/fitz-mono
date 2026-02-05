@@ -31,7 +31,7 @@
     "start-db": "docker compose up -d",
     "start-db-hard": "docker compose up -d --build",
     "stop-db": "docker compose down",
-    "generate": "drizzle-zero generate --output ../zero-shared/src/schems.ts --format",
+    "generate": "drizzle-zero generate --output ../zero-shared/src/schema.ts --format",
     "postinstall": "pnpm generate"
   },
   "dependencies": {
