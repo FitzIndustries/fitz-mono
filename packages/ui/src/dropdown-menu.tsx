@@ -1,12 +1,13 @@
 "use client";
 
-import { cn } from "@fitzindustries/ui";
 import {
   CheckIcon,
   ChevronRightIcon,
   DotFilledIcon,
 } from "@radix-ui/react-icons";
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
+
+import { cn } from "@fitzindustries/ui";
 
 export function DropdownMenu({
   ...props

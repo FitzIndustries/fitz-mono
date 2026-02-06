@@ -14,10 +14,6 @@
       "cache": false,
       "persistent": false
     },
-    "zero-cache-dev": {
-      "cache": false,
-      "persistent": true
-    },
     "format": {
       "outputs": [".cache/.prettiercache"],
       "outputLogs": "new-only"

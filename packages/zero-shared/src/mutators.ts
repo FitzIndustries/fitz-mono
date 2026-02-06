@@ -3,22 +3,22 @@ import { defineMutator, defineMutators } from "@rocicorp/zero";
 import { z } from "zod/v4";
 
 export const mutators = defineMutators({
-  albums: {
+  posts: {
     create: defineMutator(
       z.object({
         id: z.string(),
-        artistID: z.string(),
         title: z.string(),
-        year: z.number(),
+        content: z.string(),
         createdAt: z.number(),
+        updatedAt: z.number(),
       }),
       async ({ args, tx }) => {
-        await tx.mutate.albums.insert({
+        await tx.mutate.Post.insert({
           id: args.id,
-          artistId: args.artistID,
           title: args.title,
-          releaseYear: args.year,
+          content: args.content,
           createdAt: args.createdAt,
+          updatedAt: args.updatedAt,
         });
       },
     ),

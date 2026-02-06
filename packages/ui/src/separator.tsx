@@ -1,7 +1,8 @@
 "use client";
 
-import { cn } from "@fitzindustries/ui";
 import { Separator as SeparatorPrimitive } from "radix-ui";
+
+import { cn } from "@fitzindustries/ui";
 
 export function Separator({
   className,

@@ -1,7 +1,8 @@
 "use client";
 
-import { cn } from "@fitzindustries/ui";
 import { Label as LabelPrimitive } from "radix-ui";
+
+import { cn } from "@fitzindustries/ui";
 
 export function Label({
   className,
