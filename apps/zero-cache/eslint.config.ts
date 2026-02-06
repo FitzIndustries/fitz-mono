@@ -4,7 +4,7 @@ import { baseConfig } from "@fitzindustries/eslint-config/base";
 
 export default defineConfig(
   {
-    ignores: ["dist/**"],
+    ignores: ["dist/**", "src/scripts/**"],
   },
   baseConfig,
 );

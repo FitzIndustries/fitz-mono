@@ -1,4 +1,4 @@
-import { reactStartCookies } from "better-auth/react-start";
+import { tanstackStartCookies } from "better-auth/tanstack-start";
 
 import { initAuth } from "@fitzindustries/auth";
 
@@ -9,5 +9,5 @@ export const auth = initAuth({
   baseUrl: getBaseUrl(),
   secret: env.AUTH_SECRET,
 
-  extraPlugins: [reactStartCookies()],
+  extraPlugins: [tanstackStartCookies()],
 });

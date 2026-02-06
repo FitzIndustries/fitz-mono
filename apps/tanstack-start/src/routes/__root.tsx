@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+import type { Zero } from "@rocicorp/zero";
 import type { QueryClient } from "@tanstack/react-query";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import type * as React from "react";
@@ -14,12 +15,13 @@ import type { AppRouter } from "@fitzindustries/api";
 import { ThemeToggle } from "@fitzindustries/ui/theme";
 import { Toaster } from "@fitzindustries/ui/toast";
 
+import appCss from "~/global.css?url";
 import { Providers } from "~/providers";
-import appCss from "~/styles.css?url";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
   trpc: TRPCOptionsProxy<AppRouter>;
+  zero: Zero;
 }>()({
   head: () => ({
     links: [{ rel: "stylesheet", href: appCss }],

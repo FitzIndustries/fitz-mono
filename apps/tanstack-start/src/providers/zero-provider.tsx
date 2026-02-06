@@ -1,19 +1,116 @@
-import type { ZeroOptions } from "@rocicorp/zero";
-import { ZeroProvider as RocicorpZeroProvider } from "@rocicorp/zero/react";
+import type { Zero } from "@rocicorp/zero";
+import { lazy, useCallback } from "react";
+import { useRouter } from "@tanstack/react-router";
 
 import { mutators, schema } from "@fitzindustries/zero-shared";
 
+import { authClient } from "~/auth/client";
 import { env } from "~/env";
 
-const opts: ZeroOptions = {
-  userID: "anon",
-  cacheURL: env.VITE_ZERO_CACHE_URL,
-  schema,
-  mutators,
-};
+// Use absolute URL through Vite proxy to enable cookie-based auth
+const cacheURL = env.VITE_ZERO_CACHE_URL;
+const logLevel = env.VITE_PUBLIC_ZERO_LOG_LEVEL;
+
+// Use React lazy to defer loading the ZeroProvider
+const RocicorpZeroProvider = lazy(() =>
+  import("@rocicorp/zero/react").then((mod) => ({
+    default: mod.ZeroProvider,
+  })),
+);
 
 function ZeroProvider({ children }: { children: React.ReactNode }) {
-  return <RocicorpZeroProvider {...opts}>{children}</RocicorpZeroProvider>;
+  const router = useRouter();
+  const session = authClient.useSession();
+  const context = session.data ? { userId: session.data.user.id } : undefined;
+  const userID = session.data?.user.id ?? "anon";
+
+  const init = useCallback(
+    (zero: Zero) => {
+      router.update({
+        context: {
+          ...router.options.context,
+          zero,
+        },
+      });
+      void router.invalidate();
+
+      void preload(zero);
+    },
+    [router],
+  );
+
+  return (
+    <RocicorpZeroProvider
+      {...{
+        schema,
+        userID,
+        context,
+        cacheURL,
+        mutators,
+        init,
+        logLevel,
+      }}
+    >
+      {children}
+    </RocicorpZeroProvider>
+  );
 }
 
 export { ZeroProvider };
+
+function preload(_zero: Zero) {
+  // Delay preload() slightly to avoid blocking UI on first run. We don't need
+  // this data to display the UI, it's used by search.
+  // setTimeout(() => {
+  // # Why this particular preload?
+  //
+  // The goal of Zero generally is for every user interaction to be instant.
+  // This relies fundamentally on preloading data. But we cannot preload
+  // everything, so preloading is at core about guessing data user will most
+  // likely need. This is different in every app. Zero gives you the full
+  // power of queries to express and orchestrate whatever preload sequence you
+  // want.
+  //
+  // And if you guess wrong, it's nbd, because Zero queries automatically
+  // fallback to the server.
+  //
+  // For this app, the primary interface is a search box. Users are more
+  // likely to search for popular artists than unpopular so we preload the
+  // first 1k artists by popularity.
+  //
+  // Note that we don't also preload their albums. We could, but there's no
+  // reason to as the list UI will do that. We know the user can't navigate to
+  // an album they don't see in the UI, so there's no point in preloading
+  // more.
+  //
+  // # Preventing Jostle
+  //
+  // There is also an interesting interaction with the UI. Since we will get
+  // instant local results and full server results async, we ideally want to
+  // avoid having the UI jostle. So we want to preload in the same order we
+  // tend to display in the UI. That way local results are always also the
+  // top ranked results.
+  //
+  // # TTL
+  //
+  // For simple Zero apps you won't need or want a TTL on your preload,
+  // because preload queries run at startup and run for entire length of app.
+  // Since they are never not running, there is never an opp for them to get
+  // evicted.
+  //
+  // For this app, because it is a demo of a shopping site (and also to show
+  // off 😂) we want to optimize startup as much as possible. So we want to
+  // delay the preload query until after the initial view comes up. Because
+  // of this delay, there is a moment (actually 1s - because of setTimeout
+  // below) where the preload query is *not* running and would get evicted if
+  // it didn't have a TTL. We set the TTL to 1m just be safe, but anything
+  // more than 1s should technically work.
+  //
+  // There is a slight downside here than when/if the preload query changes,
+  // Users will momentarily do *both* preload queries at startup -- the old
+  // and new ones, until the old one ages out.
+  // z.preload(queries.artistPreload(), {
+  //   ttl: "1m",
+  // });
+  // }, 1_000);
+}

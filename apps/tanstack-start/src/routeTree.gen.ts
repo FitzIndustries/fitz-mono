@@ -10,24 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiQueryRouteImport } from './routes/api/query'
-import { Route as ApiMutateRouteImport } from './routes/api/mutate'
-import { Route as ApiTrpcSplatRouteImport } from './routes/api/trpc.$'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth.$'
+import { Route as ApiZeroQueryRouteImport } from './routes/api/zero/query'
+import { Route as ApiZeroMutateRouteImport } from './routes/api/zero/mutate'
+import { Route as ApiTrpcSplatRouteImport } from './routes/api/trpc/$'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiQueryRoute = ApiQueryRouteImport.update({
-  id: '/api/query',
-  path: '/api/query',
+const ApiZeroQueryRoute = ApiZeroQueryRouteImport.update({
+  id: '/api/zero/query',
+  path: '/api/zero/query',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiMutateRoute = ApiMutateRouteImport.update({
-  id: '/api/mutate',
-  path: '/api/mutate',
+const ApiZeroMutateRoute = ApiZeroMutateRouteImport.update({
+  id: '/api/zero/mutate',
+  path: '/api/zero/mutate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
@@ -43,46 +43,56 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/api/mutate': typeof ApiMutateRoute
-  '/api/query': typeof ApiQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
+  '/api/zero/mutate': typeof ApiZeroMutateRoute
+  '/api/zero/query': typeof ApiZeroQueryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/api/mutate': typeof ApiMutateRoute
-  '/api/query': typeof ApiQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
+  '/api/zero/mutate': typeof ApiZeroMutateRoute
+  '/api/zero/query': typeof ApiZeroQueryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/api/mutate': typeof ApiMutateRoute
-  '/api/query': typeof ApiQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
+  '/api/zero/mutate': typeof ApiZeroMutateRoute
+  '/api/zero/query': typeof ApiZeroQueryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/mutate' | '/api/query' | '/api/auth/$' | '/api/trpc/$'
+  fullPaths:
+    | '/'
+    | '/api/auth/$'
+    | '/api/trpc/$'
+    | '/api/zero/mutate'
+    | '/api/zero/query'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/mutate' | '/api/query' | '/api/auth/$' | '/api/trpc/$'
+  to:
+    | '/'
+    | '/api/auth/$'
+    | '/api/trpc/$'
+    | '/api/zero/mutate'
+    | '/api/zero/query'
   id:
     | '__root__'
     | '/'
-    | '/api/mutate'
-    | '/api/query'
     | '/api/auth/$'
     | '/api/trpc/$'
+    | '/api/zero/mutate'
+    | '/api/zero/query'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ApiMutateRoute: typeof ApiMutateRoute
-  ApiQueryRoute: typeof ApiQueryRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
+  ApiZeroMutateRoute: typeof ApiZeroMutateRoute
+  ApiZeroQueryRoute: typeof ApiZeroQueryRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -94,18 +104,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/query': {
-      id: '/api/query'
-      path: '/api/query'
-      fullPath: '/api/query'
-      preLoaderRoute: typeof ApiQueryRouteImport
+    '/api/zero/query': {
+      id: '/api/zero/query'
+      path: '/api/zero/query'
+      fullPath: '/api/zero/query'
+      preLoaderRoute: typeof ApiZeroQueryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/mutate': {
-      id: '/api/mutate'
-      path: '/api/mutate'
-      fullPath: '/api/mutate'
-      preLoaderRoute: typeof ApiMutateRouteImport
+    '/api/zero/mutate': {
+      id: '/api/zero/mutate'
+      path: '/api/zero/mutate'
+      fullPath: '/api/zero/mutate'
+      preLoaderRoute: typeof ApiZeroMutateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/trpc/$': {
@@ -127,10 +137,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ApiMutateRoute: ApiMutateRoute,
-  ApiQueryRoute: ApiQueryRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,
+  ApiZeroMutateRoute: ApiZeroMutateRoute,
+  ApiZeroQueryRoute: ApiZeroQueryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

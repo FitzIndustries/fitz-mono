@@ -26,11 +26,18 @@ export const env = createEnv({
    */
   client: {
     VITE_ZERO_CACHE_URL: z.url(),
+    VITE_PUBLIC_ZERO_LOG_LEVEL: z
+      .enum(["debug", "info", "warn", "error"])
+      .default("info")
+      .optional(),
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
    */
-  runtimeEnv: process.env,
+  runtimeEnv: {
+    ...import.meta.env,
+    ...process.env,
+  },
   skipValidation:
     !!process.env.CI || process.env.npm_lifecycle_event === "lint",
 });

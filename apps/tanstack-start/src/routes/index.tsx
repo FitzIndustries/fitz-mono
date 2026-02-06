@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { useZero } from "@rocicorp/zero/react";
+// import { useZero } from "@rocicorp/zero/react";
 import { useForm } from "@tanstack/react-form";
 import {
   useMutation,
@@ -34,8 +34,8 @@ export const Route = createFileRoute("/")({
 });
 
 function RouteComponent() {
-  const zero = useZero();
-  console.log("clientID", zero.clientID);
+  // const zero = useZero();
+  // console.log("clientID", zero.clientID);
 
   return (
     <main className="container h-screen py-16">

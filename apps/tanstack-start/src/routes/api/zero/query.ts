@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { queries, schema } from "@fitzindustries/zero-shared";
 
-export const Route = createFileRoute("/api/query")({
+export const Route = createFileRoute("/api/zero/query")({
   server: {
     handlers: {
       POST: async ({ request }) => {

@@ -1,3 +1,4 @@
+import { Zero } from "@rocicorp/zero";
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
@@ -22,7 +23,7 @@ export function getRouter() {
 
   const router = createRouter({
     routeTree,
-    context: { queryClient, trpc },
+    context: { queryClient, trpc, zero: undefined as unknown as Zero },
     defaultPreload: "intent",
     Wrap: (props) => (
       <TRPCProvider
@@ -38,4 +39,10 @@ export function getRouter() {
   });
 
   return router;
+}
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: ReturnType<typeof createRouter>;
+  }
 }
