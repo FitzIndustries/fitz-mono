@@ -7,8 +7,7 @@
     "dev": "pnpm zero-cache-dev",
     "zero-cache-dev": "dotenv -e ../../.env -- pnpm exec zero-cache-dev",
     "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint --no-error-on-unmatched-pattern .",
-    "typecheck": "tsc --noEmit"
+    "lint": "eslint --no-error-on-unmatched-pattern ."
   },
   "dependencies": {
     "@rocicorp/zero": "catalog:"
