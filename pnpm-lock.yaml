@@ -15,9 +15,6 @@ catalogs:
     '@eslint/js':
       specifier: ^9.38.0
       version: 9.38.0
-    '@rocicorp/zero':
-      specifier: ^0.25.12
-      version: 0.25.12
     '@tailwindcss/postcss':
       specifier: ^4.1.16
       version: 4.1.16
@@ -78,6 +75,7 @@ catalogs:
       version: 19.1.4
 
 overrides:
+  '@rocicorp/zero': ^0.25.12
   '@types/minimatch': 5.1.2
   lightningcss: 1.30.1
   vite: 7.1.12
@@ -92,6 +90,9 @@ importers:
       '@turbo/gen':
         specifier: ^2.5.8
         version: 2.5.8(@types/node@24.9.1)(typescript@5.9.3)
+      baseline-browser-mapping:
+        specifier: ^2.9.19
+        version: 2.9.19
       dotenv-cli:
         specifier: ^10.0.0
         version: 10.0.0
@@ -117,7 +118,7 @@ importers:
         specifier: ^2.0.14
         version: 2.0.14(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.12)(bufferutil@4.0.8)(react@19.1.4)(utf-8-validate@6.0.4))(react@19.1.4)
       '@rocicorp/zero':
-        specifier: 'catalog:'
+        specifier: ^0.25.12
         version: 0.25.12(@opentelemetry/core@2.5.0(@opentelemetry/api@1.9.0))(bufferutil@4.0.8)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.12)(bufferutil@4.0.8)(react@19.1.4)(utf-8-validate@6.0.4))(react@19.1.4))(utf-8-validate@6.0.4)
       '@tanstack/react-query':
         specifier: 'catalog:'
@@ -256,7 +257,7 @@ importers:
         specifier: ^5.2.7
         version: 5.2.7
       '@rocicorp/zero':
-        specifier: 'catalog:'
+        specifier: ^0.25.12
         version: 0.25.12(@opentelemetry/core@2.5.0(@opentelemetry/api@1.9.0))(bufferutil@4.0.8)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.82.0(@babel/core@7.28.5)(@types/react@19.1.12)(bufferutil@4.0.8)(react@19.1.4)(utf-8-validate@6.0.4))(react@19.1.4))(utf-8-validate@6.0.4)
       '@t3-oss/env-core':
         specifier: ^0.13.8
@@ -356,7 +357,7 @@ importers:
   apps/zero-cache:
     dependencies:
       '@rocicorp/zero':
-        specifier: 'catalog:'
+        specifier: ^0.25.12
         version: 0.25.12(@opentelemetry/core@2.5.0(@opentelemetry/api@1.9.0))(bufferutil@4.0.8)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.82.0(@babel/core@7.29.0)(@types/react@19.1.12)(bufferutil@4.0.8)(react@19.1.4)(utf-8-validate@6.0.4))(react@19.1.4))(utf-8-validate@6.0.4)
     devDependencies:
       '@fitzindustries/eslint-config':
@@ -470,7 +471,7 @@ importers:
         specifier: workspace:*
         version: link:../zero-shared
       '@rocicorp/zero':
-        specifier: 'catalog:'
+        specifier: ^0.25.12
         version: 0.25.12(@opentelemetry/core@2.5.0(@opentelemetry/api@1.9.0))(bufferutil@4.0.8)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.82.0(@babel/core@7.29.0)(@types/react@19.1.12)(bufferutil@4.0.8)(react@19.1.4)(utf-8-validate@6.0.4))(react@19.1.4))(utf-8-validate@6.0.4)
       drizzle-orm:
         specifier: ^0.44.7
@@ -600,7 +601,7 @@ importers:
         specifier: workspace:*
         version: link:../../tooling/typescript
       '@rocicorp/zero':
-        specifier: 'catalog:'
+        specifier: ^0.25.12
         version: 0.25.12(@opentelemetry/core@2.5.0(@opentelemetry/api@1.9.0))(bufferutil@4.0.8)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.82.0(@babel/core@7.29.0)(@types/react@19.1.12)(bufferutil@4.0.8)(react@19.1.4)(utf-8-validate@6.0.4))(react@19.1.4))(utf-8-validate@6.0.4)
       eslint:
         specifier: 'catalog:'
@@ -5046,6 +5047,10 @@ packages:
     resolution: {integrity: sha512-OMu3BGQ4E7P1ErFsIPpbJh0qvDudM/UuJeHgkAvfWe+0HFJCXh+t/l8L6fVLR55RI/UbKrVLnAXZSVwd9ysWYw==}
     hasBin: true
 
+  baseline-browser-mapping@2.9.19:
+    resolution: {integrity: sha512-ipDqC8FrAl/76p2SSWKSI+H9tFwm7vYqXQrItCuiVPt26Km0jS+NzSsBWAaBusvSbQcfJG+JitdMm+wZAgTYqg==}
+    hasBin: true
+
   basic-auth@2.0.1:
     resolution: {integrity: sha512-NF+epuEdnUYVlGuhaxbbq+dvJttwLnGY+YixlXlME5KpQ5W3CnXA5cVTneY3SPbPDRkcjMbifrwmFYcClgOZeg==}
     engines: {node: '>= 0.8'}
@@ -5928,7 +5933,7 @@ packages:
     resolution: {integrity: sha512-MnwGGSXmajlsWHFJwBl/I+iZDFNZ9fIjd9wD4KhFCc1qs7cfY0uHhkl5iR0LWj0jyjsrk+9n7zCGA1eN0WBplQ==}
     hasBin: true
     peerDependencies:
-      '@rocicorp/zero': ''
+      '@rocicorp/zero': ^0.25.12
       '@types/pg': ''
       drizzle-orm: '>=0.36.0'
       pg: ''
@@ -12188,7 +12193,7 @@ snapshots:
       metro-babel-transformer: 0.83.3
       metro-cache: 0.83.3
       metro-cache-key: 0.83.3
-      metro-config: 0.83.3(bufferutil@4.0.8)
+      metro-config: 0.83.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)
       metro-core: 0.83.3
       metro-file-map: 0.83.3
       metro-minify-terser: 0.83.3
@@ -12197,7 +12202,7 @@ snapshots:
       metro-source-map: 0.83.3
       metro-symbolicate: 0.83.3
       metro-transform-plugins: 0.83.3
-      metro-transform-worker: 0.83.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)
+      metro-transform-worker: 0.83.3(bufferutil@4.0.8)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -14520,7 +14525,7 @@ snapshots:
       debug: 4.4.3
       invariant: 2.2.4
       metro: 0.83.3(bufferutil@4.0.8)
-      metro-config: 0.83.3(bufferutil@4.0.8)
+      metro-config: 0.83.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)
       metro-core: 0.83.3
       semver: 7.7.3
     transitivePeerDependencies:
@@ -16700,6 +16705,8 @@ snapshots:
   base64-js@1.5.1: {}
 
   baseline-browser-mapping@2.8.16: {}
+
+  baseline-browser-mapping@2.9.19: {}
 
   basic-auth@2.0.1:
     dependencies:
@@ -19852,22 +19859,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  metro-config@0.83.3(bufferutil@4.0.8):
-    dependencies:
-      connect: 3.7.0
-      flow-enums-runtime: 0.0.6
-      jest-validate: 29.7.0
-      metro: 0.83.3(bufferutil@4.0.8)
-      metro-cache: 0.83.3
-      metro-core: 0.83.3
-      metro-runtime: 0.83.3
-      yaml: 2.8.1
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-    optional: true
-
   metro-config@0.83.3(bufferutil@4.0.8)(utf-8-validate@6.0.4):
     dependencies:
       connect: 3.7.0
@@ -19954,6 +19945,27 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  metro-transform-worker@0.83.3(bufferutil@4.0.8):
+    dependencies:
+      '@babel/core': 7.28.5
+      '@babel/generator': 7.28.5
+      '@babel/parser': 7.28.5
+      '@babel/types': 7.28.5
+      flow-enums-runtime: 0.0.6
+      metro: 0.83.3(bufferutil@4.0.8)
+      metro-babel-transformer: 0.83.3
+      metro-cache: 0.83.3
+      metro-cache-key: 0.83.3
+      metro-minify-terser: 0.83.3
+      metro-source-map: 0.83.3
+      metro-transform-plugins: 0.83.3
+      nullthrows: 1.1.1
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+    optional: true
+
   metro-transform-worker@0.83.3(bufferutil@4.0.8)(utf-8-validate@6.0.4):
     dependencies:
       '@babel/core': 7.28.5
@@ -20000,7 +20012,7 @@ snapshots:
       metro-babel-transformer: 0.83.3
       metro-cache: 0.83.3
       metro-cache-key: 0.83.3
-      metro-config: 0.83.3(bufferutil@4.0.8)
+      metro-config: 0.83.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)
       metro-core: 0.83.3
       metro-file-map: 0.83.3
       metro-resolver: 0.83.3
@@ -20008,7 +20020,7 @@ snapshots:
       metro-source-map: 0.83.3
       metro-symbolicate: 0.83.3
       metro-transform-plugins: 0.83.3
-      metro-transform-worker: 0.83.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)
+      metro-transform-worker: 0.83.3(bufferutil@4.0.8)
       mime-types: 2.1.35
       nullthrows: 1.1.1
       serialize-error: 2.1.0
