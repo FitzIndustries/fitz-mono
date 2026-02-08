@@ -1,5 +1,6 @@
 import type { Zero } from "@rocicorp/zero";
-import { lazy, useCallback } from "react";
+import { useCallback } from "react";
+import { ZeroProvider as RocicorpZeroProvider } from "@rocicorp/zero/react";
 import { useRouter } from "@tanstack/react-router";
 
 import { mutators, schema } from "@fitzindustries/zero-shared";
@@ -12,11 +13,11 @@ const cacheURL = env.VITE_ZERO_CACHE_URL;
 const logLevel = env.VITE_PUBLIC_ZERO_LOG_LEVEL;
 
 // Use React lazy to defer loading the ZeroProvider
-const RocicorpZeroProvider = lazy(() =>
-  import("@rocicorp/zero/react").then((mod) => ({
-    default: mod.ZeroProvider,
-  })),
-);
+// const RocicorpZeroProvider = lazy(() =>
+//   import("@rocicorp/zero/react").then((mod) => ({
+//     default: mod.ZeroProvider,
+//   })),
+// );
 
 function ZeroProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -25,7 +26,8 @@ function ZeroProvider({ children }: { children: React.ReactNode }) {
   const userID = session.data?.user.id ?? "anon";
 
   const init = useCallback(
-    (zero: Zero) => {
+    (untypedZero: unknown) => {
+      const zero = untypedZero as Zero;
       router.update({
         context: {
           ...router.options.context,

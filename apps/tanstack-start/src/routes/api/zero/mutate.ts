@@ -1,4 +1,3 @@
-// src/routes/api/mutate.ts
 import { mustGetMutator } from "@rocicorp/zero";
 import { handleMutateRequest } from "@rocicorp/zero/server";
 import { createFileRoute } from "@tanstack/react-router";

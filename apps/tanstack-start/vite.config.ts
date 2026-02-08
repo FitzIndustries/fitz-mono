@@ -14,7 +14,11 @@ export default defineConfig({
       projects: ["./tsconfig.json"],
     }),
     nitro(),
-    tanstackStart(),
+    tanstackStart({
+      spa: {
+        enabled: true,
+      },
+    }),
     viteReact(),
     tailwindcss(),
   ],
