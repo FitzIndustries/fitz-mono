@@ -1,11 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import {
-  handleQueryRequest,
-  mustGetQuery,
-  queries,
-  schema,
-} from "@fitzindustries/zero-shared";
+import { mustGetQuery } from "@rocicorp/zero";
+import { handleQueryRequest } from "@rocicorp/zero/server";
+
+import { queries, schema } from "@fitzindustries/zero-shared";
 
 export const Route = createFileRoute("/api/zero/query")({
   server: {
