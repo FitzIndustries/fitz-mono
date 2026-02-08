@@ -1,10 +1,11 @@
 import { defineQueries, defineQuery } from "@rocicorp/zero";
-import { z } from "zod/v4";
+
+// import { z } from "zod/v4";
 
 import { zql } from "./schema";
 
 export const queries = defineQueries({
   posts: {
-    all: defineQuery(z.object({}), () => zql.Post),
+    all: defineQuery(() => zql.Post),
   },
 });
