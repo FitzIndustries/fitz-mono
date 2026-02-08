@@ -5,7 +5,7 @@ import superjson from "superjson";
 
 import type { AppRouter } from "@fitzindustries/api";
 
-import { authClient } from "./auth";
+import { authClient } from "~/lib/auth";
 import { getBaseUrl } from "./base-url";
 
 export const queryClient = new QueryClient({
