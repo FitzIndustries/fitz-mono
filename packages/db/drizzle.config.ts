@@ -1,10 +1,10 @@
 import type { Config } from "drizzle-kit";
 
-if (!process.env.POSTGRES_URL) {
-  throw new Error("Missing POSTGRES_URL");
-}
-
-const nonPoolingUrl = process.env.POSTGRES_URL.replace(":6543", ":5432");
+// Use a dummy URL for schema-only operations (like drizzle-zero generation)
+// Real DB operations require POSTGRES_URL to be set
+const nonPoolingUrl = process.env.POSTGRES_URL
+  ? process.env.POSTGRES_URL.replace(":6543", ":5432")
+  : "postgresql://localhost:5432/dummy";
 
 export default {
   dialect: "postgresql",
