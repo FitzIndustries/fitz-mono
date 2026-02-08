@@ -15,8 +15,11 @@ import type { AppRouter } from "@fitzindustries/api";
 import { ThemeToggle } from "@fitzindustries/ui/theme";
 import { Toaster } from "@fitzindustries/ui/toast";
 
+import { env } from "~/env";
 import appCss from "~/global.css?url";
 import { Providers } from "~/providers";
+
+const zeroCacheURL = env.VITE_ZERO_CACHE_URL;
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -24,7 +27,28 @@ export const Route = createRootRouteWithContext<{
   zero: Zero;
 }>()({
   head: () => ({
-    links: [{ rel: "stylesheet", href: appCss }],
+    meta: [
+      {
+        charSet: "utf-8",
+      },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
+      },
+      {
+        title: "TanStack Start Starter",
+      },
+    ],
+    links: [
+      {
+        rel: "stylesheet",
+        href: appCss,
+      },
+      {
+        rel: "preconnect",
+        href: zeroCacheURL,
+      },
+    ],
   }),
   component: RootComponent,
 });
@@ -37,7 +61,7 @@ function RootComponent() {
   );
 }
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootDocument({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <Providers>
       <html lang="en" suppressHydrationWarning>
