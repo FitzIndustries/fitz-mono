@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { useZero } from "@rocicorp/zero/react";
+import { useQuery as useZeroQuery } from "@rocicorp/zero/react";
 import { useForm } from "@tanstack/react-form";
 import {
   useMutation,
@@ -21,6 +21,7 @@ import {
 } from "@fitzindustries/ui/field";
 import { Input } from "@fitzindustries/ui/input";
 import { toast } from "@fitzindustries/ui/toast";
+import { queries } from "@fitzindustries/zero-shared";
 
 import { AuthShowcase } from "~/component/auth-showcase";
 import { useTRPC } from "~/lib/trpc";
@@ -34,9 +35,6 @@ export const Route = createFileRoute("/")({
 });
 
 function RouteComponent() {
-  const zero = useZero();
-  console.log("clientID", zero.clientID);
-
   return (
     <main className="container h-screen py-16">
       <div className="flex flex-col items-center justify-center gap-4">
@@ -162,6 +160,8 @@ function PostList() {
   const trpc = useTRPC();
   const { data: posts } = useSuspenseQuery(trpc.post.all.queryOptions());
 
+  const [zeroPosts] = useZeroQuery(queries.posts.all());
+
   if (posts.length === 0) {
     return (
       <div className="relative flex w-full flex-col gap-4">
@@ -178,7 +178,13 @@ function PostList() {
 
   return (
     <div className="flex w-full flex-col gap-4">
+      <div className="text-2xl font-bold">TRPC Posts</div>
       {posts.map((p) => {
+        return <PostCard key={p.id} post={p} />;
+      })}
+
+      <div className="text-2xl font-bold">Zero Posts</div>
+      {zeroPosts.map((p) => {
         return <PostCard key={p.id} post={p} />;
       })}
     </div>

@@ -1,9 +1,11 @@
-import { mustGetMutator } from "@rocicorp/zero";
-import { handleMutateRequest } from "@rocicorp/zero/server";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { dbProvider } from "@fitzindustries/db/client";
-import { mutators } from "@fitzindustries/zero-shared";
+import {
+  handleMutateRequest,
+  mustGetMutator,
+  mutators,
+} from "@fitzindustries/zero-shared";
 
 export const Route = createFileRoute("/api/zero/mutate")({
   server: {
