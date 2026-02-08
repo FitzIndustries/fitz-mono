@@ -17,13 +17,16 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@rocicorp/zero": "catalog:",
     "zod": "catalog:"
+  },
+  "peerDependencies": {
+    "@rocicorp/zero": "*"
   },
   "devDependencies": {
     "@fitzindustries/eslint-config": "workspace:*",
     "@fitzindustries/prettier-config": "workspace:*",
     "@fitzindustries/tsconfig": "workspace:*",
+    "@rocicorp/zero": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
