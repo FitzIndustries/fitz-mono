@@ -56,28 +56,29 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <Providers>
+        <Outlet />
+        <div className="absolute right-4 bottom-12">
+          <ThemeToggle />
+        </div>
+        <Toaster />
+      </Providers>
     </RootDocument>
   );
 }
 
 function RootDocument({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <Providers>
-      <html lang="en" suppressHydrationWarning>
-        <head>
-          <HeadContent />
-        </head>
-        <body className="bg-background text-foreground min-h-screen font-sans antialiased">
-          {children}
-          <div className="absolute right-4 bottom-12">
-            <ThemeToggle />
-          </div>
-          <Toaster />
-          <TanStackRouterDevtools position="bottom-right" />
-          <Scripts />
-        </body>
-      </html>
-    </Providers>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <HeadContent />
+      </head>
+      <body className="bg-background text-foreground min-h-screen font-sans antialiased">
+        {children}
+
+        <TanStackRouterDevtools position="bottom-right" />
+        <Scripts />
+      </body>
+    </html>
   );
 }
