@@ -19,9 +19,6 @@
   "dependencies": {
     "zod": "catalog:"
   },
-  "peerDependencies": {
-    "@rocicorp/zero": "*"
-  },
   "devDependencies": {
     "@fitzindustries/eslint-config": "workspace:*",
     "@fitzindustries/prettier-config": "workspace:*",
