@@ -1,5 +1,5 @@
-import { mustGetQuery } from "@rocicorp/zero";
-import { handleQueryRequest } from "@rocicorp/zero/server";
+import { mustGetQuery } from "@fitzindustries/zero-shared/zero";
+import { handleQueryRequest } from "@fitzindustries/zero-shared/server";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { queries, schema } from "@fitzindustries/zero-shared";

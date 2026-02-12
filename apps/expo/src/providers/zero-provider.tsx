@@ -1,7 +1,7 @@
 import type React from "react";
 import { useMemo } from "react";
 import { Platform } from "react-native";
-import { ZeroProvider as RocicorpZeroProvider } from "@rocicorp/zero/react";
+import { ZeroProvider as RocicorpZeroProvider } from "@fitzindustries/zero-shared/react";
 
 import { mutators, schema } from "@fitzindustries/zero-shared";
 

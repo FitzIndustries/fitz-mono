@@ -17,7 +17,6 @@
     "@better-auth/expo": "catalog:",
     "@fitzindustries/zero-shared": "workspace:*",
     "@legendapp/list": "^2.0.14",
-    "@rocicorp/zero": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@trpc/client": "catalog:",
     "@trpc/server": "catalog:",

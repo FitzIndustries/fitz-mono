@@ -1,5 +1,5 @@
-import { mustGetMutator } from "@rocicorp/zero";
-import { handleMutateRequest } from "@rocicorp/zero/server";
+import { mustGetMutator } from "@fitzindustries/zero-shared/zero";
+import { handleMutateRequest } from "@fitzindustries/zero-shared/server";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { dbProvider } from "@fitzindustries/db/client";

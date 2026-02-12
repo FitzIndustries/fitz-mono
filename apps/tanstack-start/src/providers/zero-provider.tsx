@@ -1,6 +1,6 @@
-import type { Zero } from "@rocicorp/zero";
+import type { Zero } from "@fitzindustries/zero-shared/zero";
 import { useCallback } from "react";
-import { ZeroProvider as RocicorpZeroProvider } from "@rocicorp/zero/react";
+import { ZeroProvider as RocicorpZeroProvider } from "@fitzindustries/zero-shared/react";
 import { useRouter } from "@tanstack/react-router";
 
 import { mutators, schema } from "@fitzindustries/zero-shared";

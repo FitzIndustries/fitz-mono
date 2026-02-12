@@ -1,4 +1,4 @@
-import { defineQueries, defineQuery } from "@rocicorp/zero";
+import { defineQueries, defineQuery } from "./zero";
 
 // import { z } from "zod/v4";
 

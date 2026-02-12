@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { useQuery as useZeroQuery } from "@rocicorp/zero/react";
+import { useQuery as useZeroQuery } from "@fitzindustries/zero-shared/react";
 import { useForm } from "@tanstack/react-form";
 import {
   useMutation,

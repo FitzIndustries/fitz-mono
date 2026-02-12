@@ -6,6 +6,22 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./react": {
+      "types": "./src/react.ts",
+      "default": "./src/react.ts"
+    },
+    "./server": {
+      "types": "./src/server.ts",
+      "default": "./src/server.ts"
+    },
+    "./expo-sqlite": {
+      "types": "./src/expo-sqlite.ts",
+      "default": "./src/expo-sqlite.ts"
+    },
+    "./zero": {
+      "types": "./src/zero.ts",
+      "default": "./src/zero.ts"
     }
   },
   "scripts": {
@@ -17,13 +33,13 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@rocicorp/zero": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@fitzindustries/eslint-config": "workspace:*",
     "@fitzindustries/prettier-config": "workspace:*",
     "@fitzindustries/tsconfig": "workspace:*",
-    "@rocicorp/zero": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"

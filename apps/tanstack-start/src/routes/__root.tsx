@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import type { Zero } from "@rocicorp/zero";
+import type { Zero } from "@fitzindustries/zero-shared/zero";
 import type { QueryClient } from "@tanstack/react-query";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import type * as React from "react";
