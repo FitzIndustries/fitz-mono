@@ -1,5 +1,5 @@
 // zero/mutators.ts
-import { defineMutator, defineMutators } from "./zero";
+import { defineMutator, defineMutators } from "@rocicorp/zero";
 import { z } from "zod/v4";
 
 export const mutators = defineMutators({
