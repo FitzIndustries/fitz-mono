@@ -5,6 +5,9 @@ import { Link, Stack } from "expo-router";
 import { LegendList } from "@legendapp/list";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { queries } from "@fitzindustries/zero-shared";
+import { useQuery as useZeroQuery } from "@fitzindustries/zero-shared/react";
+
 import type { RouterOutputs } from "~/utils/api";
 import { authClient } from "~/lib/auth";
 import { trpc } from "~/utils/api";
@@ -252,6 +255,8 @@ export default function Index() {
 
   const postQuery = useQuery(trpc.post.all.queryOptions());
 
+  const [zeroPosts] = useZeroQuery(queries.posts.all());
+
   const deletePostMutation = useMutation(
     trpc.post.delete.mutationOptions({
       onSettled: () =>
@@ -278,6 +283,25 @@ export default function Index() {
 
         <LegendList
           data={postQuery.data ?? []}
+          estimatedItemSize={20}
+          keyExtractor={(item) => item.id}
+          ItemSeparatorComponent={() => <View className="h-2" />}
+          renderItem={(p) => (
+            <PostCard
+              post={p.item}
+              onDelete={() => deletePostMutation.mutate(p.item.id)}
+            />
+          )}
+        />
+
+        <View className="py-2">
+          <Text className="text-primary font-semibold italic">
+            Press on a post
+          </Text>
+        </View>
+
+        <LegendList
+          data={zeroPosts}
           estimatedItemSize={20}
           keyExtractor={(item) => item.id}
           ItemSeparatorComponent={() => <View className="h-2" />}
