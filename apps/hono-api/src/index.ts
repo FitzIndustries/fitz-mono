@@ -13,15 +13,20 @@ import {
 } from "@fitzindustries/zero-shared/server";
 import { mustGetMutator, mustGetQuery } from "@fitzindustries/zero-shared/zero";
 
-import { auth } from "~/auth";
 import { env } from "~/env";
+import { auth } from "./auth";
 
 const app = new Hono();
 
 app.use(logger());
 app.use(
+  "/api/*",
   cors({
     origin: ["http://localhost:3000", "http://localhost:3001"],
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["POST", "GET", "OPTIONS"],
+    exposeHeaders: ["Content-Length"],
+    maxAge: 600,
     credentials: true,
   }),
 );
@@ -45,11 +50,14 @@ app.use(
   }),
 );
 
-app.post("/api/query", async (c) => {
+app.post("/api/zero/query", async (c) => {
+  const session = await auth.api.getSession(c.req.raw);
+  const ctx = session ? { userId: session.user.id } : undefined;
+
   const result = await handleQueryRequest(
     (name, args) => {
       const query = mustGetQuery(queries, name);
-      return query.fn({ args, ctx: { userId: "anon" } });
+      return query.fn({ args, ctx });
     },
     schema,
     c.req.raw,
@@ -58,13 +66,16 @@ app.post("/api/query", async (c) => {
   return c.json(result);
 });
 
-app.post("/api/mutate", async (c) => {
+app.post("/api/zero/mutate", async (c) => {
+  const session = await auth.api.getSession(c.req.raw);
+  const ctx = session ? { userId: session.user.id } : undefined;
+
   const result = await handleMutateRequest(
     dbProvider,
     (transact) =>
       transact((tx, name, args) => {
         const mutator = mustGetMutator(mutators, name);
-        return mutator.fn({ args, tx, ctx: { userId: "anon" } });
+        return mutator.fn({ args, tx, ctx });
       }),
     c.req.raw,
   );

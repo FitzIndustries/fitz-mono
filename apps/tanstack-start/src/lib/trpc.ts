@@ -13,7 +13,6 @@ import * as Api from "@fitzindustries/api";
 
 import { auth } from "~/auth/server";
 import { env } from "~/env";
-import { getBaseUrl } from "~/lib/url";
 
 export const makeTRPCClient = createIsomorphicFn()
   .server(() => {
@@ -41,7 +40,7 @@ export const makeTRPCClient = createIsomorphicFn()
         }),
         httpBatchStreamLink({
           transformer: SuperJSON,
-          url: getBaseUrl() + "/api/trpc",
+          url: env.VITE_API_URL + "/api/trpc",
           headers() {
             const headers = new Headers();
             headers.set("x-trpc-source", "tanstack-start-client");

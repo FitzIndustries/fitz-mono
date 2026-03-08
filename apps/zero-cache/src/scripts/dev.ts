@@ -13,8 +13,8 @@ const runZeroCacheDev = async (): Promise<void> => {
     env: {
       ...process.env,
       ZERO_UPSTREAM_DB: zeroUpstreamDb,
-      ZERO_QUERY_URL: "http://localhost:3001/api/zero/query",
-      ZERO_MUTATE_URL: "http://localhost:3001/api/zero/mutate",
+      ZERO_QUERY_URL: "http://localhost:3100/api/zero/query",
+      ZERO_MUTATE_URL: "http://localhost:3100/api/zero/mutate",
       ZERO_QUERY_FORWARD_COOKIES: "true",
       ZERO_MUTATE_FORWARD_COOKIES: "true",
     },

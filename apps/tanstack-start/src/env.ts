@@ -25,6 +25,7 @@ export const env = createEnv({
    * For them to be exposed to the client, prefix them with `NEXT_PUBLIC_`.
    */
   client: {
+    VITE_API_URL: z.url(),
     VITE_ZERO_CACHE_URL: z.url(),
     VITE_PUBLIC_ZERO_LOG_LEVEL: z
       .enum(["debug", "info", "warn", "error"])

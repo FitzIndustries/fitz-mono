@@ -1,5 +1,5 @@
 {
-  "name": "@fitzindustries/server",
+  "name": "@fitzindustries/hono-api",
   "private": true,
   "sideEffects": false,
   "type": "module",

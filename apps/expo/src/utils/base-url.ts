@@ -14,7 +14,7 @@ const getLocalhost = () => {
 
 /**
  * Base URL for the API server (tRPC, better-auth, etc.).
- * Port 3000 is the default for the TanStack Start dev server.
+ * Port 3100 is the default for the Hono API server.
  */
 export const getBaseUrl = () => {
   if (process.env.EXPO_PUBLIC_API_URL) {
@@ -27,7 +27,7 @@ export const getBaseUrl = () => {
       "Failed to get localhost. Please point to your production server.",
     );
   }
-  return `http://${localhost}:3001`;
+  return `http://${localhost}:3100`;
 };
 
 /**

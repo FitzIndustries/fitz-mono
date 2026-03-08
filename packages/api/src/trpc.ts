@@ -10,8 +10,19 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { z, ZodError } from "zod/v4";
 
-import type { Auth } from "@fitzindustries/auth";
 import { db } from "@fitzindustries/db/client";
+
+/**
+ * Structural type for the auth parameter — avoids nominal type conflicts
+ * caused by pnpm resolving better-auth through different dependency paths.
+ */
+type AuthProvider = {
+  api: {
+    getSession: (opts: {
+      headers: Headers;
+    }) => Promise<{ session: Record<string, unknown>; user: { id: string } } | null>;
+  };
+};
 
 /**
  * 1. CONTEXT
@@ -28,14 +39,12 @@ import { db } from "@fitzindustries/db/client";
 
 export const createTRPCContext = async (opts: {
   headers: Headers;
-  auth: Auth;
+  auth: AuthProvider;
 }) => {
-  const authApi = opts.auth.api;
-  const session = await authApi.getSession({
+  const session = await opts.auth.api.getSession({
     headers: opts.headers,
   });
   return {
-    authApi,
     session,
     db,
   };
