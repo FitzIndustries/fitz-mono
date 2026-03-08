@@ -23,7 +23,7 @@ app.use(
   "/api/*",
   cors({
     origin: ["http://localhost:3000", "http://localhost:3001"],
-    allowHeaders: ["Content-Type", "Authorization"],
+    allowHeaders: ["Content-Type", "Authorization", "trpc-accept", "x-trpc-source", "Cookie"],
     allowMethods: ["POST", "GET", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
     maxAge: 600,
@@ -38,6 +38,7 @@ app.on(["GET", "POST"], "/api/auth/**", (c) => auth.handler(c.req.raw));
 app.use(
   "/api/trpc/*",
   trpcServer({
+    endpoint: "/api/trpc",
     router: appRouter,
     createContext: (_opts, c) =>
       createTRPCContext({
