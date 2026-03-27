@@ -1,8 +1,13 @@
 import { useEffect, useRef } from "react";
 
+import type { ThemeMode } from "@fitzindustries/ui/theme";
 import { ThemeProvider, useTheme } from "@fitzindustries/ui/theme";
+import { mutators, queries } from "@fitzindustries/zero-shared";
+import {
+  useZero,
+  useQuery as useZeroQuery,
+} from "@fitzindustries/zero-shared/react";
 
-import { useUserPreferences } from "~/hooks/use-user-preferences";
 import { ZeroProvider } from "./zero-provider";
 
 /**
@@ -14,50 +19,58 @@ import { ZeroProvider } from "./zero-provider";
 function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
-      <ThemePreferenceSync />
-      <ZeroProvider>{children}</ZeroProvider>
+      <ZeroProvider>
+        <ThemePreferenceSync />
+        {children}
+      </ZeroProvider>
     </ThemeProvider>
   );
 }
 
 function ThemePreferenceSync() {
   const { themeMode, setTheme } = useTheme();
-  const { isFetched, preferences, session, updatePreferences } =
-    useUserPreferences();
+  const zero = useZero();
+  const [currentUser] = useZeroQuery(queries.preferences.currentUser());
   const hasAppliedRemoteTheme = useRef(false);
   const lastSyncedTheme = useRef(themeMode);
 
   useEffect(() => {
-    if (!session) {
+    if (!currentUser) {
       hasAppliedRemoteTheme.current = false;
       lastSyncedTheme.current = themeMode;
       return;
     }
 
-    if (!isFetched || !preferences) {
-      return;
-    }
+    const remoteTheme = (currentUser.themeMode ?? "auto") as ThemeMode;
 
     if (!hasAppliedRemoteTheme.current) {
       hasAppliedRemoteTheme.current = true;
-      lastSyncedTheme.current = preferences.themeMode;
+      lastSyncedTheme.current = remoteTheme;
 
-      if (preferences.themeMode !== themeMode) {
-        setTheme(preferences.themeMode);
+      if (remoteTheme !== themeMode) {
+        setTheme(remoteTheme);
       }
       return;
     }
 
-    if (themeMode === lastSyncedTheme.current || updatePreferences.isPending) {
+    if (remoteTheme !== themeMode && themeMode === lastSyncedTheme.current) {
+      lastSyncedTheme.current = remoteTheme;
+      setTheme(remoteTheme);
+      return;
+    }
+
+    if (themeMode === lastSyncedTheme.current) {
       return;
     }
 
     lastSyncedTheme.current = themeMode;
-    void updatePreferences.mutateAsync({ themeMode }).catch(() => {
-      lastSyncedTheme.current = preferences.themeMode;
-      setTheme(preferences.themeMode);
-    });
-  }, [isFetched, preferences, session, setTheme, themeMode, updatePreferences]);
+    void zero
+      .mutate(mutators.preferences.updateTheme({ themeMode }))
+      .server.catch(() => {
+        lastSyncedTheme.current = remoteTheme;
+        setTheme(remoteTheme);
+      });
+  }, [currentUser, setTheme, themeMode, zero]);
 
   return null;
 }

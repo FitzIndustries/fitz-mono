@@ -140,4 +140,27 @@ export const mutators = defineMutators({
       },
     ),
   },
+
+  preferences: {
+    updateTheme: defineMutator(
+      z.object({
+        themeMode: z.enum(["light", "dark", "auto"]),
+      }),
+      async ({ args, ctx, tx }) => {
+        const existingUser = await tx.run(
+          zql.user.where("id", ctx.userId).one(),
+        );
+
+        if (!existingUser) {
+          throw new Error("User not found");
+        }
+
+        await tx.mutate.user.update({
+          id: ctx.userId,
+          themeMode: args.themeMode,
+          updatedAt: Date.now(),
+        });
+      },
+    ),
+  },
 });

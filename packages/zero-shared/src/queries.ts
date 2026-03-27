@@ -86,6 +86,12 @@ export const queries = defineQueries({
     ),
   },
 
+  preferences: {
+    currentUser: defineQuery(({ ctx }) =>
+      zql.user.where("id", ctx.userId).one(),
+    ),
+  },
+
   organizations: {
     all: defineQuery(() => zql.organization),
   },
