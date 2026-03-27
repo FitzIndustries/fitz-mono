@@ -45,7 +45,15 @@
       "interactive": true
     }
   },
-  "globalEnv": ["POSTGRES_URL", "ZERO_UPSTREAM_DB", "AUTH_SECRET", "PORT"],
+  "globalEnv": [
+    "POSTGRES_URL",
+    "ZERO_UPSTREAM_DB",
+    "AUTH_SECRET",
+    "PORT",
+    "RESEND_API_KEY",
+    "RESEND_WEBHOOK_SECRET",
+    "ENCRYPTION_KEY"
+  ],
   "globalPassThroughEnv": [
     "NODE_ENV",
     "CI",

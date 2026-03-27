@@ -11,6 +11,9 @@ export const env = createEnv({
       .default("development"),
     POSTGRES_URL: z.url(),
     PORT: z.coerce.number().default(3100),
+    ENCRYPTION_KEY: z.string().length(64),
+    RESEND_API_KEY: z.string().optional(),
+    RESEND_WEBHOOK_SECRET: z.string().optional(),
   },
   runtimeEnv: process.env,
   skipValidation:

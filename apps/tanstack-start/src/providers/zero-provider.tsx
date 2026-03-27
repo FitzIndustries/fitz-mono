@@ -1,12 +1,12 @@
-import type { Zero } from "@fitzindustries/zero-shared/zero";
 import { useCallback } from "react";
-import { ZeroProvider as RocicorpZeroProvider } from "@fitzindustries/zero-shared/react";
 import { useRouter } from "@tanstack/react-router";
 
+import type { Zero } from "@fitzindustries/zero-shared/zero";
 import { mutators, schema } from "@fitzindustries/zero-shared";
+import { ZeroProvider as RocicorpZeroProvider } from "@fitzindustries/zero-shared/react";
 
-import { authClient } from "~/auth/client";
 import { env } from "~/env";
+import { useViewerOrganization } from "~/hooks/use-viewer-organization";
 
 // Use absolute URL through Vite proxy to enable cookie-based auth
 const cacheURL = env.VITE_ZERO_CACHE_URL;
@@ -21,9 +21,21 @@ const logLevel = env.VITE_PUBLIC_ZERO_LOG_LEVEL;
 
 function ZeroProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const session = authClient.useSession();
-  const context = session.data ? { userId: session.data.user.id } : undefined;
-  const userID = session.data?.user.id ?? "anon";
+  const {
+    currentMembershipId,
+    currentOrganizationId,
+    isSessionPending,
+    session,
+  } = useViewerOrganization();
+  const context = session
+    ? {
+        userId: session.user.id,
+        organizationId: currentOrganizationId ?? "__pending__",
+        membershipId: currentMembershipId,
+      }
+    : undefined;
+  const userID = session?.user.id ?? "anon";
+  const zeroKey = `${userID}:${currentOrganizationId ?? "pending"}`;
 
   const init = useCallback(
     (untypedZero: unknown) => {
@@ -41,8 +53,13 @@ function ZeroProvider({ children }: { children: React.ReactNode }) {
     [router],
   );
 
+  if (isSessionPending) {
+    return null;
+  }
+
   return (
     <RocicorpZeroProvider
+      key={zeroKey}
       {...{
         schema,
         userID,

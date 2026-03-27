@@ -12,6 +12,13 @@ export function initAuth<
   secret: string | undefined;
   extraPlugins?: TExtraPlugins;
 }) {
+  const trustedOrigins = [
+    options.baseUrl,
+    "expo://",
+    "http://localhost:3000",
+    "http://localhost:3001",
+  ];
+
   const config = {
     database: drizzleAdapter(db, {
       provider: "pg",
@@ -22,7 +29,7 @@ export function initAuth<
       enabled: true,
     },
     plugins: [expo(), ...(options.extraPlugins ?? [])],
-    trustedOrigins: ["expo://"],
+    trustedOrigins,
     onAPIError: {
       onError(error, ctx) {
         console.error("BETTER AUTH API ERROR", error, ctx);

@@ -16,13 +16,14 @@ import { db } from "@fitzindustries/db/client";
  * Structural type for the auth parameter — avoids nominal type conflicts
  * caused by pnpm resolving better-auth through different dependency paths.
  */
-type AuthProvider = {
+interface AuthProvider {
   api: {
-    getSession: (opts: {
-      headers: Headers;
-    }) => Promise<{ session: Record<string, unknown>; user: { id: string } } | null>;
+    getSession: (opts: { headers: Headers }) => Promise<{
+      session: Record<string, unknown>;
+      user: { id: string; name?: string | null; email?: string | null };
+    } | null>;
   };
-};
+}
 
 /**
  * 1. CONTEXT

@@ -2,7 +2,10 @@
 // You should NOT make any changes in this file as it will be overwritten.
 
 import type { Row } from "@rocicorp/zero";
+import type { CustomType } from "drizzle-zero";
 import { createBuilder } from "@rocicorp/zero";
+
+import type * as drizzleSchema from "../../db/src/schema";
 
 const postTable = {
   name: "Post",
@@ -119,6 +122,693 @@ const accountTable = {
   },
   primaryKey: ["id"],
 } as const;
+const articleTable = {
+  name: "article",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    title: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    content: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    slug: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    category: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+    },
+    published: {
+      type: "boolean",
+      optional: true,
+      customType: null as unknown as boolean,
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+    updatedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "updated_at",
+    },
+  },
+  primaryKey: ["id"],
+} as const;
+const auditLogTable = {
+  name: "auditLog",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    actorId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "actor_id",
+    },
+    action: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    resource: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    resourceId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "resource_id",
+    },
+    metadata: {
+      type: "json",
+      optional: true,
+      customType: null as unknown as CustomType<
+        typeof drizzleSchema,
+        "auditLog",
+        "metadata"
+      >,
+    },
+    ipAddress: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "ip_address",
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+  },
+  primaryKey: ["id"],
+  serverName: "audit_log",
+} as const;
+const cannedResponseTable = {
+  name: "cannedResponse",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    teamId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "team_id",
+    },
+    title: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    content: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    shortcut: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+    },
+    category: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+    updatedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "updated_at",
+    },
+  },
+  primaryKey: ["id"],
+  serverName: "canned_response",
+} as const;
+const conversationTable = {
+  name: "conversation",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    customerId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "customer_id",
+    },
+    channel: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as "email" | "whatsapp",
+    },
+    channelId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "channel_id",
+    },
+    status: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as "open" | "pending" | "resolved" | "closed",
+    },
+    teamId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "team_id",
+    },
+    assignedAgentId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "assigned_agent_id",
+    },
+    subject: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+    },
+    lastMessageAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "last_message_at",
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+    updatedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "updated_at",
+    },
+  },
+  primaryKey: ["id"],
+} as const;
+const conversationMetricTable = {
+  name: "conversationMetric",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    conversationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "conversation_id",
+    },
+    firstResponseAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "first_response_at",
+    },
+    resolvedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "resolved_at",
+    },
+    agentResponseCount: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "agent_response_count",
+    },
+    customerResponseCount: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "customer_response_count",
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+  },
+  primaryKey: ["id"],
+  serverName: "conversation_metric",
+} as const;
+const customerTable = {
+  name: "customer",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    email: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+    },
+    phone: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+    },
+    name: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+    },
+    metadata: {
+      type: "json",
+      optional: true,
+      customType: null as unknown as CustomType<
+        typeof drizzleSchema,
+        "customer",
+        "metadata"
+      >,
+    },
+    tags: {
+      type: "json",
+      optional: true,
+      customType: null as unknown as string[],
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+    updatedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "updated_at",
+    },
+  },
+  primaryKey: ["id"],
+} as const;
+const emailChannelTable = {
+  name: "emailChannel",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    name: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    emailAddress: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "email_address",
+    },
+    fromName: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "from_name",
+    },
+    awsSesArn: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "aws_ses_arn",
+    },
+    awsSesVerified: {
+      type: "boolean",
+      optional: true,
+      customType: null as unknown as boolean,
+      serverName: "aws_ses_verified",
+    },
+    botpressBotId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "botpress_bot_id",
+    },
+    isActive: {
+      type: "boolean",
+      optional: true,
+      customType: null as unknown as boolean,
+      serverName: "is_active",
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+    updatedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "updated_at",
+    },
+  },
+  primaryKey: ["id"],
+  serverName: "email_channel",
+} as const;
+const internalNoteTable = {
+  name: "internalNote",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    conversationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "conversation_id",
+    },
+    agentId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "agent_id",
+    },
+    content: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+    updatedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "updated_at",
+    },
+  },
+  primaryKey: ["id"],
+  serverName: "internal_note",
+} as const;
+const messageTable = {
+  name: "message",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    conversationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "conversation_id",
+    },
+    senderType: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as "customer" | "agent" | "system" | "bot",
+      serverName: "sender_type",
+    },
+    senderId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "sender_id",
+    },
+    content: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    contentType: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as
+        | "text"
+        | "template"
+        | "attachment"
+        | "bot_response",
+      serverName: "content_type",
+    },
+    direction: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as "inbound" | "outbound",
+    },
+    metadata: {
+      type: "json",
+      optional: true,
+      customType: null as unknown as CustomType<
+        typeof drizzleSchema,
+        "message",
+        "metadata"
+      >,
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+  },
+  primaryKey: ["id"],
+} as const;
+const organizationTable = {
+  name: "organization",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    name: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    slug: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    logoUrl: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "logo_url",
+    },
+    stripeCustomerId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "stripe_customer_id",
+    },
+    stripeSubscriptionId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "stripe_subscription_id",
+    },
+    stripeItemId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "stripe_item_id",
+    },
+    plan: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as "starter" | "pro" | "enterprise",
+    },
+    seatLimit: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "seat_limit",
+    },
+    seatUsed: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "seat_used",
+    },
+    settings: {
+      type: "json",
+      optional: true,
+      customType: null as unknown as CustomType<
+        typeof drizzleSchema,
+        "organization",
+        "settings"
+      >,
+    },
+    isActive: {
+      type: "boolean",
+      optional: true,
+      customType: null as unknown as boolean,
+      serverName: "is_active",
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+    updatedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "updated_at",
+    },
+  },
+  primaryKey: ["id"],
+} as const;
+const organizationMemberTable = {
+  name: "organizationMember",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    userId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "user_id",
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    role: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as "agent" | "owner" | "admin" | "viewer",
+    },
+    invitedBy: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "invited_by",
+    },
+    isActive: {
+      type: "boolean",
+      optional: true,
+      customType: null as unknown as boolean,
+      serverName: "is_active",
+    },
+    joinedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "joined_at",
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+    updatedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "updated_at",
+    },
+  },
+  primaryKey: ["id"],
+  serverName: "organization_member",
+} as const;
 const sessionTable = {
   name: "session",
   columns: {
@@ -167,6 +857,140 @@ const sessionTable = {
       optional: false,
       customType: null as unknown as string,
       serverName: "user_id",
+    },
+  },
+  primaryKey: ["id"],
+} as const;
+const teamTable = {
+  name: "team",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    name: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    description: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+    },
+    priority: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+    },
+    autoAssign: {
+      type: "boolean",
+      optional: true,
+      customType: null as unknown as boolean,
+      serverName: "auto_assign",
+    },
+    isActive: {
+      type: "boolean",
+      optional: true,
+      customType: null as unknown as boolean,
+      serverName: "is_active",
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+    updatedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "updated_at",
+    },
+  },
+  primaryKey: ["id"],
+} as const;
+const ticketTable = {
+  name: "ticket",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    conversationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "conversation_id",
+    },
+    ticketType: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as
+        | "booking"
+        | "refund"
+        | "info"
+        | "complaint"
+        | "other",
+      serverName: "ticket_type",
+    },
+    priority: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as "low" | "medium" | "high" | "urgent",
+    },
+    status: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as
+        | "open"
+        | "resolved"
+        | "closed"
+        | "in_progress",
+    },
+    eventId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "event_id",
+    },
+    orderId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "order_id",
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+    updatedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "updated_at",
+    },
+    resolvedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "resolved_at",
     },
   },
   primaryKey: ["id"],
@@ -254,6 +1078,77 @@ const verificationTable = {
   },
   primaryKey: ["id"],
 } as const;
+const whatsappChannelTable = {
+  name: "whatsappChannel",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    name: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    phoneNumber: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "phone_number",
+    },
+    phoneNumberId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "phone_number_id",
+    },
+    accessTokenEncrypted: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "access_token_encrypted",
+    },
+    webhookVerifyToken: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "webhook_verify_token",
+    },
+    botpressBotId: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "botpress_bot_id",
+    },
+    isActive: {
+      type: "boolean",
+      optional: true,
+      customType: null as unknown as boolean,
+      serverName: "is_active",
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+    updatedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "updated_at",
+    },
+  },
+  primaryKey: ["id"],
+  serverName: "whatsapp_channel",
+} as const;
 const accountRelationships = {
   user: [
     {
@@ -264,12 +1159,326 @@ const accountRelationships = {
     },
   ],
 } as const;
+const articleRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+} as const;
+const auditLogRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+} as const;
+const cannedResponseRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+  team: [
+    {
+      sourceField: ["teamId"],
+      destField: ["id"],
+      destSchema: "team",
+      cardinality: "one",
+    },
+  ],
+} as const;
+const conversationMetricRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+  conversation: [
+    {
+      sourceField: ["conversationId"],
+      destField: ["id"],
+      destSchema: "conversation",
+      cardinality: "one",
+    },
+  ],
+} as const;
+const conversationRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+  customer: [
+    {
+      sourceField: ["customerId"],
+      destField: ["id"],
+      destSchema: "customer",
+      cardinality: "one",
+    },
+  ],
+  team: [
+    {
+      sourceField: ["teamId"],
+      destField: ["id"],
+      destSchema: "team",
+      cardinality: "one",
+    },
+  ],
+  assignedAgent: [
+    {
+      sourceField: ["assignedAgentId"],
+      destField: ["id"],
+      destSchema: "organizationMember",
+      cardinality: "one",
+    },
+  ],
+  messages: [
+    {
+      sourceField: ["id"],
+      destField: ["conversationId"],
+      destSchema: "message",
+      cardinality: "many",
+    },
+  ],
+  internalNotes: [
+    {
+      sourceField: ["id"],
+      destField: ["conversationId"],
+      destSchema: "internalNote",
+      cardinality: "many",
+    },
+  ],
+  tickets: [
+    {
+      sourceField: ["id"],
+      destField: ["conversationId"],
+      destSchema: "ticket",
+      cardinality: "many",
+    },
+  ],
+  metric: [
+    {
+      sourceField: ["id"],
+      destField: ["conversationId"],
+      destSchema: "conversationMetric",
+      cardinality: "one",
+    },
+  ],
+} as const;
+const customerRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+  conversations: [
+    {
+      sourceField: ["id"],
+      destField: ["customerId"],
+      destSchema: "conversation",
+      cardinality: "many",
+    },
+  ],
+} as const;
+const emailChannelRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+} as const;
+const internalNoteRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+  conversation: [
+    {
+      sourceField: ["conversationId"],
+      destField: ["id"],
+      destSchema: "conversation",
+      cardinality: "one",
+    },
+  ],
+  agent: [
+    {
+      sourceField: ["agentId"],
+      destField: ["id"],
+      destSchema: "organizationMember",
+      cardinality: "one",
+    },
+  ],
+} as const;
+const messageRelationships = {
+  conversation: [
+    {
+      sourceField: ["conversationId"],
+      destField: ["id"],
+      destSchema: "conversation",
+      cardinality: "one",
+    },
+  ],
+} as const;
+const organizationMemberRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+} as const;
+const organizationRelationships = {
+  members: [
+    {
+      sourceField: ["id"],
+      destField: ["organizationId"],
+      destSchema: "organizationMember",
+      cardinality: "many",
+    },
+  ],
+  teams: [
+    {
+      sourceField: ["id"],
+      destField: ["organizationId"],
+      destSchema: "team",
+      cardinality: "many",
+    },
+  ],
+  customers: [
+    {
+      sourceField: ["id"],
+      destField: ["organizationId"],
+      destSchema: "customer",
+      cardinality: "many",
+    },
+  ],
+  conversations: [
+    {
+      sourceField: ["id"],
+      destField: ["organizationId"],
+      destSchema: "conversation",
+      cardinality: "many",
+    },
+  ],
+  whatsappChannels: [
+    {
+      sourceField: ["id"],
+      destField: ["organizationId"],
+      destSchema: "whatsappChannel",
+      cardinality: "many",
+    },
+  ],
+  emailChannels: [
+    {
+      sourceField: ["id"],
+      destField: ["organizationId"],
+      destSchema: "emailChannel",
+      cardinality: "many",
+    },
+  ],
+  cannedResponses: [
+    {
+      sourceField: ["id"],
+      destField: ["organizationId"],
+      destSchema: "cannedResponse",
+      cardinality: "many",
+    },
+  ],
+  articles: [
+    {
+      sourceField: ["id"],
+      destField: ["organizationId"],
+      destSchema: "article",
+      cardinality: "many",
+    },
+  ],
+  auditLogs: [
+    {
+      sourceField: ["id"],
+      destField: ["organizationId"],
+      destSchema: "auditLog",
+      cardinality: "many",
+    },
+  ],
+} as const;
 const sessionRelationships = {
   user: [
     {
       sourceField: ["userId"],
       destField: ["id"],
       destSchema: "user",
+      cardinality: "one",
+    },
+  ],
+} as const;
+const teamRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+  conversations: [
+    {
+      sourceField: ["id"],
+      destField: ["teamId"],
+      destSchema: "conversation",
+      cardinality: "many",
+    },
+  ],
+  cannedResponses: [
+    {
+      sourceField: ["id"],
+      destField: ["teamId"],
+      destSchema: "cannedResponse",
+      cardinality: "many",
+    },
+  ],
+} as const;
+const ticketRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+  conversation: [
+    {
+      sourceField: ["conversationId"],
+      destField: ["id"],
+      destSchema: "conversation",
       cardinality: "one",
     },
   ],
@@ -292,6 +1501,16 @@ const userRelationships = {
     },
   ],
 } as const;
+const whatsappChannelRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+} as const;
 /**
  * The Zero schema object.
  * This type is auto-generated from your Drizzle schema definition.
@@ -300,14 +1519,42 @@ export const schema = {
   tables: {
     Post: postTable,
     account: accountTable,
+    article: articleTable,
+    auditLog: auditLogTable,
+    cannedResponse: cannedResponseTable,
+    conversation: conversationTable,
+    conversationMetric: conversationMetricTable,
+    customer: customerTable,
+    emailChannel: emailChannelTable,
+    internalNote: internalNoteTable,
+    message: messageTable,
+    organization: organizationTable,
+    organizationMember: organizationMemberTable,
     session: sessionTable,
+    team: teamTable,
+    ticket: ticketTable,
     user: userTable,
     verification: verificationTable,
+    whatsappChannel: whatsappChannelTable,
   },
   relationships: {
     account: accountRelationships,
+    article: articleRelationships,
+    auditLog: auditLogRelationships,
+    cannedResponse: cannedResponseRelationships,
+    conversationMetric: conversationMetricRelationships,
+    conversation: conversationRelationships,
+    customer: customerRelationships,
+    emailChannel: emailChannelRelationships,
+    internalNote: internalNoteRelationships,
+    message: messageRelationships,
+    organizationMember: organizationMemberRelationships,
+    organization: organizationRelationships,
     session: sessionRelationships,
+    team: teamRelationships,
+    ticket: ticketRelationships,
     user: userRelationships,
+    whatsappChannel: whatsappChannelRelationships,
   },
   enableLegacyQueries: false,
   enableLegacyMutators: false,
@@ -329,10 +1576,79 @@ export type Post = Row<(typeof schema)["tables"]["Post"]>;
  */
 export type Account = Row<(typeof schema)["tables"]["account"]>;
 /**
+ * Represents a row from the "article" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type Article = Row<(typeof schema)["tables"]["article"]>;
+/**
+ * Represents a row from the "auditLog" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type AuditLog = Row<(typeof schema)["tables"]["auditLog"]>;
+/**
+ * Represents a row from the "cannedResponse" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type CannedResponse = Row<(typeof schema)["tables"]["cannedResponse"]>;
+/**
+ * Represents a row from the "conversation" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type Conversation = Row<(typeof schema)["tables"]["conversation"]>;
+/**
+ * Represents a row from the "conversationMetric" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type ConversationMetric = Row<
+  (typeof schema)["tables"]["conversationMetric"]
+>;
+/**
+ * Represents a row from the "customer" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type Customer = Row<(typeof schema)["tables"]["customer"]>;
+/**
+ * Represents a row from the "emailChannel" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type EmailChannel = Row<(typeof schema)["tables"]["emailChannel"]>;
+/**
+ * Represents a row from the "internalNote" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type InternalNote = Row<(typeof schema)["tables"]["internalNote"]>;
+/**
+ * Represents a row from the "message" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type Message = Row<(typeof schema)["tables"]["message"]>;
+/**
+ * Represents a row from the "organization" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type Organization = Row<(typeof schema)["tables"]["organization"]>;
+/**
+ * Represents a row from the "organizationMember" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type OrganizationMember = Row<
+  (typeof schema)["tables"]["organizationMember"]
+>;
+/**
  * Represents a row from the "session" table.
  * This type is auto-generated from your Drizzle schema definition.
  */
 export type Session = Row<(typeof schema)["tables"]["session"]>;
+/**
+ * Represents a row from the "team" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type Team = Row<(typeof schema)["tables"]["team"]>;
+/**
+ * Represents a row from the "ticket" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type Ticket = Row<(typeof schema)["tables"]["ticket"]>;
 /**
  * Represents a row from the "user" table.
  * This type is auto-generated from your Drizzle schema definition.
@@ -343,6 +1659,11 @@ export type User = Row<(typeof schema)["tables"]["user"]>;
  * This type is auto-generated from your Drizzle schema definition.
  */
 export type Verification = Row<(typeof schema)["tables"]["verification"]>;
+/**
+ * Represents a row from the "whatsappChannel" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type WhatsappChannel = Row<(typeof schema)["tables"]["whatsappChannel"]>;
 
 /**
  * Represents the ZQL query builder.

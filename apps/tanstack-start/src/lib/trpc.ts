@@ -41,6 +41,12 @@ export const makeTRPCClient = createIsomorphicFn()
         httpBatchStreamLink({
           transformer: SuperJSON,
           url: env.VITE_API_URL + "/api/trpc",
+          fetch(url, options) {
+            return fetch(url, {
+              ...options,
+              credentials: "include",
+            });
+          },
           headers() {
             const headers = new Headers();
             headers.set("x-trpc-source", "tanstack-start-client");

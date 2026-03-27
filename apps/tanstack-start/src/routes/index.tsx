@@ -1,255 +1,517 @@
-import { Suspense } from "react";
-import { useQuery as useZeroQuery } from "@fitzindustries/zero-shared/react";
-import { useForm } from "@tanstack/react-form";
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { Settings } from "lucide-react";
 
-import type { RouterOutputs } from "@fitzindustries/api";
-import { CreatePostSchema } from "@fitzindustries/db/schema";
 import { cn } from "@fitzindustries/ui";
-import { Button } from "@fitzindustries/ui/button";
 import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@fitzindustries/ui/field";
-import { Input } from "@fitzindustries/ui/input";
-import { toast } from "@fitzindustries/ui/toast";
-import { queries } from "@fitzindustries/zero-shared";
+  ConversationListItem,
+  ConversationView,
+} from "@fitzindustries/ui/support";
+import { mutators, queries } from "@fitzindustries/zero-shared";
+import {
+  useZero,
+  useQuery as useZeroQuery,
+} from "@fitzindustries/zero-shared/react";
 
-import { AuthShowcase } from "~/component/auth-showcase";
-import { useTRPC } from "~/lib/trpc";
+import { authClient } from "~/auth/client";
+import { useViewerOrganization } from "~/hooks/use-viewer-organization";
+import { apiFetch } from "~/lib/api";
 
 export const Route = createFileRoute("/")({
-  loader: ({ context }) => {
-    const { trpc, queryClient } = context;
-    void queryClient.prefetchQuery(trpc.post.all.queryOptions());
+  beforeLoad: async () => {
+    const session = await authClient.getSession();
+    if (!session.data) {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw redirect({ to: "/login" });
+    }
   },
-  component: RouteComponent,
+  component: SupportPage,
 });
 
-function RouteComponent() {
-  return (
-    <main className="container h-screen py-16">
-      <div className="flex flex-col items-center justify-center gap-4">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Create <span className="text-primary">T3</span> Turbo
-        </h1>
-        <AuthShowcase />
+type InboxType = "my" | "team";
+type FilterType = "all" | "open" | "pending" | "resolved" | "closed";
 
-        <CreatePostForm />
-        <div className="w-full max-w-2xl overflow-y-scroll">
-          <Suspense
-            fallback={
-              <div className="flex w-full flex-col gap-4">
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-              </div>
-            }
-          >
-            <PostList />
-          </Suspense>
-        </div>
-      </div>
-    </main>
-  );
-}
+function SupportPage() {
+  const zero = useZero();
+  const { data: session, isPending: isSessionPending } =
+    authClient.useSession();
+  const {
+    currentMembershipId,
+    currentOrganization,
+    currentOrganizationId,
+    isPending: isOrganizationPending,
+    organizations,
+    setCurrentOrganization,
+  } = useViewerOrganization();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [inboxType, setInboxType] = useState<InboxType>("my");
+  const [filter, setFilter] = useState<FilterType>("all");
+  const [ticketType, setTicketType] = useState<
+    "booking" | "refund" | "info" | "complaint" | "other"
+  >("booking");
+  const [ticketPriority, setTicketPriority] = useState<
+    "low" | "medium" | "high" | "urgent"
+  >("medium");
 
-function CreatePostForm() {
-  const trpc = useTRPC();
-
-  const queryClient = useQueryClient();
-  const createPost = useMutation(
-    trpc.post.create.mutationOptions({
-      onSuccess: async () => {
-        form.reset();
-        await queryClient.invalidateQueries(trpc.post.pathFilter());
-      },
-      onError: (err) => {
-        toast.error(
-          err.data?.code === "UNAUTHORIZED"
-            ? "You must be logged in to post"
-            : "Failed to create post",
-        );
-      },
+  const [conversations] = useZeroQuery(
+    queries.support.inbox({
+      scope: inboxType,
+      status: filter === "all" ? undefined : filter,
     }),
   );
 
-  const form = useForm({
-    defaultValues: {
-      content: "",
-      title: "",
+  const conversationList = useMemo(() => conversations, [conversations]);
+  const activeSelectedId = useMemo(() => {
+    if (!conversationList.length) {
+      return null;
+    }
+
+    if (selectedId) {
+      const isStillVisible = conversationList.some(
+        (conversation) => conversation.id === selectedId,
+      );
+
+      if (isStillVisible) {
+        return selectedId;
+      }
+    }
+
+    return conversationList[0]?.id ?? null;
+  }, [conversationList, selectedId]);
+
+  const [selectedConversation] = useZeroQuery(
+    queries.support.conversation(
+      activeSelectedId ?? "00000000-0000-0000-0000-000000000000",
+    ),
+  );
+
+  const userInitials = getInitials(session?.user.name);
+
+  const selectedConversationProps = useMemo(() => {
+    if (!selectedConversation?.customer) {
+      return null;
+    }
+
+    return {
+      id: selectedConversation.id,
+      channel: selectedConversation.channel,
+      status: selectedConversation.status ?? "open",
+      subject: selectedConversation.subject,
+      customer: {
+        id: selectedConversation.customer.id,
+        name: selectedConversation.customer.name,
+        email: selectedConversation.customer.email,
+        phone: selectedConversation.customer.phone,
+        metadata: selectedConversation.customer.metadata ?? undefined,
+      },
+      agentName:
+        selectedConversation.assignedAgentId === currentMembershipId
+          ? "You"
+          : selectedConversation.assignedAgentId
+            ? "Assigned"
+            : null,
+      messages: selectedConversation.messages.map((message) => ({
+        id: message.id,
+        content: message.content,
+        senderType: message.senderType,
+        direction: message.direction,
+        createdAt: message.createdAt ?? selectedConversation.lastMessageAt ?? 0,
+        senderId: message.senderId,
+        senderName:
+          message.senderType === "customer"
+            ? (selectedConversation.customer?.name ?? "Customer")
+            : message.senderId === currentMembershipId
+              ? "You"
+              : message.senderType === "agent"
+                ? "Agent"
+                : message.senderType,
+      })),
+    };
+  }, [currentMembershipId, selectedConversation]);
+
+  const replyMutation = useMutation({
+    mutationFn: (content: string) => {
+      if (!activeSelectedId) {
+        throw new Error("No conversation selected");
+      }
+
+      return apiFetch<{ message: { id: string } }>(
+        `/api/conversations/${activeSelectedId}/reply`,
+        {
+          method: "POST",
+          body: JSON.stringify({ content }),
+        },
+      );
     },
-    validators: {
-      onSubmit: CreatePostSchema,
-    },
-    onSubmit: (data) => createPost.mutate(data.value),
   });
 
+  const createTicketMutation = useMutation({
+    mutationFn: () => {
+      if (!activeSelectedId) {
+        throw new Error("No conversation selected");
+      }
+
+      return apiFetch<{ ticket: { id: string }; duplicate?: boolean }>(
+        "/api/tickets",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            conversationId: activeSelectedId,
+            ticketType,
+            priority: ticketPriority,
+          }),
+        },
+      );
+    },
+  });
+
+  const handleSendMessage = (content: string) => {
+    if (!activeSelectedId) {
+      return;
+    }
+
+    void replyMutation.mutateAsync(content).catch((error) => {
+      console.error("Failed to send support message", error);
+    });
+  };
+
+  const handleStatusChange = (
+    status: "open" | "pending" | "resolved" | "closed",
+  ) => {
+    if (!selectedId) {
+      return;
+    }
+
+    void zero
+      .mutate(
+        mutators.support.updateStatus({ conversationId: selectedId, status }),
+      )
+      .server.catch((error) => {
+        console.error("Failed to update conversation status", error);
+      });
+  };
+
+  const handleAssignSelf = () => {
+    if (!selectedId) {
+      return;
+    }
+
+    void zero
+      .mutate(mutators.support.assignSelf({ conversationId: selectedId }))
+      .server.catch((error) => {
+        console.error("Failed to assign conversation", error);
+      });
+  };
+
+  const ticketActions = selectedConversationProps ? (
+    <div className="ml-auto flex flex-wrap items-center gap-2">
+      <span className="text-muted-foreground text-xs">
+        {selectedConversation?.tickets.length
+          ? `${selectedConversation.tickets.length} ticket${selectedConversation.tickets.length === 1 ? "" : "s"}`
+          : "No tickets"}
+      </span>
+      <select
+        value={ticketType}
+        onChange={(event) => {
+          setTicketType(
+            event.target.value as
+              | "booking"
+              | "refund"
+              | "info"
+              | "complaint"
+              | "other",
+          );
+        }}
+        className="border-input bg-background h-8 rounded-md border px-2 text-xs"
+      >
+        <option value="booking">Booking</option>
+        <option value="refund">Refund</option>
+        <option value="info">Info</option>
+        <option value="complaint">Complaint</option>
+        <option value="other">Other</option>
+      </select>
+      <select
+        value={ticketPriority}
+        onChange={(event) => {
+          setTicketPriority(
+            event.target.value as "low" | "medium" | "high" | "urgent",
+          );
+        }}
+        className="border-input bg-background h-8 rounded-md border px-2 text-xs"
+      >
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="urgent">Urgent</option>
+      </select>
+      <button
+        type="button"
+        onClick={() => {
+          void createTicketMutation.mutateAsync().catch((error) => {
+            console.error("Failed to create ticket", error);
+          });
+        }}
+        className="text-muted-foreground hover:text-foreground text-sm"
+        disabled={createTicketMutation.isPending}
+      >
+        {createTicketMutation.isPending ? "Creating..." : "Create ticket"}
+      </button>
+    </div>
+  ) : null;
+
+  const isLoading =
+    isSessionPending || isOrganizationPending || !currentOrganizationId;
+
   return (
-    <form
-      className="w-full max-w-2xl"
-      onSubmit={(event) => {
-        event.preventDefault();
-        void form.handleSubmit();
-      }}
-    >
-      <FieldGroup>
-        <form.Field
-          name="title"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldContent>
-                  <FieldLabel htmlFor={field.name}>Bug Title</FieldLabel>
-                </FieldContent>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                  placeholder="Title"
-                />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-        />
-        <form.Field
-          name="content"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldContent>
-                  <FieldLabel htmlFor={field.name}>Content</FieldLabel>
-                </FieldContent>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                  placeholder="Content"
-                />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-        />
-      </FieldGroup>
-      <Button type="submit">Create</Button>
-    </form>
-  );
-}
+    <div className="flex h-screen bg-[radial-gradient(circle_at_top_left,_hsl(var(--primary)/0.12),_transparent_30%),linear-gradient(180deg,_hsl(var(--background)),_hsl(var(--muted)/0.35))]">
+      <aside className="bg-card/90 flex w-80 shrink-0 flex-col border-r backdrop-blur">
+        <div className="border-b p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-muted-foreground text-xs font-medium tracking-[0.18em] uppercase">
+                Support Desk
+              </p>
+              <h1 className="text-lg font-semibold">
+                {currentOrganization?.name ?? "Workspace"}
+              </h1>
+            </div>
+          </div>
 
-function PostList() {
-  const trpc = useTRPC();
-  const { data: posts } = useSuspenseQuery(trpc.post.all.queryOptions());
+          <select
+            value={currentOrganizationId ?? ""}
+            onChange={(event) => {
+              void setCurrentOrganization.mutateAsync(event.target.value);
+            }}
+            className="border-input bg-background mt-3 h-9 w-full rounded-md border px-2 text-sm"
+            disabled={setCurrentOrganization.isPending || !organizations.length}
+          >
+            {organizations.map((item) => (
+              <option key={item.organizationId} value={item.organizationId}>
+                {item.organization?.name ?? "Workspace"}
+              </option>
+            ))}
+          </select>
 
-  const [zeroPosts] = useZeroQuery(queries.posts.all());
+          <div className="mt-3 grid grid-cols-3 gap-2 text-xs font-medium">
+            <Link to="/" className="bg-muted rounded-md px-3 py-2 text-center">
+              Inbox
+            </Link>
+            <Link
+              to="/customers"
+              className="hover:bg-muted rounded-md px-3 py-2 text-center"
+            >
+              Customers
+            </Link>
+            <Link
+              to="/tickets"
+              className="hover:bg-muted rounded-md px-3 py-2 text-center"
+            >
+              Tickets
+            </Link>
+          </div>
 
-  if (posts.length === 0) {
-    return (
-      <div className="relative flex w-full flex-col gap-4">
-        <PostCardSkeleton pulse={false} />
-        <PostCardSkeleton pulse={false} />
-        <PostCardSkeleton pulse={false} />
+          <div className="bg-muted mt-4 flex gap-1 rounded-lg p-1">
+            <TabButton
+              active={inboxType === "my"}
+              onClick={() => setInboxType("my")}
+            >
+              My Inbox
+            </TabButton>
+            <TabButton
+              active={inboxType === "team"}
+              onClick={() => setInboxType("team")}
+            >
+              Team Inbox
+            </TabButton>
+          </div>
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/10">
-          <p className="text-2xl font-bold text-white">No posts yet</p>
+          <div className="bg-muted mt-2 grid grid-cols-5 gap-1 rounded-lg p-1">
+            {(["all", "open", "pending", "resolved", "closed"] as const).map(
+              (value) => (
+                <TabButton
+                  key={value}
+                  active={filter === value}
+                  onClick={() => setFilter(value)}
+                  className="px-2"
+                >
+                  {value === "all" ? "All" : capitalize(value)}
+                </TabButton>
+              ),
+            )}
+          </div>
+
+          <p className="text-muted-foreground mt-3 text-xs">
+            {isLoading
+              ? "Loading conversations..."
+              : `${conversationList.length} conversation${conversationList.length === 1 ? "" : "s"}`}
+          </p>
         </div>
-      </div>
-    );
-  }
 
-  return (
-    <div className="flex w-full flex-col gap-4">
-      <div className="text-2xl font-bold">TRPC Posts</div>
-      {posts.map((p) => {
-        return <PostCard key={p.id} post={p} />;
-      })}
+        <div className="flex-1 overflow-y-auto p-2">
+          {isLoading ? (
+            <LoadingList />
+          ) : conversationList.length ? (
+            <div className="space-y-2">
+              {conversationList.map((conversation) => (
+                <ConversationListItem
+                  key={conversation.id}
+                  id={conversation.id}
+                  customer={{
+                    name: conversation.customer?.name,
+                    email: conversation.customer?.email,
+                    phone: conversation.customer?.phone,
+                  }}
+                  channel={conversation.channel}
+                  status={conversation.status ?? "open"}
+                  subject={conversation.subject}
+                  lastMessage={
+                    conversation.messages[0]
+                      ? {
+                          content: conversation.messages[0].content,
+                          createdAt:
+                            conversation.messages[0].createdAt ??
+                            conversation.lastMessageAt ??
+                            0,
+                        }
+                      : undefined
+                  }
+                  assignedAgent={
+                    conversation.assignedAgentId
+                      ? {
+                          name:
+                            conversation.assignedAgentId === currentMembershipId
+                              ? "You"
+                              : "Assigned",
+                        }
+                      : null
+                  }
+                  isSelected={activeSelectedId === conversation.id}
+                  onClick={() => setSelectedId(conversation.id)}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyInbox />
+          )}
+        </div>
 
-      <div className="text-2xl font-bold">Zero Posts</div>
-      {zeroPosts.map((p) => {
-        return <PostCard key={p.id} post={p} />;
-      })}
+        <div className="border-t p-2">
+          <Link
+            to="/settings"
+            className="hover:bg-accent flex items-center gap-3 rounded-lg px-3 py-2 text-sm"
+          >
+            <div className="from-primary to-primary/60 text-primary-foreground flex size-8 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold">
+              {userInitials}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-medium">
+                {session?.user.name ?? "Agent"}
+              </p>
+              <p className="text-muted-foreground truncate text-xs">
+                {session?.user.email ?? ""}
+              </p>
+            </div>
+            <Settings className="text-muted-foreground size-4" />
+          </Link>
+        </div>
+      </aside>
+
+      <main className="min-w-0 flex-1">
+        {selectedConversationProps ? (
+          <ConversationView
+            {...selectedConversationProps}
+            onSendMessage={handleSendMessage}
+            onStatusChange={handleStatusChange}
+            onAssign={handleAssignSelf}
+            actions={ticketActions}
+            disabled={replyMutation.isPending}
+            className="bg-background/80 h-full backdrop-blur"
+          />
+        ) : (
+          <EmptyConversation />
+        )}
+      </main>
     </div>
   );
 }
 
-function PostCard(props: { post: RouterOutputs["post"]["all"][number] }) {
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
-  const deletePost = useMutation(
-    trpc.post.delete.mutationOptions({
-      onSuccess: async () => {
-        await queryClient.invalidateQueries(trpc.post.pathFilter());
-      },
-      onError: (err) => {
-        toast.error(
-          err.data?.code === "UNAUTHORIZED"
-            ? "You must be logged in to delete a post"
-            : "Failed to delete post",
-        );
-      },
-    }),
-  );
-
+function TabButton({
+  active,
+  children,
+  className,
+  onClick,
+}: {
+  active: boolean;
+  children: React.ReactNode;
+  className?: string;
+  onClick: () => void;
+}) {
   return (
-    <div className="bg-muted flex flex-row rounded-lg p-4">
-      <div className="grow">
-        <h2 className="text-primary text-2xl font-bold">{props.post.title}</h2>
-        <p className="mt-2 text-sm">{props.post.content}</p>
-      </div>
-      <div>
-        <Button
-          variant="ghost"
-          className="text-primary cursor-pointer text-sm font-bold uppercase hover:bg-transparent hover:text-white"
-          onClick={() => deletePost.mutate(props.post.id)}
-        >
-          Delete
-        </Button>
-      </div>
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+        active ? "bg-background shadow-sm" : "hover:bg-background/60",
+        className,
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function LoadingList() {
+  return (
+    <div className="space-y-2">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <div
+          key={index}
+          className="bg-muted/70 h-24 animate-pulse rounded-lg"
+        />
+      ))}
     </div>
   );
 }
 
-function PostCardSkeleton(props: { pulse?: boolean }) {
-  const { pulse = true } = props;
+function EmptyInbox() {
   return (
-    <div className="bg-muted flex flex-row rounded-lg p-4">
-      <div className="grow">
-        <h2
-          className={cn(
-            "bg-primary w-1/4 rounded-sm text-2xl font-bold",
-            pulse && "animate-pulse",
-          )}
-        >
-          &nbsp;
-        </h2>
-        <p
-          className={cn(
-            "mt-2 w-1/3 rounded-sm bg-current text-sm",
-            pulse && "animate-pulse",
-          )}
-        >
-          &nbsp;
+    <div className="text-muted-foreground flex h-full items-center justify-center px-6 text-center text-sm">
+      Your inbox is clear. New WhatsApp and email conversations will appear
+      here.
+    </div>
+  );
+}
+
+function EmptyConversation() {
+  return (
+    <div className="flex h-full items-center justify-center">
+      <div className="max-w-sm text-center">
+        <div className="bg-muted mx-auto flex size-16 items-center justify-center rounded-full" />
+        <h2 className="mt-4 text-lg font-semibold">No conversation selected</h2>
+        <p className="text-muted-foreground mt-2 text-sm">
+          Pick a conversation from the inbox to review the customer history and
+          reply in real time.
         </p>
       </div>
     </div>
   );
+}
+
+function getInitials(name?: string | null) {
+  if (!name) {
+    return "?";
+  }
+
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+function capitalize(value: string) {
+  return `${value[0]?.toUpperCase() ?? ""}${value.slice(1)}`;
 }

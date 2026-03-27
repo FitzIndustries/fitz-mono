@@ -1,5 +1,4 @@
 /// <reference types="vite/client" />
-import type { Zero } from "@fitzindustries/zero-shared/zero";
 import type { QueryClient } from "@tanstack/react-query";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import type * as React from "react";
@@ -12,7 +11,7 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import type { AppRouter } from "@fitzindustries/api";
-import { ThemeToggle } from "@fitzindustries/ui/theme";
+import type { Zero } from "@fitzindustries/zero-shared/zero";
 import { Toaster } from "@fitzindustries/ui/toast";
 
 import { env } from "~/env";
@@ -36,7 +35,7 @@ export const Route = createRootRouteWithContext<{
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "Support Platform",
       },
     ],
     links: [
@@ -58,9 +57,6 @@ function RootComponent() {
     <RootDocument>
       <Providers>
         <Outlet />
-        <div className="absolute right-4 bottom-12">
-          <ThemeToggle />
-        </div>
         <Toaster />
       </Providers>
     </RootDocument>
