@@ -22,6 +22,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Separator,
 } from "@fitzindustries/ui";
 import { useTheme } from "@fitzindustries/ui/theme";
 
@@ -71,52 +72,53 @@ function ProfileSettings() {
     : "?";
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 p-8">
+    <div className="mx-auto max-w-4xl space-y-8 p-8">
       <div>
-        <h2 className="text-2xl font-semibold">Your Profile</h2>
-        <p className="text-muted-foreground mt-1 text-sm">
+        <h2 className="text-3xl font-semibold tracking-tight">Your Profile</h2>
+        <p className="text-muted-foreground mt-2 text-base">
           Manage your personal information and preferences.
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile Overview</CardTitle>
+      <Card className="border-border/60 bg-card/70 gap-0 py-0 shadow-none backdrop-blur-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-2xl">Profile Overview</CardTitle>
           <CardDescription>
             Your identity follows you across every workspace.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center gap-6">
+        <CardContent className="flex items-center gap-6 pb-6">
           <div className="relative">
-            <div className="bg-primary/10 text-primary flex h-24 w-24 items-center justify-center rounded-full text-3xl font-semibold">
+            <div className="bg-primary/10 text-primary flex h-24 w-24 items-center justify-center rounded-full text-3xl font-semibold shadow-inner">
               {initials}
             </div>
             <Button
-              size="icon"
-              className="absolute -right-1 -bottom-1 rounded-full"
+              size="icon-sm"
+              variant="secondary"
+              className="border-border/70 absolute -right-1 -bottom-1 rounded-full border shadow-sm"
             >
               <Camera className="size-4" />
             </Button>
           </div>
-          <div>
+          <div className="space-y-1.5">
             <h3 className="text-lg font-semibold">{user.name}</h3>
             <p className="text-muted-foreground text-sm">{user.email}</p>
-            <Button variant="link" className="mt-1 h-auto px-0 text-sm">
+            <Button variant="link" className="text-primary h-auto px-0 text-sm">
               Change photo
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
+      <Card className="border-border/60 bg-card/70 gap-0 py-0 shadow-none backdrop-blur-sm">
+        <CardHeader className="pb-5">
           <CardTitle>Personal Information</CardTitle>
           <CardDescription>
             Contact your administrator to update your account identity.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <FieldGroup>
+        <CardContent className="pb-6">
+          <FieldGroup className="gap-5">
             <div className="grid grid-cols-2 gap-4">
               <Field>
                 <FieldLabel>First Name</FieldLabel>
@@ -124,7 +126,7 @@ function ProfileSettings() {
                   <Input
                     value={nameParts[0] ?? ""}
                     readOnly
-                    className="bg-muted opacity-70"
+                    className="border-border/70 bg-muted/60 opacity-80"
                   />
                 </FieldContent>
               </Field>
@@ -134,7 +136,7 @@ function ProfileSettings() {
                   <Input
                     value={nameParts.slice(1).join(" ") || ""}
                     readOnly
-                    className="bg-muted opacity-70"
+                    className="border-border/70 bg-muted/60 opacity-80"
                   />
                 </FieldContent>
               </Field>
@@ -145,7 +147,7 @@ function ProfileSettings() {
                 <Input
                   value={user.email}
                   readOnly
-                  className="bg-muted opacity-70"
+                  className="border-border/70 bg-muted/60 opacity-80"
                 />
                 <FieldDescription>
                   This email is managed through authentication and workspace
@@ -157,15 +159,15 @@ function ProfileSettings() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
+      <Card className="border-border/60 bg-card/70 gap-0 py-0 shadow-none backdrop-blur-sm">
+        <CardHeader className="pb-5">
           <CardTitle>Preferences</CardTitle>
           <CardDescription>
             Personal defaults for how you work inside the support platform.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <FieldGroup>
+        <CardContent className="pb-6">
+          <FieldGroup className="gap-5">
             <Field>
               <FieldLabel>Timezone</FieldLabel>
               <FieldContent>
@@ -207,47 +209,54 @@ function ProfileSettings() {
                 </Select>
               </FieldContent>
             </Field>
-            <Field orientation="horizontal">
+            <Separator />
+            <label className="border-border/60 flex items-start gap-4 rounded-lg border px-4 py-3">
               <Checkbox
                 checked={emailNotifications}
                 onCheckedChange={(checked: boolean | "indeterminate") =>
                   setEmailNotifications(checked === true)
                 }
+                className="mt-0.5"
               />
-              <FieldContent>
-                <FieldLabel>Email notifications</FieldLabel>
-                <FieldDescription>
+              <div className="space-y-1">
+                <div className="text-sm leading-none font-medium">
+                  Email notifications
+                </div>
+                <p className="text-muted-foreground text-sm">
                   Receive daily digests of support activity.
-                </FieldDescription>
-              </FieldContent>
-            </Field>
-            <Field orientation="horizontal">
+                </p>
+              </div>
+            </label>
+            <label className="border-border/60 flex items-start gap-4 rounded-lg border px-4 py-3">
               <Checkbox
                 checked={desktopNotifications}
                 onCheckedChange={(checked: boolean | "indeterminate") =>
                   setDesktopNotifications(checked === true)
                 }
+                className="mt-0.5"
               />
-              <FieldContent>
-                <FieldLabel>Desktop notifications</FieldLabel>
-                <FieldDescription>
+              <div className="space-y-1">
+                <div className="text-sm leading-none font-medium">
+                  Desktop notifications
+                </div>
+                <p className="text-muted-foreground text-sm">
                   Get notified when new customer messages arrive.
-                </FieldDescription>
-              </FieldContent>
-            </Field>
+                </p>
+              </div>
+            </label>
           </FieldGroup>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
+      <Card className="border-border/60 bg-card/70 gap-0 py-0 shadow-none backdrop-blur-sm">
+        <CardHeader className="pb-5">
           <CardTitle>Security</CardTitle>
           <CardDescription>
             Authentication and device access for this account.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
+        <CardContent className="space-y-4 pb-6">
+          <div className="border-border/60 flex items-center justify-between rounded-lg border px-4 py-4">
             <div>
               <p className="font-medium">Password</p>
               <p className="text-muted-foreground text-sm">
@@ -256,7 +265,7 @@ function ProfileSettings() {
             </div>
             <Button variant="outline">Change password</Button>
           </div>
-          <div className="flex items-center justify-between">
+          <div className="border-border/60 flex items-center justify-between rounded-lg border px-4 py-4">
             <div>
               <p className="font-medium">Two-factor authentication</p>
               <p className="text-muted-foreground text-sm">
@@ -265,7 +274,7 @@ function ProfileSettings() {
             </div>
             <Button variant="outline">Enable 2FA</Button>
           </div>
-          <div className="flex items-center justify-between border-t pt-4">
+          <div className="border-destructive/30 flex items-center justify-between rounded-lg border px-4 py-4">
             <div>
               <p className="font-medium">Sign out</p>
               <p className="text-muted-foreground text-sm">
@@ -279,14 +288,14 @@ function ProfileSettings() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
+      <Card className="border-border/60 bg-card/70 gap-0 py-0 shadow-none backdrop-blur-sm">
+        <CardHeader className="pb-5">
           <CardTitle>Appearance</CardTitle>
           <CardDescription>
             Theme selection is synced in real time through Zero.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-6">
           <FieldGroup>
             <Field>
               <FieldLabel>Theme</FieldLabel>
@@ -296,37 +305,43 @@ function ProfileSettings() {
                     type="button"
                     variant={themeMode === "light" ? "default" : "outline"}
                     className={cn(
-                      "h-auto flex-col gap-2 py-4",
+                      "h-auto min-h-28 flex-col gap-3 rounded-xl py-4",
                       themeMode === "light" && "ring-primary ring-2",
                     )}
                     onClick={() => setTheme("light")}
                   >
-                    <Sun className="size-5 text-amber-500" />
-                    Light
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-white text-amber-500 shadow-sm">
+                      <Sun className="size-5" />
+                    </div>
+                    <span>Light</span>
                   </Button>
                   <Button
                     type="button"
                     variant={themeMode === "dark" ? "default" : "outline"}
                     className={cn(
-                      "h-auto flex-col gap-2 py-4",
+                      "h-auto min-h-28 flex-col gap-3 rounded-xl py-4",
                       themeMode === "dark" && "ring-primary ring-2",
                     )}
                     onClick={() => setTheme("dark")}
                   >
-                    <Moon className="size-5" />
-                    Dark
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-zinc-950 text-zinc-100 shadow-sm">
+                      <Moon className="size-5" />
+                    </div>
+                    <span>Dark</span>
                   </Button>
                   <Button
                     type="button"
                     variant={themeMode === "auto" ? "default" : "outline"}
                     className={cn(
-                      "h-auto flex-col gap-2 py-4",
+                      "h-auto min-h-28 flex-col gap-3 rounded-xl py-4",
                       themeMode === "auto" && "ring-primary ring-2",
                     )}
                     onClick={() => setTheme("auto")}
                   >
-                    <span className="text-sm font-medium">Auto</span>
-                    System
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-white to-zinc-900 text-sm font-semibold text-zinc-950 shadow-sm">
+                      <span className="mix-blend-screen">A</span>
+                    </div>
+                    <span>System</span>
                   </Button>
                 </div>
               </FieldContent>
