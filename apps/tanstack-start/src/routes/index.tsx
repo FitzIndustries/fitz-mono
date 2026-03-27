@@ -3,7 +3,15 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { Settings } from "lucide-react";
 
-import { cn } from "@fitzindustries/ui";
+import {
+  Button,
+  cn,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@fitzindustries/ui";
 import {
   ConversationListItem,
   ConversationView,
@@ -211,52 +219,54 @@ function SupportPage() {
           ? `${selectedConversation.tickets.length} ticket${selectedConversation.tickets.length === 1 ? "" : "s"}`
           : "No tickets"}
       </span>
-      <select
+      <Select
         value={ticketType}
-        onChange={(event) => {
-          setTicketType(
-            event.target.value as
-              | "booking"
-              | "refund"
-              | "info"
-              | "complaint"
-              | "other",
-          );
+        onValueChange={(
+          value: "booking" | "refund" | "info" | "complaint" | "other",
+        ) => {
+          setTicketType(value);
         }}
-        className="border-input bg-background h-8 rounded-md border px-2 text-xs"
       >
-        <option value="booking">Booking</option>
-        <option value="refund">Refund</option>
-        <option value="info">Info</option>
-        <option value="complaint">Complaint</option>
-        <option value="other">Other</option>
-      </select>
-      <select
+        <SelectTrigger className="h-8 w-28 text-xs">
+          <SelectValue placeholder="Type" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="booking">Booking</SelectItem>
+          <SelectItem value="refund">Refund</SelectItem>
+          <SelectItem value="info">Info</SelectItem>
+          <SelectItem value="complaint">Complaint</SelectItem>
+          <SelectItem value="other">Other</SelectItem>
+        </SelectContent>
+      </Select>
+      <Select
         value={ticketPriority}
-        onChange={(event) => {
-          setTicketPriority(
-            event.target.value as "low" | "medium" | "high" | "urgent",
-          );
+        onValueChange={(value: "low" | "medium" | "high" | "urgent") => {
+          setTicketPriority(value);
         }}
-        className="border-input bg-background h-8 rounded-md border px-2 text-xs"
       >
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-        <option value="urgent">Urgent</option>
-      </select>
-      <button
+        <SelectTrigger className="h-8 w-28 text-xs">
+          <SelectValue placeholder="Priority" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="low">Low</SelectItem>
+          <SelectItem value="medium">Medium</SelectItem>
+          <SelectItem value="high">High</SelectItem>
+          <SelectItem value="urgent">Urgent</SelectItem>
+        </SelectContent>
+      </Select>
+      <Button
         type="button"
+        variant="ghost"
+        size="sm"
         onClick={() => {
           void createTicketMutation.mutateAsync().catch((error) => {
             console.error("Failed to create ticket", error);
           });
         }}
-        className="text-muted-foreground hover:text-foreground text-sm"
         disabled={createTicketMutation.isPending}
       >
         {createTicketMutation.isPending ? "Creating..." : "Create ticket"}
-      </button>
+      </Button>
     </div>
   ) : null;
 
@@ -278,20 +288,31 @@ function SupportPage() {
             </div>
           </div>
 
-          <select
-            value={currentOrganizationId ?? ""}
-            onChange={(event) => {
-              void setCurrentOrganization.mutateAsync(event.target.value);
-            }}
-            className="border-input bg-background mt-3 h-9 w-full rounded-md border px-2 text-sm"
-            disabled={setCurrentOrganization.isPending || !organizations.length}
-          >
-            {organizations.map((item) => (
-              <option key={item.organizationId} value={item.organizationId}>
-                {item.organization?.name ?? "Workspace"}
-              </option>
-            ))}
-          </select>
+          <div className="mt-3">
+            <Select
+              value={currentOrganizationId ?? undefined}
+              onValueChange={(value: string) => {
+                void setCurrentOrganization.mutateAsync(value);
+              }}
+              disabled={
+                setCurrentOrganization.isPending || !organizations.length
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select workspace" />
+              </SelectTrigger>
+              <SelectContent>
+                {organizations.map((item) => (
+                  <SelectItem
+                    key={item.organizationId}
+                    value={item.organizationId}
+                  >
+                    {item.organization?.name ?? "Workspace"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
           <div className="mt-3 grid grid-cols-3 gap-2 text-xs font-medium">
             <Link to="/" className="bg-muted rounded-md px-3 py-2 text-center">

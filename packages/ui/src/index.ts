@@ -4,9 +4,29 @@ import { twMerge } from "tailwind-merge";
 export const cn = (...inputs: Parameters<typeof cx>) => twMerge(cx(inputs));
 
 export { Button, buttonVariants } from "./button";
+export {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./card";
+export { Checkbox } from "./checkbox";
 export { Input } from "./input";
 export { Label } from "./label";
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "./select";
 export { Separator } from "./separator";
+export { Textarea } from "./textarea";
 export {
   DropdownMenu,
   DropdownMenuTrigger,

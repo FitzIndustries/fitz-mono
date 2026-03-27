@@ -5,16 +5,16 @@
   "tsx": true,
   "tailwind": {
     "config": "",
-    "css": "",
+    "css": "src/styles/globals.css",
     "baseColor": "zinc",
     "cssVariables": true
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@fitzindustries/ui/src",
-    "ui": "@fitzindustries/ui/src",
-    "lib": "@fitzindustries/ui/src/lib",
+    "components": "@fitzindustries/ui/components",
     "utils": "@fitzindustries/ui/src/lib/utils",
-    "hooks": "@fitzindustries/ui/src/hooks"
+    "hooks": "@fitzindustries/ui/src/hooks",
+    "lib": "@fitzindustries/ui/src/lib",
+    "ui": "@fitzindustries/ui/src/components"
   }
 }

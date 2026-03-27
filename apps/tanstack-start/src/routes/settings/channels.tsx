@@ -1,5 +1,21 @@
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Checkbox,
+  Field,
+  FieldContent,
+  FieldGroup,
+  FieldLabel,
+  Input,
+} from "@fitzindustries/ui";
 
 import { apiFetch } from "~/lib/api";
 
@@ -35,12 +51,22 @@ function ChannelsSettings() {
   });
 
   const saveWhatsapp = useMutation({
-    mutationFn: (payload: Record<string, unknown>) =>
+    mutationFn: (payload: {
+      name: string;
+      phoneNumber: string;
+      phoneNumberId: string;
+      webhookVerifyToken: string;
+      accessToken: string;
+      isActive: boolean;
+    }) =>
       apiFetch<{ whatsapp: ChannelsResponse["whatsapp"] }>(
         "/api/channels/whatsapp",
         {
           method: "PUT",
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            ...payload,
+            accessToken: payload.accessToken || undefined,
+          }),
         },
       ),
     onSuccess: async () => {
@@ -49,247 +75,311 @@ function ChannelsSettings() {
   });
 
   const saveEmail = useMutation({
-    mutationFn: (payload: Record<string, unknown>) =>
+    mutationFn: (payload: {
+      name: string;
+      emailAddress: string;
+      fromName: string;
+      awsSesArn: string;
+      isActive: boolean;
+    }) =>
       apiFetch<{ email: ChannelsResponse["email"] }>("/api/channels/email", {
         method: "PUT",
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          awsSesArn: normalizeOptionalString(payload.awsSesArn),
+        }),
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["channel-settings"] });
     },
   });
 
-  const channels = channelsQuery.data;
+  if (channelsQuery.isPending) {
+    return (
+      <div className="mx-auto max-w-4xl p-8">Loading channel settings...</div>
+    );
+  }
 
   return (
-    <div className="mx-auto max-w-3xl p-8">
-      <div className="mb-8">
+    <ChannelsForm
+      key={`${channelsQuery.data?.whatsapp?.id ?? "whatsapp"}:${channelsQuery.data?.email?.id ?? "email"}`}
+      channels={channelsQuery.data}
+      saveWhatsapp={saveWhatsapp}
+      saveEmail={saveEmail}
+    />
+  );
+}
+
+function ChannelsForm({
+  channels,
+  saveWhatsapp,
+  saveEmail,
+}: {
+  channels: ChannelsResponse | undefined;
+  saveWhatsapp: {
+    mutateAsync: (payload: {
+      name: string;
+      phoneNumber: string;
+      phoneNumberId: string;
+      webhookVerifyToken: string;
+      accessToken: string;
+      isActive: boolean;
+    }) => Promise<unknown>;
+    isPending: boolean;
+  };
+  saveEmail: {
+    mutateAsync: (payload: {
+      name: string;
+      emailAddress: string;
+      fromName: string;
+      awsSesArn: string;
+      isActive: boolean;
+    }) => Promise<unknown>;
+    isPending: boolean;
+  };
+}) {
+  const [whatsAppForm, setWhatsAppForm] = useState({
+    name: channels?.whatsapp?.name ?? "Festival WhatsApp",
+    phoneNumber: channels?.whatsapp?.phoneNumber ?? "",
+    phoneNumberId: channels?.whatsapp?.phoneNumberId ?? "",
+    webhookVerifyToken: channels?.whatsapp?.webhookVerifyToken ?? "",
+    accessToken: "",
+    isActive: channels?.whatsapp?.isActive ?? true,
+  });
+  const [emailForm, setEmailForm] = useState({
+    name: channels?.email?.name ?? "Primary Support",
+    emailAddress: channels?.email?.emailAddress ?? "",
+    fromName: channels?.email?.fromName ?? "Support Team",
+    awsSesArn: channels?.email?.awsSesArn ?? "",
+    isActive: channels?.email?.isActive ?? true,
+  });
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-6 p-8">
+      <div>
         <h2 className="text-2xl font-semibold">Channels</h2>
         <p className="text-muted-foreground mt-1 text-sm">
           Connect the numbers and inboxes customers use to reach your team.
         </p>
       </div>
 
-      <div className="space-y-8">
-        <ChannelCard
-          title="WhatsApp Business"
-          description="Messages route into the shared support inbox through the Meta API."
-          status={channels?.whatsapp?.isActive ? "Connected" : "Not connected"}
-        >
-          <form
-            className="space-y-4"
-            onSubmit={(event) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-              const accessToken = getFormString(formData, "accessToken").trim();
-
-              void saveWhatsapp.mutate({
-                name: getFormString(formData, "name", "WhatsApp Inbox"),
-                phoneNumber: getFormString(formData, "phoneNumber"),
-                phoneNumberId: getFormString(formData, "phoneNumberId"),
-                accessToken: accessToken.length ? accessToken : undefined,
-                webhookVerifyToken: getFormString(
-                  formData,
-                  "webhookVerifyToken",
-                ),
-                isActive: formData.get("isActive") === "on",
-              });
-            }}
-          >
+      <Card>
+        <CardHeader>
+          <CardTitle>WhatsApp Business</CardTitle>
+          <CardDescription>
+            Messages route into the shared support inbox through the Meta API.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Channel Name">
-                <input
-                  name="name"
-                  defaultValue={channels?.whatsapp?.name ?? "Festival WhatsApp"}
-                  className={inputClassName}
-                />
+              <Field>
+                <FieldLabel>Channel Name</FieldLabel>
+                <FieldContent>
+                  <Input
+                    value={whatsAppForm.name}
+                    onChange={(event) =>
+                      setWhatsAppForm({
+                        ...whatsAppForm,
+                        name: event.target.value,
+                      })
+                    }
+                  />
+                </FieldContent>
               </Field>
-              <Field label="Phone Number">
-                <input
-                  name="phoneNumber"
-                  defaultValue={channels?.whatsapp?.phoneNumber ?? ""}
-                  className={inputClassName}
-                />
+              <Field>
+                <FieldLabel>Phone Number</FieldLabel>
+                <FieldContent>
+                  <Input
+                    value={whatsAppForm.phoneNumber}
+                    onChange={(event) =>
+                      setWhatsAppForm({
+                        ...whatsAppForm,
+                        phoneNumber: event.target.value,
+                      })
+                    }
+                  />
+                </FieldContent>
               </Field>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Phone Number ID">
-                <input
-                  name="phoneNumberId"
-                  defaultValue={channels?.whatsapp?.phoneNumberId ?? ""}
-                  className={inputClassName}
-                />
+              <Field>
+                <FieldLabel>Phone Number ID</FieldLabel>
+                <FieldContent>
+                  <Input
+                    value={whatsAppForm.phoneNumberId}
+                    onChange={(event) =>
+                      setWhatsAppForm({
+                        ...whatsAppForm,
+                        phoneNumberId: event.target.value,
+                      })
+                    }
+                  />
+                </FieldContent>
               </Field>
-              <Field label="Webhook Verify Token">
-                <input
-                  name="webhookVerifyToken"
-                  defaultValue={channels?.whatsapp?.webhookVerifyToken ?? ""}
-                  className={inputClassName}
-                />
+              <Field>
+                <FieldLabel>Webhook Verify Token</FieldLabel>
+                <FieldContent>
+                  <Input
+                    value={whatsAppForm.webhookVerifyToken}
+                    onChange={(event) =>
+                      setWhatsAppForm({
+                        ...whatsAppForm,
+                        webhookVerifyToken: event.target.value,
+                      })
+                    }
+                  />
+                </FieldContent>
               </Field>
             </div>
-            <Field label="Access Token">
-              <input
-                name="accessToken"
-                type="password"
-                placeholder={
-                  channels?.whatsapp
-                    ? "Leave blank to keep existing token"
-                    : "Enter Meta access token"
+            <Field>
+              <FieldLabel>Access Token</FieldLabel>
+              <FieldContent>
+                <Input
+                  type="password"
+                  value={whatsAppForm.accessToken}
+                  onChange={(event) =>
+                    setWhatsAppForm({
+                      ...whatsAppForm,
+                      accessToken: event.target.value,
+                    })
+                  }
+                  placeholder={
+                    channels?.whatsapp
+                      ? "Leave blank to keep existing token"
+                      : "Enter Meta access token"
+                  }
+                />
+              </FieldContent>
+            </Field>
+            <Field orientation="horizontal">
+              <Checkbox
+                checked={whatsAppForm.isActive}
+                onCheckedChange={(checked: boolean | "indeterminate") =>
+                  setWhatsAppForm({
+                    ...whatsAppForm,
+                    isActive: checked === true,
+                  })
                 }
-                className={inputClassName}
               />
+              <FieldContent>
+                <FieldLabel>Channel active</FieldLabel>
+              </FieldContent>
             </Field>
-            <label className="flex items-center gap-2 text-sm font-medium">
-              <input
-                type="checkbox"
-                name="isActive"
-                defaultChecked={channels?.whatsapp?.isActive ?? true}
-              />
-              Channel active
-            </label>
-            <SaveButton
-              isPending={saveWhatsapp.isPending}
-              label="Save WhatsApp"
-            />
-          </form>
-        </ChannelCard>
+            <div className="flex justify-end">
+              <Button
+                onClick={() => {
+                  void saveWhatsapp
+                    .mutateAsync(whatsAppForm)
+                    .then(() =>
+                      setWhatsAppForm((current) => ({
+                        ...current,
+                        accessToken: "",
+                      })),
+                    );
+                }}
+                disabled={saveWhatsapp.isPending}
+              >
+                {saveWhatsapp.isPending ? "Saving..." : "Save WhatsApp"}
+              </Button>
+            </div>
+          </FieldGroup>
+        </CardContent>
+      </Card>
 
-        <ChannelCard
-          title="Email"
-          description="Inbound support email aliases flow into the same live queue."
-          status={channels?.email?.isActive ? "Connected" : "Not connected"}
-        >
-          <form
-            className="space-y-4"
-            onSubmit={(event) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-
-              void saveEmail.mutate({
-                name: getFormString(formData, "name", "Email Inbox"),
-                emailAddress: getFormString(formData, "emailAddress"),
-                fromName: getFormString(formData, "fromName"),
-                awsSesArn: normalizeOptionalString(formData.get("awsSesArn")),
-                isActive: formData.get("isActive") === "on",
-              });
-            }}
-          >
+      <Card>
+        <CardHeader>
+          <CardTitle>Email</CardTitle>
+          <CardDescription>
+            Inbound support email aliases flow into the same live queue.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Channel Name">
-                <input
-                  name="name"
-                  defaultValue={channels?.email?.name ?? "Primary Support"}
-                  className={inputClassName}
-                />
+              <Field>
+                <FieldLabel>Channel Name</FieldLabel>
+                <FieldContent>
+                  <Input
+                    value={emailForm.name}
+                    onChange={(event) =>
+                      setEmailForm({ ...emailForm, name: event.target.value })
+                    }
+                  />
+                </FieldContent>
               </Field>
-              <Field label="From Name">
-                <input
-                  name="fromName"
-                  defaultValue={channels?.email?.fromName ?? "Support Team"}
-                  className={inputClassName}
-                />
+              <Field>
+                <FieldLabel>From Name</FieldLabel>
+                <FieldContent>
+                  <Input
+                    value={emailForm.fromName}
+                    onChange={(event) =>
+                      setEmailForm({
+                        ...emailForm,
+                        fromName: event.target.value,
+                      })
+                    }
+                  />
+                </FieldContent>
               </Field>
             </div>
-            <Field label="Email Address">
-              <input
-                name="emailAddress"
-                defaultValue={channels?.email?.emailAddress ?? ""}
-                className={inputClassName}
-              />
+            <Field>
+              <FieldLabel>Email Address</FieldLabel>
+              <FieldContent>
+                <Input
+                  value={emailForm.emailAddress}
+                  onChange={(event) =>
+                    setEmailForm({
+                      ...emailForm,
+                      emailAddress: event.target.value,
+                    })
+                  }
+                />
+              </FieldContent>
             </Field>
-            <Field label="SES / Provider ARN">
-              <input
-                name="awsSesArn"
-                defaultValue={channels?.email?.awsSesArn ?? ""}
-                className={inputClassName}
-              />
+            <Field>
+              <FieldLabel>SES / Provider ARN</FieldLabel>
+              <FieldContent>
+                <Input
+                  value={emailForm.awsSesArn}
+                  onChange={(event) =>
+                    setEmailForm({
+                      ...emailForm,
+                      awsSesArn: event.target.value,
+                    })
+                  }
+                />
+              </FieldContent>
             </Field>
-            <label className="flex items-center gap-2 text-sm font-medium">
-              <input
-                type="checkbox"
-                name="isActive"
-                defaultChecked={channels?.email?.isActive ?? true}
+            <Field orientation="horizontal">
+              <Checkbox
+                checked={emailForm.isActive}
+                onCheckedChange={(checked: boolean | "indeterminate") =>
+                  setEmailForm({ ...emailForm, isActive: checked === true })
+                }
               />
-              Channel active
-            </label>
-            <SaveButton isPending={saveEmail.isPending} label="Save Email" />
-          </form>
-        </ChannelCard>
-      </div>
+              <FieldContent>
+                <FieldLabel>Channel active</FieldLabel>
+              </FieldContent>
+            </Field>
+            <div className="flex justify-end">
+              <Button
+                onClick={() => {
+                  void saveEmail.mutateAsync(emailForm);
+                }}
+                disabled={saveEmail.isPending}
+              >
+                {saveEmail.isPending ? "Saving..." : "Save Email"}
+              </Button>
+            </div>
+          </FieldGroup>
+        </CardContent>
+      </Card>
     </div>
   );
 }
 
-function ChannelCard({
-  title,
-  description,
-  status,
-  children,
-}: {
-  title: string;
-  description: string;
-  status: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="space-y-4 rounded-lg border p-5">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="font-semibold">{title}</h3>
-          <p className="text-muted-foreground mt-1 text-sm">{description}</p>
-        </div>
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-          {status}
-        </span>
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium">{label}</label>
-      {children}
-    </div>
-  );
-}
-
-function SaveButton({
-  isPending,
-  label,
-}: {
-  isPending: boolean;
-  label: string;
-}) {
-  return (
-    <button
-      type="submit"
-      className="bg-primary text-primary-foreground rounded-md px-4 py-2 text-sm font-medium"
-      disabled={isPending}
-    >
-      {isPending ? "Saving..." : label}
-    </button>
-  );
-}
-
-function normalizeOptionalString(value: FormDataEntryValue | null) {
-  const nextValue = typeof value === "string" ? value.trim() : "";
+function normalizeOptionalString(value: string) {
+  const nextValue = value.trim();
   return nextValue.length ? nextValue : null;
 }
-
-function getFormString(formData: FormData, key: string, fallback = "") {
-  const value = formData.get(key);
-  return typeof value === "string" ? value : fallback;
-}
-
-const inputClassName =
-  "border-input bg-background h-10 w-full rounded-md border px-3 text-sm";

@@ -1,6 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Field,
+  FieldContent,
+  FieldLabel,
+  Input,
+} from "@fitzindustries/ui";
+
 import { apiFetch } from "~/lib/api";
 
 export const Route = createFileRoute("/settings/billing")({
@@ -54,16 +67,22 @@ function BillingSettings() {
   const seatUsed = billing?.seatUsed ?? 0;
 
   return (
-    <div className="mx-auto max-w-4xl p-8">
-      <div className="mb-8">
+    <div className="mx-auto max-w-4xl space-y-6 p-8">
+      <div>
         <h2 className="text-2xl font-semibold">Billing</h2>
         <p className="text-muted-foreground mt-1 text-sm">
           Manage your workspace plan and seat capacity.
         </p>
       </div>
 
-      <section className="mb-8 rounded-lg border p-5">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Current Subscription</CardTitle>
+          <CardDescription>
+            Seat usage is enforced when members are added or reactivated.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="font-semibold">
               Current plan: {labelForPlan(currentPlan)}
@@ -80,66 +99,61 @@ function BillingSettings() {
               Subscription: {billing?.stripeSubscriptionId ?? "Not connected"}
             </p>
           </div>
-        </div>
-      </section>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 md:grid-cols-3">
         {plans.map((plan) => {
           const isCurrent = currentPlan === plan.id;
-
           return (
-            <form
+            <Card
               key={plan.id}
-              className={`rounded-lg border p-5 ${isCurrent ? "border-primary bg-primary/5" : ""}`}
-              onSubmit={(event) => {
-                event.preventDefault();
-                const formData = new FormData(event.currentTarget);
-                const nextSeatLimit = Number.parseInt(
-                  getFormString(
-                    formData,
-                    "seatLimit",
-                    String(plan.defaultSeats),
-                  ),
-                  10,
-                );
-
-                void saveBilling.mutate({
-                  plan: plan.id,
-                  seatLimit: Number.isNaN(nextSeatLimit)
-                    ? plan.defaultSeats
-                    : nextSeatLimit,
-                });
-              }}
+              className={isCurrent ? "border-primary bg-primary/5" : undefined}
             >
-              <div className="mb-4">
-                <h3 className="font-semibold">{plan.name}</h3>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  ${plan.price}/month
-                </p>
-              </div>
-              <ul className="mb-4 space-y-2 text-sm">
-                <li>{plan.defaultSeats}+ team seats</li>
-                <li>Email + WhatsApp channels</li>
-                <li>Shared realtime inbox</li>
-              </ul>
-              <label className="mb-4 block text-sm font-medium">
-                Seat limit
-                <input
-                  name="seatLimit"
-                  type="number"
-                  min={seatUsed || 1}
-                  defaultValue={isCurrent ? seatLimit : plan.defaultSeats}
-                  className="border-input bg-background mt-2 h-10 w-full rounded-md border px-3"
-                />
-              </label>
-              <button
-                type="submit"
-                className="bg-primary text-primary-foreground w-full rounded-md px-4 py-2 text-sm font-medium"
-                disabled={saveBilling.isPending}
-              >
-                {isCurrent ? "Update plan" : `Switch to ${plan.name}`}
-              </button>
-            </form>
+              <CardHeader>
+                <CardTitle>{plan.name}</CardTitle>
+                <CardDescription>${plan.price}/month</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <ul className="space-y-2 text-sm">
+                  <li>{plan.defaultSeats}+ team seats</li>
+                  <li>Email + WhatsApp channels</li>
+                  <li>Shared realtime inbox</li>
+                </ul>
+                <Field>
+                  <FieldLabel>Seat limit</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      type="number"
+                      min={seatUsed || 1}
+                      defaultValue={isCurrent ? seatLimit : plan.defaultSeats}
+                      id={`seat-limit-${plan.id}`}
+                    />
+                  </FieldContent>
+                </Field>
+                <Button
+                  className="w-full"
+                  onClick={() => {
+                    const input = document.getElementById(
+                      `seat-limit-${plan.id}`,
+                    ) as HTMLInputElement | null;
+                    const nextSeatLimit = Number.parseInt(
+                      input?.value ?? String(plan.defaultSeats),
+                      10,
+                    );
+                    void saveBilling.mutate({
+                      plan: plan.id,
+                      seatLimit: Number.isNaN(nextSeatLimit)
+                        ? plan.defaultSeats
+                        : nextSeatLimit,
+                    });
+                  }}
+                  disabled={saveBilling.isPending}
+                >
+                  {isCurrent ? "Update plan" : `Switch to ${plan.name}`}
+                </Button>
+              </CardContent>
+            </Card>
           );
         })}
       </div>
@@ -156,9 +170,4 @@ function labelForPlan(plan: "starter" | "pro" | "enterprise") {
     case "enterprise":
       return "Enterprise";
   }
-}
-
-function getFormString(formData: FormData, key: string, fallback = "") {
-  const value = formData.get(key);
-  return typeof value === "string" ? value : fallback;
 }

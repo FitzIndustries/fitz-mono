@@ -15,6 +15,13 @@ import {
   Users,
 } from "lucide-react";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@fitzindustries/ui";
 import { ThemeToggle } from "@fitzindustries/ui/theme";
 
 import { authClient } from "~/auth/client";
@@ -64,25 +71,32 @@ function SettingsLayout() {
             Back to Inbox
           </Link>
         </div>
-        <div className="flex items-center justify-between border-b px-4 py-4">
-          <div className="min-w-0 flex-1">
+        <div className="flex items-start justify-between gap-3 border-b px-4 py-4">
+          <div className="min-w-0 flex-1 space-y-2">
             <h2 className="text-lg font-semibold">Settings</h2>
-            <select
-              value={currentOrganizationId ?? ""}
-              onChange={(event) => {
-                void setCurrentOrganization.mutateAsync(event.target.value);
+            <Select
+              value={currentOrganizationId ?? undefined}
+              onValueChange={(value: string) => {
+                void setCurrentOrganization.mutateAsync(value);
               }}
-              className="border-input bg-background mt-2 h-9 w-full rounded-md border px-2 text-sm"
               disabled={
                 setCurrentOrganization.isPending || !organizations.length
               }
             >
-              {organizations.map((item) => (
-                <option key={item.organizationId} value={item.organizationId}>
-                  {item.organization?.name ?? "Workspace"}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select workspace" />
+              </SelectTrigger>
+              <SelectContent>
+                {organizations.map((item) => (
+                  <SelectItem
+                    key={item.organizationId}
+                    value={item.organizationId}
+                  >
+                    {item.organization?.name ?? "Workspace"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <ThemeToggle />
         </div>

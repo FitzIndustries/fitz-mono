@@ -1,5 +1,28 @@
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Checkbox,
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
+} from "@fitzindustries/ui";
 
 import { apiFetch } from "~/lib/api";
 
@@ -56,247 +79,290 @@ function OrganizationSettings() {
 
   if (organizationQuery.isPending) {
     return (
-      <PageShell
-        title="Organization"
-        description="Loading workspace settings..."
-      />
+      <div className="mx-auto max-w-4xl p-8">Loading workspace settings...</div>
     );
   }
 
   if (!org) {
-    return (
-      <PageShell title="Organization" description="Workspace not found." />
-    );
+    return <div className="mx-auto max-w-4xl p-8">Workspace not found.</div>;
   }
 
-  const settings = org.settings ?? {};
-  const selectedFeatures = Array.isArray(settings.eventFeatures)
-    ? new Set(
-        settings.eventFeatures.filter(
-          (value): value is string => typeof value === "string",
-        ),
-      )
-    : new Set<string>();
-
   return (
-    <PageShell
-      title="Organization Settings"
-      description="Manage your workspace identity and support preferences."
+    <OrganizationForm
+      key={org.id}
+      org={org}
+      saveOrganization={saveOrganization}
+    />
+  );
+}
+
+function OrganizationForm({
+  org,
+  saveOrganization,
+}: {
+  org: NonNullable<OrganizationResponse["organization"]>;
+  saveOrganization: ReturnType<
+    typeof useMutation<
+      OrganizationResponse,
+      Error,
+      {
+        name: string;
+        slug: string;
+        logoUrl: string | null;
+        settings: Record<string, unknown>;
+      }
     >
-      <form
-        className="space-y-8"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const formData = new FormData(event.currentTarget);
-          const featureValues = eventFeatures.filter((feature) =>
-            formData.getAll("eventFeatures").includes(feature),
-          );
-
-          void saveOrganization.mutate({
-            name: getFormString(formData, "name"),
-            slug: getFormString(formData, "slug"),
-            logoUrl: normalizeOptionalString(formData.get("logoUrl")),
-            settings: {
-              eventType: getFormString(
-                formData,
-                "eventType",
-                "music-festivals",
-              ),
-              timezone: getFormString(formData, "timezone", "Europe/London"),
-              language: getFormString(formData, "language", "English"),
-              support247: formData.get("support247") === "on",
-              afterHoursMessage: getFormString(
-                formData,
-                "afterHoursMessage",
-              ).trim(),
-              eventFeatures: featureValues,
-            },
-          });
-        }}
-      >
-        <Section title="Organization Details">
-          <Field label="Organization Name">
-            <input
-              name="name"
-              defaultValue={org.name}
-              className={inputClassName}
-            />
-          </Field>
-          <Field label="Subdomain">
-            <div className="flex items-center rounded-md border">
-              <span className="bg-muted text-muted-foreground px-3 text-sm">
-                https://
-              </span>
-              <input
-                name="slug"
-                defaultValue={org.slug}
-                className="h-10 flex-1 rounded-r-md bg-transparent px-3 text-sm outline-none"
-              />
-              <span className="text-muted-foreground pr-3 text-sm">
-                .eventsupport.io
-              </span>
-            </div>
-          </Field>
-          <Field label="Logo URL">
-            <input
-              name="logoUrl"
-              defaultValue={org.logoUrl ?? ""}
-              placeholder="https://..."
-              className={inputClassName}
-            />
-          </Field>
-        </Section>
-
-        <Section title="Industry Focus">
-          <Field label="Primary Event Type">
-            <select
-              name="eventType"
-              defaultValue={getSettingString(
-                settings,
-                "eventType",
-                "music-festivals",
-              )}
-              className={inputClassName}
-            >
-              <option value="music-festivals">Music Festivals</option>
-              <option value="sports">Sports Events</option>
-              <option value="theater">Theater & Performing Arts</option>
-              <option value="conferences">Conferences & Trade Shows</option>
-              <option value="nightlife">Nightlife & Clubs</option>
-            </select>
-          </Field>
-          <Field label="Event Features">
-            <div className="grid grid-cols-2 gap-3">
-              {eventFeatures.map((feature) => (
-                <label
-                  key={feature}
-                  className="flex items-center gap-2 text-sm"
-                >
-                  <input
-                    type="checkbox"
-                    name="eventFeatures"
-                    value={feature}
-                    defaultChecked={selectedFeatures.has(feature)}
-                  />
-                  {featureLabel(feature)}
-                </label>
-              ))}
-            </div>
-          </Field>
-        </Section>
-
-        <Section title="Support Preferences">
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Timezone">
-              <select
-                name="timezone"
-                defaultValue={getSettingString(
-                  settings,
-                  "timezone",
-                  "Europe/London",
-                )}
-                className={inputClassName}
-              >
-                <option value="Europe/London">Europe/London</option>
-                <option value="Europe/Paris">Europe/Paris</option>
-                <option value="America/New_York">America/New_York</option>
-                <option value="America/Los_Angeles">America/Los_Angeles</option>
-              </select>
-            </Field>
-            <Field label="Language">
-              <select
-                name="language"
-                defaultValue={getSettingString(settings, "language", "English")}
-                className={inputClassName}
-              >
-                <option value="English">English</option>
-                <option value="Spanish">Spanish</option>
-                <option value="French">French</option>
-              </select>
-            </Field>
-          </div>
-          <label className="flex items-center gap-2 text-sm font-medium">
-            <input
-              type="checkbox"
-              name="support247"
-              defaultChecked={Boolean(settings.support247 ?? true)}
-            />
-            24/7 Support
-          </label>
-          <Field label="Outside Support Hours Message">
-            <textarea
-              name="afterHoursMessage"
-              defaultValue={getSettingString(settings, "afterHoursMessage")}
-              className="border-input bg-background min-h-28 w-full rounded-md border px-3 py-2 text-sm"
-            />
-          </Field>
-        </Section>
-
-        <div className="flex items-center justify-between">
-          <p className="text-muted-foreground text-sm">
-            {saveOrganization.isSuccess ? "Organization settings saved." : ""}
-          </p>
-          <button
-            type="submit"
-            className="bg-primary text-primary-foreground rounded-md px-5 py-2 text-sm font-medium"
-            disabled={saveOrganization.isPending}
-          >
-            {saveOrganization.isPending ? "Saving..." : "Save changes"}
-          </button>
-        </div>
-      </form>
-    </PageShell>
-  );
-}
-
-function PageShell({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description: string;
-  children?: React.ReactNode;
+  >;
 }) {
+  const settings = org.settings ?? {};
+  const [name, setName] = useState(org.name);
+  const [slug, setSlug] = useState(org.slug);
+  const [logoUrl, setLogoUrl] = useState(org.logoUrl ?? "");
+  const [eventType, setEventType] = useState(
+    getSettingString(settings, "eventType", "music-festivals"),
+  );
+  const [timezone, setTimezone] = useState(
+    getSettingString(settings, "timezone", "Europe/London"),
+  );
+  const [language, setLanguage] = useState(
+    getSettingString(settings, "language", "English"),
+  );
+  const [support247, setSupport247] = useState(
+    getSettingBoolean(settings, "support247", true),
+  );
+  const [afterHoursMessage, setAfterHoursMessage] = useState(
+    getSettingString(settings, "afterHoursMessage"),
+  );
+  const [selectedFeatures, setSelectedFeatures] = useState(
+    getSettingStringArray(settings, "eventFeatures"),
+  );
+
   return (
-    <div className="mx-auto max-w-3xl p-8">
-      <div className="mb-8">
-        <h2 className="text-2xl font-semibold">{title}</h2>
-        <p className="text-muted-foreground mt-1 text-sm">{description}</p>
+    <div className="mx-auto max-w-4xl space-y-6 p-8">
+      <div>
+        <h2 className="text-2xl font-semibold">Organization Settings</h2>
+        <p className="text-muted-foreground mt-1 text-sm">
+          Manage your workspace identity and support defaults.
+        </p>
       </div>
-      {children}
-    </div>
-  );
-}
 
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="space-y-4 rounded-lg border bg-white/40 p-5 dark:bg-transparent">
-      <h3 className="text-sm font-semibold tracking-wide text-slate-500 uppercase">
-        {title}
-      </h3>
-      <div className="space-y-4">{children}</div>
-    </section>
-  );
-}
+      <Card>
+        <CardHeader>
+          <CardTitle>Organization Details</CardTitle>
+          <CardDescription>
+            Branding and workspace URL used across the support app.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
+            <Field>
+              <FieldLabel>Organization Name</FieldLabel>
+              <FieldContent>
+                <Input
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                />
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldLabel>Subdomain</FieldLabel>
+              <FieldContent>
+                <div className="flex items-center rounded-md border">
+                  <span className="bg-muted text-muted-foreground px-3 text-sm">
+                    https://
+                  </span>
+                  <Input
+                    value={slug}
+                    onChange={(event) => setSlug(event.target.value)}
+                    className="border-0 shadow-none focus-visible:ring-0"
+                  />
+                  <span className="text-muted-foreground px-3 text-sm">
+                    .eventsupport.io
+                  </span>
+                </div>
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldLabel>Logo URL</FieldLabel>
+              <FieldContent>
+                <Input
+                  value={logoUrl}
+                  onChange={(event) => setLogoUrl(event.target.value)}
+                  placeholder="https://..."
+                />
+              </FieldContent>
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
 
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium">{label}</label>
-      {children}
+      <Card>
+        <CardHeader>
+          <CardTitle>Industry Focus</CardTitle>
+          <CardDescription>
+            Tailor the workspace for the event types you support most.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
+            <Field>
+              <FieldLabel>Primary Event Type</FieldLabel>
+              <FieldContent>
+                <Select value={eventType} onValueChange={setEventType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select event type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="music-festivals">
+                      Music Festivals
+                    </SelectItem>
+                    <SelectItem value="sports">Sports Events</SelectItem>
+                    <SelectItem value="theater">
+                      Theater & Performing Arts
+                    </SelectItem>
+                    <SelectItem value="conferences">
+                      Conferences & Trade Shows
+                    </SelectItem>
+                    <SelectItem value="nightlife">Nightlife & Clubs</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldLabel>Event Features</FieldLabel>
+              <FieldContent>
+                <div className="grid grid-cols-2 gap-3">
+                  {eventFeatures.map((feature) => (
+                    <Field
+                      key={feature}
+                      orientation="horizontal"
+                      className="items-center rounded-md border p-3"
+                    >
+                      <Checkbox
+                        checked={selectedFeatures.includes(feature)}
+                        onCheckedChange={(
+                          checked: boolean | "indeterminate",
+                        ) => {
+                          setSelectedFeatures((current) =>
+                            checked === true
+                              ? [...new Set([...current, feature])]
+                              : current.filter((value) => value !== feature),
+                          );
+                        }}
+                      />
+                      <FieldContent>
+                        <FieldLabel>{featureLabel(feature)}</FieldLabel>
+                      </FieldContent>
+                    </Field>
+                  ))}
+                </div>
+              </FieldContent>
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Support Preferences</CardTitle>
+          <CardDescription>
+            Defaults used by agents and automations across the workspace.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
+            <div className="grid grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel>Timezone</FieldLabel>
+                <FieldContent>
+                  <Select value={timezone} onValueChange={setTimezone}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select timezone" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Europe/London">
+                        Europe/London
+                      </SelectItem>
+                      <SelectItem value="Europe/Paris">Europe/Paris</SelectItem>
+                      <SelectItem value="America/New_York">
+                        America/New_York
+                      </SelectItem>
+                      <SelectItem value="America/Los_Angeles">
+                        America/Los_Angeles
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Language</FieldLabel>
+                <FieldContent>
+                  <Select value={language} onValueChange={setLanguage}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="English">English</SelectItem>
+                      <SelectItem value="Spanish">Spanish</SelectItem>
+                      <SelectItem value="French">French</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+              </Field>
+            </div>
+            <Field orientation="horizontal">
+              <Checkbox
+                checked={support247}
+                onCheckedChange={(checked: boolean | "indeterminate") =>
+                  setSupport247(checked === true)
+                }
+              />
+              <FieldContent>
+                <FieldLabel>24/7 Support</FieldLabel>
+                <FieldDescription>
+                  Keep agents and messaging active around the clock.
+                </FieldDescription>
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldLabel>Outside Support Hours Message</FieldLabel>
+              <FieldContent>
+                <Textarea
+                  value={afterHoursMessage}
+                  onChange={(event) => setAfterHoursMessage(event.target.value)}
+                  className="min-h-28"
+                />
+              </FieldContent>
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
+
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground text-sm">
+          {saveOrganization.isSuccess ? "Organization settings saved." : ""}
+        </p>
+        <Button
+          onClick={() => {
+            void saveOrganization.mutate({
+              name,
+              slug,
+              logoUrl: normalizeOptionalString(logoUrl),
+              settings: {
+                eventType,
+                timezone,
+                language,
+                support247,
+                afterHoursMessage: afterHoursMessage.trim(),
+                eventFeatures: selectedFeatures,
+              },
+            });
+          }}
+          disabled={saveOrganization.isPending}
+        >
+          {saveOrganization.isPending ? "Saving..." : "Save changes"}
+        </Button>
+      </div>
     </div>
   );
 }
@@ -318,14 +384,9 @@ function featureLabel(value: (typeof eventFeatures)[number]) {
   }
 }
 
-function normalizeOptionalString(value: FormDataEntryValue | null) {
-  const nextValue = typeof value === "string" ? value.trim() : "";
+function normalizeOptionalString(value: string) {
+  const nextValue = value.trim();
   return nextValue.length ? nextValue : null;
-}
-
-function getFormString(formData: FormData, key: string, fallback = "") {
-  const value = formData.get(key);
-  return typeof value === "string" ? value : fallback;
 }
 
 function getSettingString(
@@ -337,5 +398,18 @@ function getSettingString(
   return typeof value === "string" ? value : fallback;
 }
 
-const inputClassName =
-  "border-input bg-background h-10 w-full rounded-md border px-3 text-sm";
+function getSettingBoolean(
+  settings: Record<string, unknown>,
+  key: string,
+  fallback: boolean,
+) {
+  const value = settings[key];
+  return typeof value === "boolean" ? value : fallback;
+}
+
+function getSettingStringArray(settings: Record<string, unknown>, key: string) {
+  const value = settings[key];
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
+}
