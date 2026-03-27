@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 import { cva } from "class-variance-authority";
 import { Paperclip, Send, Sparkles } from "lucide-react";
 
+import { cn } from "../../lib/utils";
 import { Button } from "../button";
-import { cn } from "../lib/utils";
 
 interface ChatInputProps {
   onSend: (content: string) => void;

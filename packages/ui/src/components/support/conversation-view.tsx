@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Mail, MessageCircle, MoreHorizontal, Phone, User } from "lucide-react";
 
-import { cn } from "../lib/utils";
+import { cn } from "../../lib/utils";
 import { ChannelBadge, StatusBadge } from "./badges";
 import { ChatInput } from "./chat-input";
 import { MessageBubble } from "./message-bubble";

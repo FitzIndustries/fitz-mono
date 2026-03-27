@@ -2,7 +2,7 @@ import { cva } from "class-variance-authority";
 import { formatDistanceToNow } from "date-fns";
 import { User } from "lucide-react";
 
-import { cn } from "../lib/utils";
+import { cn } from "../../lib/utils";
 import { ChannelBadge, StatusBadge } from "./badges";
 
 interface ConversationListItemProps {

@@ -4,6 +4,9 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./components/*": "./src/components/*.tsx",
+    "./components/support/*": "./src/components/support/*.tsx",
+    "./support/*": "./src/support/*.tsx",
     "./button": "./src/button.tsx",
     "./dropdown-menu": "./src/dropdown-menu.tsx",
     "./field": "./src/field.tsx",
@@ -12,12 +15,7 @@
     "./separator": "./src/separator.tsx",
     "./theme": "./src/theme.tsx",
     "./toast": "./src/toast.tsx",
-    "./support": "./src/support/index.ts",
-    "./support/badges": "./src/support/badges.tsx",
-    "./support/chat-input": "./src/support/chat-input.tsx",
-    "./support/conversation-list": "./src/support/conversation-list.tsx",
-    "./support/conversation-view": "./src/support/conversation-view.tsx",
-    "./support/message-bubble": "./src/support/message-bubble.tsx"
+    "./support": "./src/support/index.ts"
   },
   "license": "MIT",
   "scripts": {

@@ -2,7 +2,7 @@ import { cva } from "class-variance-authority";
 import { format } from "date-fns";
 import { Bot, User } from "lucide-react";
 
-import { cn } from "../lib/utils";
+import { cn } from "../../lib/utils";
 
 interface MessageBubbleProps {
   id: string;

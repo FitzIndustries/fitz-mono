@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { cva } from "class-variance-authority";
 import { Mail, MessageCircle } from "lucide-react";
 
-import { cn } from "../lib/utils";
+import { cn } from "../../lib/utils";
 
 const channelBadgeVariants = cva(
   "inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium",
