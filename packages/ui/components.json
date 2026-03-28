@@ -1,20 +1,23 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "new-york",
+  "style": "base-nova",
   "rsc": false,
   "tsx": true,
   "tailwind": {
     "config": "",
     "css": "src/styles/globals.css",
-    "baseColor": "zinc",
+    "baseColor": "neutral",
     "cssVariables": true
   },
   "iconLibrary": "lucide",
   "aliases": {
     "components": "@fitzindustries/ui/components",
-    "utils": "@fitzindustries/ui/src/lib/utils",
-    "hooks": "@fitzindustries/ui/src/hooks",
-    "lib": "@fitzindustries/ui/src/lib",
-    "ui": "@fitzindustries/ui/src/components"
-  }
+    "utils": "@fitzindustries/ui/lib/utils",
+    "hooks": "@fitzindustries/ui/hooks",
+    "lib": "@fitzindustries/ui/lib",
+    "ui": "@fitzindustries/ui/components"
+  },
+  "rtl": false,
+  "menuColor": "default",
+  "menuAccent": "subtle"
 }
