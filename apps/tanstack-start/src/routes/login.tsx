@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 
-import { Button } from "@fitzindustries/ui/button";
-import { Input } from "@fitzindustries/ui/input";
-import { Label } from "@fitzindustries/ui/label";
+import { Button } from "@fitzindustries/ui/components/button";
+import { Input } from "@fitzindustries/ui/components/input";
+import { Label } from "@fitzindustries/ui/components/label";
 
 import { authClient } from "~/auth/client";
 

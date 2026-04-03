@@ -15,7 +15,7 @@ import {
   FieldGroup,
   FieldLabel,
   Input,
-} from "@fitzindustries/ui";
+} from "@fitzindustries/ui/components";
 
 import { apiFetch } from "~/lib/api";
 
@@ -269,14 +269,12 @@ function ChannelsForm({
             <div className="flex justify-end">
               <Button
                 onClick={() => {
-                  void saveWhatsapp
-                    .mutateAsync(whatsAppForm)
-                    .then(() =>
-                      setWhatsAppForm((current) => ({
-                        ...current,
-                        accessToken: "",
-                      })),
-                    );
+                  void saveWhatsapp.mutateAsync(whatsAppForm).then(() =>
+                    setWhatsAppForm((current) => ({
+                      ...current,
+                      accessToken: "",
+                    })),
+                  );
                 }}
                 disabled={saveWhatsapp.isPending}
               >

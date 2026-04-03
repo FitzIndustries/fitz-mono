@@ -12,7 +12,7 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import type { AppRouter } from "@fitzindustries/api";
 import type { Zero } from "@fitzindustries/zero-shared/zero";
-import { Toaster } from "@fitzindustries/ui/toast";
+import { Toaster } from "@fitzindustries/ui/components/sonner";
 
 import { env } from "~/env";
 import appCss from "~/global.css?url";
