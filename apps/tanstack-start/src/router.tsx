@@ -1,4 +1,3 @@
-import type { Zero } from "@fitzindustries/zero-shared/zero";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
@@ -7,6 +6,7 @@ import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import SuperJSON from "superjson";
 
 import type { AppRouter } from "@fitzindustries/api";
+import type { Zero } from "@fitzindustries/zero-shared/zero";
 
 import { makeTRPCClient, TRPCProvider } from "~/lib/trpc";
 import { routeTree } from "./routeTree.gen";
