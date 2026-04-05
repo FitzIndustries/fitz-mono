@@ -6,7 +6,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Providers } from "~/providers";
 import { queryClient } from "~/utils/api";
 
-import "../global.css";
+import "@fitzindustries/ui/global.css";
 
 // This is the main layout of the app
 // It wraps your pages with the providers they need
