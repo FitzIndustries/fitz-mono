@@ -21,7 +21,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@fitzindustries/ui";
+} from "@fitzindustries/ui/components/select";
 import { ThemeToggle } from "@fitzindustries/ui/theme";
 
 import { authClient } from "~/auth/client";

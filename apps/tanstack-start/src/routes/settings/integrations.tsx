@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { Button } from "@fitzindustries/ui/components/button";
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  cn,
-  Input,
-} from "@fitzindustries/ui";
+} from "@fitzindustries/ui/components/card";
+import { Input } from "@fitzindustries/ui/components/input";
+import { cn } from "@fitzindustries/ui/lib/utils";
 
 export const Route = createFileRoute("/settings/integrations")({
   component: IntegrationsSettings,

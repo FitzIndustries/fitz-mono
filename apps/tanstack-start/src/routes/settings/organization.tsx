@@ -2,27 +2,31 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { Button } from "@fitzindustries/ui/components/button";
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  Checkbox,
+} from "@fitzindustries/ui/components/card";
+import { Checkbox } from "@fitzindustries/ui/components/checkbox";
+import {
   Field,
   FieldContent,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  Input,
+} from "@fitzindustries/ui/components/field";
+import { Input } from "@fitzindustries/ui/components/input";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Textarea,
-} from "@fitzindustries/ui";
+} from "@fitzindustries/ui/components/select";
+import { Textarea } from "@fitzindustries/ui/components/textarea";
 
 import { apiFetch } from "~/lib/api";
 

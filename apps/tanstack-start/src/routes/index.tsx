@@ -3,19 +3,17 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { Settings } from "lucide-react";
 
+import { Button } from "@fitzindustries/ui/components/button";
 import {
-  Button,
-  cn,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@fitzindustries/ui";
-import {
-  ConversationListItem,
-  ConversationView,
-} from "@fitzindustries/ui/support";
+} from "@fitzindustries/ui/components/select";
+import { ConversationListItem } from "@fitzindustries/ui/components/support/conversation-list";
+import { ConversationView } from "@fitzindustries/ui/components/support/conversation-view";
+import { cn } from "@fitzindustries/ui/lib/utils";
 import { mutators, queries } from "@fitzindustries/zero-shared";
 import {
   useZero,

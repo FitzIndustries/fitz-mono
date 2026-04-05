@@ -1,18 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { Button } from "@fitzindustries/ui/components/button";
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
+} from "@fitzindustries/ui/components/card";
+import {
   Field,
   FieldContent,
   FieldLabel,
-  Input,
-} from "@fitzindustries/ui";
+} from "@fitzindustries/ui/components/field";
+import { Input } from "@fitzindustries/ui/components/input";
 
 import { apiFetch } from "~/lib/api";
 

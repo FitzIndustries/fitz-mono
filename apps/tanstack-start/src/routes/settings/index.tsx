@@ -2,28 +2,32 @@ import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Camera, Moon, Sun } from "lucide-react";
 
+import { Button } from "@fitzindustries/ui/components/button";
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  Checkbox,
-  cn,
+} from "@fitzindustries/ui/components/card";
+import { Checkbox } from "@fitzindustries/ui/components/checkbox";
+import {
   Field,
   FieldContent,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  Input,
+} from "@fitzindustries/ui/components/field";
+import { Input } from "@fitzindustries/ui/components/input";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Separator,
-} from "@fitzindustries/ui";
+} from "@fitzindustries/ui/components/select";
+import { Separator } from "@fitzindustries/ui/components/separator";
+import { cn } from "@fitzindustries/ui/lib/utils";
 import { useTheme } from "@fitzindustries/ui/theme";
 
 import { authClient } from "~/auth/client";
