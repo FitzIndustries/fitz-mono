@@ -1,4 +1,4 @@
-import * as React from "react"
+import type * as React from "react"
 import { Input as InputPrimitive } from "@fitzindustries/ui/components/input"
 
 import { cn } from "@fitzindustries/ui/lib/utils"
