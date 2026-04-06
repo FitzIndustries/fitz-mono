@@ -12,11 +12,9 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import type { AppRouter } from "@fitzindustries/api";
 import type { Zero } from "@fitzindustries/zero-shared/zero";
-import { Toaster } from "@fitzindustries/ui/components/sonner";
 import appCss from "@fitzindustries/ui/global.css?url";
 
 import { env } from "~/env";
-import { Providers } from "~/providers";
 
 const zeroCacheURL = env.VITE_ZERO_CACHE_URL;
 
@@ -55,10 +53,7 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   return (
     <RootDocument>
-      <Providers>
-        <Outlet />
-        <Toaster />
-      </Providers>
+      <Outlet />
     </RootDocument>
   );
 }

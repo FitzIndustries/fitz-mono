@@ -12,7 +12,7 @@ import {
 import { Input } from "@fitzindustries/ui/components/input";
 import { cn } from "@fitzindustries/ui/lib/utils";
 
-export const Route = createFileRoute("/settings/integrations")({
+export const Route = createFileRoute("/_authenticated/settings/integrations")({
   component: IntegrationsSettings,
 });
 

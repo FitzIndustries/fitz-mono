@@ -21,7 +21,7 @@ import { Input } from "@fitzindustries/ui/components/input";
 
 import { apiFetch } from "~/lib/api";
 
-export const Route = createFileRoute("/settings/channels")({
+export const Route = createFileRoute("/_authenticated/settings/channels")({
   component: ChannelsSettings,
 });
 

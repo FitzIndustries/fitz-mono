@@ -18,7 +18,7 @@ import { Input } from "@fitzindustries/ui/components/input";
 
 import { apiFetch } from "~/lib/api";
 
-export const Route = createFileRoute("/settings/billing")({
+export const Route = createFileRoute("/_authenticated/settings/billing")({
   component: BillingSettings,
 });
 

@@ -9,121 +9,133 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TicketsRouteImport } from './routes/tickets'
-import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as CustomersRouteImport } from './routes/customers'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as SettingsIndexRouteImport } from './routes/settings/index'
-import { Route as SettingsTeamRouteImport } from './routes/settings/team'
-import { Route as SettingsOrganizationRouteImport } from './routes/settings/organization'
-import { Route as SettingsIntegrationsRouteImport } from './routes/settings/integrations'
-import { Route as SettingsChannelsRouteImport } from './routes/settings/channels'
-import { Route as SettingsBillingRouteImport } from './routes/settings/billing'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticated/tickets'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
+import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedSettingsTeamRouteImport } from './routes/_authenticated/settings/team'
+import { Route as AuthenticatedSettingsOrganizationRouteImport } from './routes/_authenticated/settings/organization'
+import { Route as AuthenticatedSettingsIntegrationsRouteImport } from './routes/_authenticated/settings/integrations'
+import { Route as AuthenticatedSettingsChannelsRouteImport } from './routes/_authenticated/settings/channels'
+import { Route as AuthenticatedSettingsBillingRouteImport } from './routes/_authenticated/settings/billing'
 
-const TicketsRoute = TicketsRouteImport.update({
-  id: '/tickets',
-  path: '/tickets',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CustomersRoute = CustomersRouteImport.update({
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedTicketsRoute = AuthenticatedTicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
   id: '/customers',
   path: '/customers',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsIndexRoute = SettingsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => SettingsRoute,
-} as any)
-const SettingsTeamRoute = SettingsTeamRouteImport.update({
-  id: '/team',
-  path: '/team',
-  getParentRoute: () => SettingsRoute,
-} as any)
-const SettingsOrganizationRoute = SettingsOrganizationRouteImport.update({
-  id: '/organization',
-  path: '/organization',
-  getParentRoute: () => SettingsRoute,
-} as any)
-const SettingsIntegrationsRoute = SettingsIntegrationsRouteImport.update({
-  id: '/integrations',
-  path: '/integrations',
-  getParentRoute: () => SettingsRoute,
-} as any)
-const SettingsChannelsRoute = SettingsChannelsRouteImport.update({
-  id: '/channels',
-  path: '/channels',
-  getParentRoute: () => SettingsRoute,
-} as any)
-const SettingsBillingRoute = SettingsBillingRouteImport.update({
-  id: '/billing',
-  path: '/billing',
-  getParentRoute: () => SettingsRoute,
-} as any)
+const AuthenticatedSettingsIndexRoute =
+  AuthenticatedSettingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsTeamRoute =
+  AuthenticatedSettingsTeamRouteImport.update({
+    id: '/team',
+    path: '/team',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsOrganizationRoute =
+  AuthenticatedSettingsOrganizationRouteImport.update({
+    id: '/organization',
+    path: '/organization',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsIntegrationsRoute =
+  AuthenticatedSettingsIntegrationsRouteImport.update({
+    id: '/integrations',
+    path: '/integrations',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsChannelsRoute =
+  AuthenticatedSettingsChannelsRouteImport.update({
+    id: '/channels',
+    path: '/channels',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsBillingRoute =
+  AuthenticatedSettingsBillingRouteImport.update({
+    id: '/billing',
+    path: '/billing',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/customers': typeof CustomersRoute
   '/login': typeof LoginRoute
-  '/settings': typeof SettingsRouteWithChildren
-  '/tickets': typeof TicketsRoute
-  '/settings/billing': typeof SettingsBillingRoute
-  '/settings/channels': typeof SettingsChannelsRoute
-  '/settings/integrations': typeof SettingsIntegrationsRoute
-  '/settings/organization': typeof SettingsOrganizationRoute
-  '/settings/team': typeof SettingsTeamRoute
-  '/settings/': typeof SettingsIndexRoute
+  '/customers': typeof AuthenticatedCustomersRoute
+  '/settings': typeof AuthenticatedSettingsRouteWithChildren
+  '/tickets': typeof AuthenticatedTicketsRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/settings/billing': typeof AuthenticatedSettingsBillingRoute
+  '/settings/channels': typeof AuthenticatedSettingsChannelsRoute
+  '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
+  '/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
+  '/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/settings/': typeof AuthenticatedSettingsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/customers': typeof CustomersRoute
   '/login': typeof LoginRoute
-  '/tickets': typeof TicketsRoute
-  '/settings/billing': typeof SettingsBillingRoute
-  '/settings/channels': typeof SettingsChannelsRoute
-  '/settings/integrations': typeof SettingsIntegrationsRoute
-  '/settings/organization': typeof SettingsOrganizationRoute
-  '/settings/team': typeof SettingsTeamRoute
-  '/settings': typeof SettingsIndexRoute
+  '/customers': typeof AuthenticatedCustomersRoute
+  '/tickets': typeof AuthenticatedTicketsRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/settings/billing': typeof AuthenticatedSettingsBillingRoute
+  '/settings/channels': typeof AuthenticatedSettingsChannelsRoute
+  '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
+  '/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
+  '/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/settings': typeof AuthenticatedSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/customers': typeof CustomersRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
-  '/settings': typeof SettingsRouteWithChildren
-  '/tickets': typeof TicketsRoute
-  '/settings/billing': typeof SettingsBillingRoute
-  '/settings/channels': typeof SettingsChannelsRoute
-  '/settings/integrations': typeof SettingsIntegrationsRoute
-  '/settings/organization': typeof SettingsOrganizationRoute
-  '/settings/team': typeof SettingsTeamRoute
-  '/settings/': typeof SettingsIndexRoute
+  '/_authenticated/customers': typeof AuthenticatedCustomersRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRouteWithChildren
+  '/_authenticated/tickets': typeof AuthenticatedTicketsRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/settings/billing': typeof AuthenticatedSettingsBillingRoute
+  '/_authenticated/settings/channels': typeof AuthenticatedSettingsChannelsRoute
+  '/_authenticated/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
+  '/_authenticated/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
+  '/_authenticated/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/customers'
     | '/login'
+    | '/customers'
     | '/settings'
     | '/tickets'
+    | '/'
     | '/settings/billing'
     | '/settings/channels'
     | '/settings/integrations'
@@ -132,10 +144,10 @@ export interface FileRouteTypes {
     | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
-    | '/customers'
     | '/login'
+    | '/customers'
     | '/tickets'
+    | '/'
     | '/settings/billing'
     | '/settings/channels'
     | '/settings/integrations'
@@ -144,43 +156,27 @@ export interface FileRouteTypes {
     | '/settings'
   id:
     | '__root__'
-    | '/'
-    | '/customers'
+    | '/_authenticated'
     | '/login'
-    | '/settings'
-    | '/tickets'
-    | '/settings/billing'
-    | '/settings/channels'
-    | '/settings/integrations'
-    | '/settings/organization'
-    | '/settings/team'
-    | '/settings/'
+    | '/_authenticated/customers'
+    | '/_authenticated/settings'
+    | '/_authenticated/tickets'
+    | '/_authenticated/'
+    | '/_authenticated/settings/billing'
+    | '/_authenticated/settings/channels'
+    | '/_authenticated/settings/integrations'
+    | '/_authenticated/settings/organization'
+    | '/_authenticated/settings/team'
+    | '/_authenticated/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  CustomersRoute: typeof CustomersRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
-  SettingsRoute: typeof SettingsRouteWithChildren
-  TicketsRoute: typeof TicketsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tickets': {
-      id: '/tickets'
-      path: '/tickets'
-      fullPath: '/tickets'
-      preLoaderRoute: typeof TicketsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -188,93 +184,132 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/customers': {
-      id: '/customers'
-      path: '/customers'
-      fullPath: '/customers'
-      preLoaderRoute: typeof CustomersRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/settings/': {
-      id: '/settings/'
+    '/_authenticated/tickets': {
+      id: '/_authenticated/tickets'
+      path: '/tickets'
+      fullPath: '/tickets'
+      preLoaderRoute: typeof AuthenticatedTicketsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/customers': {
+      id: '/_authenticated/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof AuthenticatedCustomersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/settings/': {
+      id: '/_authenticated/settings/'
       path: '/'
       fullPath: '/settings/'
-      preLoaderRoute: typeof SettingsIndexRouteImport
-      parentRoute: typeof SettingsRoute
+      preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
     }
-    '/settings/team': {
-      id: '/settings/team'
+    '/_authenticated/settings/team': {
+      id: '/_authenticated/settings/team'
       path: '/team'
       fullPath: '/settings/team'
-      preLoaderRoute: typeof SettingsTeamRouteImport
-      parentRoute: typeof SettingsRoute
+      preLoaderRoute: typeof AuthenticatedSettingsTeamRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
     }
-    '/settings/organization': {
-      id: '/settings/organization'
+    '/_authenticated/settings/organization': {
+      id: '/_authenticated/settings/organization'
       path: '/organization'
       fullPath: '/settings/organization'
-      preLoaderRoute: typeof SettingsOrganizationRouteImport
-      parentRoute: typeof SettingsRoute
+      preLoaderRoute: typeof AuthenticatedSettingsOrganizationRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
     }
-    '/settings/integrations': {
-      id: '/settings/integrations'
+    '/_authenticated/settings/integrations': {
+      id: '/_authenticated/settings/integrations'
       path: '/integrations'
       fullPath: '/settings/integrations'
-      preLoaderRoute: typeof SettingsIntegrationsRouteImport
-      parentRoute: typeof SettingsRoute
+      preLoaderRoute: typeof AuthenticatedSettingsIntegrationsRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
     }
-    '/settings/channels': {
-      id: '/settings/channels'
+    '/_authenticated/settings/channels': {
+      id: '/_authenticated/settings/channels'
       path: '/channels'
       fullPath: '/settings/channels'
-      preLoaderRoute: typeof SettingsChannelsRouteImport
-      parentRoute: typeof SettingsRoute
+      preLoaderRoute: typeof AuthenticatedSettingsChannelsRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
     }
-    '/settings/billing': {
-      id: '/settings/billing'
+    '/_authenticated/settings/billing': {
+      id: '/_authenticated/settings/billing'
       path: '/billing'
       fullPath: '/settings/billing'
-      preLoaderRoute: typeof SettingsBillingRouteImport
-      parentRoute: typeof SettingsRoute
+      preLoaderRoute: typeof AuthenticatedSettingsBillingRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
     }
   }
 }
 
-interface SettingsRouteChildren {
-  SettingsBillingRoute: typeof SettingsBillingRoute
-  SettingsChannelsRoute: typeof SettingsChannelsRoute
-  SettingsIntegrationsRoute: typeof SettingsIntegrationsRoute
-  SettingsOrganizationRoute: typeof SettingsOrganizationRoute
-  SettingsTeamRoute: typeof SettingsTeamRoute
-  SettingsIndexRoute: typeof SettingsIndexRoute
+interface AuthenticatedSettingsRouteChildren {
+  AuthenticatedSettingsBillingRoute: typeof AuthenticatedSettingsBillingRoute
+  AuthenticatedSettingsChannelsRoute: typeof AuthenticatedSettingsChannelsRoute
+  AuthenticatedSettingsIntegrationsRoute: typeof AuthenticatedSettingsIntegrationsRoute
+  AuthenticatedSettingsOrganizationRoute: typeof AuthenticatedSettingsOrganizationRoute
+  AuthenticatedSettingsTeamRoute: typeof AuthenticatedSettingsTeamRoute
+  AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
 
-const SettingsRouteChildren: SettingsRouteChildren = {
-  SettingsBillingRoute: SettingsBillingRoute,
-  SettingsChannelsRoute: SettingsChannelsRoute,
-  SettingsIntegrationsRoute: SettingsIntegrationsRoute,
-  SettingsOrganizationRoute: SettingsOrganizationRoute,
-  SettingsTeamRoute: SettingsTeamRoute,
-  SettingsIndexRoute: SettingsIndexRoute,
+const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
+  AuthenticatedSettingsBillingRoute: AuthenticatedSettingsBillingRoute,
+  AuthenticatedSettingsChannelsRoute: AuthenticatedSettingsChannelsRoute,
+  AuthenticatedSettingsIntegrationsRoute:
+    AuthenticatedSettingsIntegrationsRoute,
+  AuthenticatedSettingsOrganizationRoute:
+    AuthenticatedSettingsOrganizationRoute,
+  AuthenticatedSettingsTeamRoute: AuthenticatedSettingsTeamRoute,
+  AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
 }
 
-const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
-  SettingsRouteChildren,
+const AuthenticatedSettingsRouteWithChildren =
+  AuthenticatedSettingsRoute._addFileChildren(
+    AuthenticatedSettingsRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRouteWithChildren
+  AuthenticatedTicketsRoute: typeof AuthenticatedTicketsRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRouteWithChildren,
+  AuthenticatedTicketsRoute: AuthenticatedTicketsRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  CustomersRoute: CustomersRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
-  SettingsRoute: SettingsRouteWithChildren,
-  TicketsRoute: TicketsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

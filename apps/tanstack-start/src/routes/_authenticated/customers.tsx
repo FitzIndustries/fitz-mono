@@ -1,18 +1,9 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { queries } from "@fitzindustries/zero-shared";
 import { useQuery as useZeroQuery } from "@fitzindustries/zero-shared/react";
 
-import { authClient } from "~/auth/client";
-
-export const Route = createFileRoute("/customers")({
-  beforeLoad: async () => {
-    const session = await authClient.getSession();
-    if (!session.data) {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
-      throw redirect({ to: "/login" });
-    }
-  },
+export const Route = createFileRoute("/_authenticated/customers")({
   component: CustomersPage,
 });
 

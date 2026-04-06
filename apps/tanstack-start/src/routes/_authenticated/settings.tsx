@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  createFileRoute,
-  Link,
-  Outlet,
-  redirect,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import {
   Building2,
   CreditCard,
@@ -24,17 +19,9 @@ import {
 } from "@fitzindustries/ui/components/select";
 import { ThemeToggle } from "@fitzindustries/ui/theme";
 
-import { authClient } from "~/auth/client";
 import { useViewerOrganization } from "~/hooks/use-viewer-organization";
 
-export const Route = createFileRoute("/settings")({
-  beforeLoad: async () => {
-    const session = await authClient.getSession();
-    if (!session.data) {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
-      throw redirect({ to: "/login" });
-    }
-  },
+export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsLayout,
 });
 

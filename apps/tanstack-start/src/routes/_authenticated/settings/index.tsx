@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+  useRouteContext,
+} from "@tanstack/react-router";
 import { Camera, Moon, Sun } from "lucide-react";
 
 import { Button } from "@fitzindustries/ui/components/button";
@@ -32,12 +36,12 @@ import { useTheme } from "@fitzindustries/ui/theme";
 
 import { authClient } from "~/auth/client";
 
-export const Route = createFileRoute("/settings/")({
+export const Route = createFileRoute("/_authenticated/settings/")({
   component: ProfileSettings,
 });
 
 function ProfileSettings() {
-  const { data: session, isPending } = authClient.useSession();
+  const { session } = useRouteContext({ from: "/_authenticated" });
   const navigate = useNavigate();
   const [timezone, setTimezone] = useState("America/New_York");
   const [language, setLanguage] = useState("English");
@@ -45,27 +49,11 @@ function ProfileSettings() {
   const [desktopNotifications, setDesktopNotifications] = useState(true);
   const { themeMode, setTheme } = useTheme();
 
-  const user = session?.user;
+  const user = session.user;
   const handleSignOut = async () => {
     await authClient.signOut();
     await navigate({ to: "/login", replace: true });
   };
-
-  if (isPending) {
-    return (
-      <div className="mx-auto max-w-4xl p-8">
-        <div className="animate-pulse space-y-4">
-          <div className="bg-muted h-10 w-48 rounded" />
-          <div className="bg-muted h-40 rounded-xl" />
-          <div className="bg-muted h-40 rounded-xl" />
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
 
   const nameParts = user.name.split(" ");
   const initials = nameParts[0]

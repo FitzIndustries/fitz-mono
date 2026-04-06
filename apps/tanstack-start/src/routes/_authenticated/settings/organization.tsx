@@ -30,7 +30,7 @@ import { Textarea } from "@fitzindustries/ui/components/textarea";
 
 import { apiFetch } from "~/lib/api";
 
-export const Route = createFileRoute("/settings/organization")({
+export const Route = createFileRoute("/_authenticated/settings/organization")({
   component: OrganizationSettings,
 });
 

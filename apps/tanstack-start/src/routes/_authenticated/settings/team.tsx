@@ -28,7 +28,7 @@ import {
 
 import { apiFetch } from "~/lib/api";
 
-export const Route = createFileRoute("/settings/team")({
+export const Route = createFileRoute("/_authenticated/settings/team")({
   component: TeamSettings,
 });
 

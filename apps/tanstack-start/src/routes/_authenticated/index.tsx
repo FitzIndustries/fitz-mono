@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouteContext } from "@tanstack/react-router";
 import { Settings } from "lucide-react";
 
 import { Button } from "@fitzindustries/ui/components/button";
@@ -20,18 +20,10 @@ import {
   useQuery as useZeroQuery,
 } from "@fitzindustries/zero-shared/react";
 
-import { authClient } from "~/auth/client";
 import { useViewerOrganization } from "~/hooks/use-viewer-organization";
 import { apiFetch } from "~/lib/api";
 
-export const Route = createFileRoute("/")({
-  beforeLoad: async () => {
-    const session = await authClient.getSession();
-    if (!session.data) {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
-      throw redirect({ to: "/login" });
-    }
-  },
+export const Route = createFileRoute("/_authenticated/")({
   component: SupportPage,
 });
 
@@ -40,8 +32,7 @@ type FilterType = "all" | "open" | "pending" | "resolved" | "closed";
 
 function SupportPage() {
   const zero = useZero();
-  const { data: session, isPending: isSessionPending } =
-    authClient.useSession();
+  const { session } = useRouteContext({ from: "/_authenticated" });
   const {
     currentMembershipId,
     currentOrganization,
@@ -92,7 +83,7 @@ function SupportPage() {
     ),
   );
 
-  const userInitials = getInitials(session?.user.name);
+  const userInitials = getInitials(session.user.name);
 
   const selectedConversationProps = useMemo(() => {
     if (!selectedConversation?.customer) {
@@ -274,8 +265,7 @@ function SupportPage() {
     </div>
   ) : null;
 
-  const isLoading =
-    isSessionPending || isOrganizationPending || !currentOrganizationId;
+  const isLoading = isOrganizationPending || !currentOrganizationId;
 
   return (
     <div className="flex h-screen bg-[radial-gradient(circle_at_top_left,_hsl(var(--primary)/0.12),_transparent_30%),linear-gradient(180deg,_hsl(var(--background)),_hsl(var(--muted)/0.35))]">
@@ -433,11 +423,9 @@ function SupportPage() {
               {userInitials}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate font-medium">
-                {session?.user.name ?? "Agent"}
-              </p>
+              <p className="truncate font-medium">{session.user.name}</p>
               <p className="text-muted-foreground truncate text-xs">
-                {session?.user.email ?? ""}
+                {session.user.email}
               </p>
             </div>
             <Settings className="text-muted-foreground size-4" />
