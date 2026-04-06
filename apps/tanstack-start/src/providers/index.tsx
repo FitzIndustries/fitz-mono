@@ -9,6 +9,7 @@ import {
   useQuery as useZeroQuery,
 } from "@fitzindustries/zero-shared/react";
 
+import { authClient } from "~/auth/client";
 import { ZeroProvider } from "./zero-provider";
 
 /**
@@ -21,9 +22,15 @@ function Providers({ children }: { children: React.ReactNode }) {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
+  const { data: session, isPending: isSessionPending } =
+    authClient.useSession();
 
   if (pathname === "/login") {
     return children;
+  }
+
+  if (isSessionPending || !session) {
+    return null;
   }
 
   return (

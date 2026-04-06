@@ -76,7 +76,10 @@ function SettingsLayout() {
             <h2 className="text-lg font-semibold">Settings</h2>
             <Select
               value={currentOrganizationId ?? undefined}
-              onValueChange={(value: string) => {
+              onValueChange={(value: string | null) => {
+                if (!value) {
+                  return;
+                }
                 void setCurrentOrganization.mutateAsync(value);
               }}
               disabled={

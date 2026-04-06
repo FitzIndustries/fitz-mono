@@ -13,7 +13,7 @@ import { authClient } from "~/lib/auth";
 import { trpc } from "~/utils/api";
 
 function PostCard(props: {
-  post: RouterOutputs["post"]["all"][number];
+  post: Pick<RouterOutputs["post"]["all"][number], "id" | "title" | "content">;
   onDelete: () => void;
 }) {
   return (

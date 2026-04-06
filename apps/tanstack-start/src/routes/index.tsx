@@ -220,8 +220,11 @@ function SupportPage() {
       <Select
         value={ticketType}
         onValueChange={(
-          value: "booking" | "refund" | "info" | "complaint" | "other",
+          value: "booking" | "refund" | "info" | "complaint" | "other" | null,
         ) => {
+          if (!value) {
+            return;
+          }
           setTicketType(value);
         }}
       >
@@ -238,7 +241,10 @@ function SupportPage() {
       </Select>
       <Select
         value={ticketPriority}
-        onValueChange={(value: "low" | "medium" | "high" | "urgent") => {
+        onValueChange={(value: "low" | "medium" | "high" | "urgent" | null) => {
+          if (!value) {
+            return;
+          }
           setTicketPriority(value);
         }}
       >
@@ -289,7 +295,10 @@ function SupportPage() {
           <div className="mt-3">
             <Select
               value={currentOrganizationId ?? undefined}
-              onValueChange={(value: string) => {
+              onValueChange={(value: string | null) => {
+                if (!value) {
+                  return;
+                }
                 void setCurrentOrganization.mutateAsync(value);
               }}
               disabled={

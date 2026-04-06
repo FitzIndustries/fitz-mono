@@ -175,7 +175,15 @@ function ProfileSettings() {
             <Field>
               <FieldLabel>Timezone</FieldLabel>
               <FieldContent>
-                <Select value={timezone} onValueChange={setTimezone}>
+                <Select
+                  value={timezone}
+                  onValueChange={(value) => {
+                    if (!value) {
+                      return;
+                    }
+                    setTimezone(value);
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select timezone" />
                   </SelectTrigger>
@@ -201,7 +209,15 @@ function ProfileSettings() {
             <Field>
               <FieldLabel>Language</FieldLabel>
               <FieldContent>
-                <Select value={language} onValueChange={setLanguage}>
+                <Select
+                  value={language}
+                  onValueChange={(value) => {
+                    if (!value) {
+                      return;
+                    }
+                    setLanguage(value);
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>

@@ -212,7 +212,15 @@ function OrganizationForm({
             <Field>
               <FieldLabel>Primary Event Type</FieldLabel>
               <FieldContent>
-                <Select value={eventType} onValueChange={setEventType}>
+                <Select
+                  value={eventType}
+                  onValueChange={(value) => {
+                    if (!value) {
+                      return;
+                    }
+                    setEventType(value);
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select event type" />
                   </SelectTrigger>
@@ -279,7 +287,15 @@ function OrganizationForm({
               <Field>
                 <FieldLabel>Timezone</FieldLabel>
                 <FieldContent>
-                  <Select value={timezone} onValueChange={setTimezone}>
+                  <Select
+                    value={timezone}
+                    onValueChange={(value) => {
+                      if (!value) {
+                        return;
+                      }
+                      setTimezone(value);
+                    }}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select timezone" />
                     </SelectTrigger>
@@ -301,7 +317,15 @@ function OrganizationForm({
               <Field>
                 <FieldLabel>Language</FieldLabel>
                 <FieldContent>
-                  <Select value={language} onValueChange={setLanguage}>
+                  <Select
+                    value={language}
+                    onValueChange={(value) => {
+                      if (!value) {
+                        return;
+                      }
+                      setLanguage(value);
+                    }}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select language" />
                     </SelectTrigger>

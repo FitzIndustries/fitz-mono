@@ -119,9 +119,12 @@ function TeamSettings() {
               <FieldContent>
                 <Select
                   value={inviteRole}
-                  onValueChange={(value: TeamMember["role"]) =>
-                    setInviteRole(value)
-                  }
+                  onValueChange={(value: TeamMember["role"] | null) => {
+                    if (!value) {
+                      return;
+                    }
+                    setInviteRole(value);
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select role" />
@@ -179,7 +182,10 @@ function TeamSettings() {
               <div className="flex items-center gap-3">
                 <Select
                   value={member.role}
-                  onValueChange={(value: TeamMember["role"]) => {
+                  onValueChange={(value: TeamMember["role"] | null) => {
+                    if (!value) {
+                      return;
+                    }
                     void updateMember.mutateAsync({
                       memberId: member.id,
                       role: value,

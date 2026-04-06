@@ -57,6 +57,10 @@ function ZeroProvider({ children }: { children: React.ReactNode }) {
     return null;
   }
 
+  if (!session) {
+    return null;
+  }
+
   return (
     <RocicorpZeroProvider
       key={zeroKey}
