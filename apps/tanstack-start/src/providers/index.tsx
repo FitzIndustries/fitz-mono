@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useRouterState } from "@tanstack/react-router";
 
 import type { ThemeMode } from "@fitzindustries/ui/theme";
 import { ThemeProvider, useTheme } from "@fitzindustries/ui/theme";
@@ -17,6 +18,14 @@ import { ZeroProvider } from "./zero-provider";
  * rendering on first paint — causing FOUC / always-light theme.
  */
 function Providers({ children }: { children: React.ReactNode }) {
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
+
+  if (pathname === "/login") {
+    return children;
+  }
+
   return (
     <ThemeProvider>
       <ZeroProvider>
