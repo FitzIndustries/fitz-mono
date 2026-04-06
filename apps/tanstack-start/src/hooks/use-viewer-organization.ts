@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouteContext } from "@tanstack/react-router";
 
-import { authClient } from "~/auth/client";
 import { apiFetch } from "~/lib/api";
 
 interface ViewerOrganizationResponse {
@@ -26,12 +26,11 @@ interface ViewerOrganizationResponse {
 }
 
 export function useViewerOrganization() {
-  const sessionState = authClient.useSession();
+  const { session, userId } = useRouteContext({ from: "/_authenticated" });
   const queryClient = useQueryClient();
-  const queryKey = ["viewer-organization", sessionState.data?.user.id] as const;
+  const queryKey = ["viewer-organization", userId] as const;
 
   const organizationQuery = useQuery({
-    enabled: !!sessionState.data?.user.id,
     queryKey,
     queryFn: () => apiFetch<ViewerOrganizationResponse>("/api/viewer"),
     staleTime: 30_000,
@@ -54,8 +53,8 @@ export function useViewerOrganization() {
   });
 
   return {
-    session: sessionState.data,
-    isSessionPending: sessionState.isPending,
+    session,
+    isSessionPending: false,
     ...organizationQuery,
     setCurrentOrganization,
     currentMembershipId: organizationQuery.data?.currentMembershipId ?? null,

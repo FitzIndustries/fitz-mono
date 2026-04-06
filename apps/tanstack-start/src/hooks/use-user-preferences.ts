@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouteContext } from "@tanstack/react-router";
 
 import type { ThemeMode } from "@fitzindustries/ui/theme";
 
-import { authClient } from "~/auth/client";
 import { apiFetch } from "~/lib/api";
 
 interface UserPreferencesResponse {
@@ -12,13 +12,12 @@ interface UserPreferencesResponse {
 }
 
 export function useUserPreferences() {
-  const sessionState = authClient.useSession();
+  const { session, userId } = useRouteContext({ from: "/_authenticated" });
   const queryClient = useQueryClient();
-  const queryKey = ["user-preferences", sessionState.data?.user.id] as const;
+  const queryKey = ["user-preferences", userId] as const;
 
   const preferencesQuery = useQuery({
     queryKey,
-    enabled: !!sessionState.data?.user.id,
     queryFn: () => apiFetch<UserPreferencesResponse>("/api/preferences"),
     staleTime: 30_000,
   });
@@ -37,8 +36,8 @@ export function useUserPreferences() {
 
   return {
     ...preferencesQuery,
-    session: sessionState.data,
-    isSessionPending: sessionState.isPending,
+    session,
+    isSessionPending: false,
     updatePreferences,
     preferences: preferencesQuery.data?.preferences ?? null,
   };

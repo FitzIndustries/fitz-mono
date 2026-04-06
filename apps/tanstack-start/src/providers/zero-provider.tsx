@@ -21,20 +21,14 @@ const logLevel = env.VITE_PUBLIC_ZERO_LOG_LEVEL;
 
 function ZeroProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const {
-    currentMembershipId,
-    currentOrganizationId,
-    isSessionPending,
-    session,
-  } = useViewerOrganization();
-  const context = session
-    ? {
-        userId: session.user.id,
-        organizationId: currentOrganizationId ?? "__pending__",
-        membershipId: currentMembershipId,
-      }
-    : undefined;
-  const userID = session?.user.id ?? "anon";
+  const { currentMembershipId, currentOrganizationId, session } =
+    useViewerOrganization();
+  const context = {
+    userId: session.user.id,
+    organizationId: currentOrganizationId ?? "__pending__",
+    membershipId: currentMembershipId,
+  };
+  const userID = session.user.id;
   const zeroKey = `${userID}:${currentOrganizationId ?? "pending"}`;
 
   const init = useCallback(
@@ -52,14 +46,6 @@ function ZeroProvider({ children }: { children: React.ReactNode }) {
     },
     [router],
   );
-
-  if (isSessionPending) {
-    return null;
-  }
-
-  if (!session) {
-    return null;
-  }
 
   return (
     <RocicorpZeroProvider

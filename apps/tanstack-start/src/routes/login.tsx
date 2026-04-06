@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { Button } from "@fitzindustries/ui/components/button";
 import { Input } from "@fitzindustries/ui/components/input";
@@ -8,24 +8,35 @@ import { Label } from "@fitzindustries/ui/components/label";
 import { authClient } from "~/auth/client";
 
 export const Route = createFileRoute("/login")({
-  beforeLoad: async () => {
-    const session = await authClient.getSession();
-    if (session.data) {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
-      throw redirect({ to: "/" });
-    }
-  },
   component: LoginPage,
 });
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { data: session, isPending: isSessionPending } =
+    authClient.useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
+
+  useEffect(() => {
+    if (!session) {
+      return;
+    }
+
+    void navigate({ to: "/", replace: true });
+  }, [navigate, session]);
+
+  if (isSessionPending) {
+    return (
+      <div className="bg-background text-foreground flex min-h-screen items-center justify-center p-6">
+        <p className="text-sm">Loading login...</p>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

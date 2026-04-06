@@ -10,20 +10,16 @@ import {
 
 import { ZeroProvider } from "./zero-provider";
 
-/**
- * ThemeProvider must be OUTSIDE ZeroProvider. The Rocicorp ZeroProvider
- * renders nothing until its internal useEffect creates the Zero instance,
- * so anything nested inside it (including ThemeProvider) is blocked from
- * rendering on first paint — causing FOUC / always-light theme.
- */
-function Providers({ children }: { children: React.ReactNode }) {
+function AppProviders({ children }: { children: React.ReactNode }) {
+  return <ThemeProvider>{children}</ThemeProvider>;
+}
+
+function AuthenticatedProviders({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider>
-      <ZeroProvider>
-        <ThemePreferenceSync />
-        {children}
-      </ZeroProvider>
-    </ThemeProvider>
+    <ZeroProvider>
+      <ThemePreferenceSync />
+      {children}
+    </ZeroProvider>
   );
 }
 
@@ -75,4 +71,4 @@ function ThemePreferenceSync() {
   return null;
 }
 
-export { Providers };
+export { AppProviders, AuthenticatedProviders };

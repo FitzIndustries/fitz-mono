@@ -1,9 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
-import { Toaster } from "@fitzindustries/ui/components/sonner";
-
 import { authClient } from "~/auth/client";
-import { Providers } from "~/providers";
+import { AuthenticatedProviders } from "~/providers";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
@@ -19,14 +17,18 @@ export const Route = createFileRoute("/_authenticated")({
       userId: session.data.user.id,
     };
   },
+  pendingComponent: AuthenticatedPending,
   component: AuthenticatedLayout,
 });
 
 function AuthenticatedLayout() {
   return (
-    <Providers>
+    <AuthenticatedProviders>
       <Outlet />
-      <Toaster />
-    </Providers>
+    </AuthenticatedProviders>
   );
+}
+
+function AuthenticatedPending() {
+  return <div className="bg-background min-h-screen" />;
 }
