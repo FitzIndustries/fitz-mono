@@ -19,7 +19,6 @@ const logLevel = env.VITE_PUBLIC_ZERO_LOG_LEVEL;
 //   })),
 // );
 
-/** Must render under `/_authenticated` — uses {@link useViewerOrganization} (route context). */
 function ZeroProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { currentMembershipId, currentOrganizationId, session } =
