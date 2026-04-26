@@ -13,8 +13,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { data: session, isPending: isSessionPending } =
-    authClient.useSession();
+  const { data: session } = authClient.useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -29,14 +28,6 @@ function LoginPage() {
 
     void navigate({ to: "/", replace: true });
   }, [navigate, session]);
-
-  if (isSessionPending) {
-    return (
-      <div className="bg-background text-foreground flex min-h-screen items-center justify-center p-6">
-        <p className="text-sm">Loading login...</p>
-      </div>
-    );
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

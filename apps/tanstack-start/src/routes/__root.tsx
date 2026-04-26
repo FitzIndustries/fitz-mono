@@ -16,7 +16,7 @@ import { Toaster } from "@fitzindustries/ui/components/sonner";
 import appCss from "@fitzindustries/ui/global.css?url";
 
 import { env } from "~/env";
-import { AppProviders } from "~/providers";
+import { Providers } from "~/providers";
 
 const zeroCacheURL = env.VITE_ZERO_CACHE_URL;
 
@@ -49,31 +49,17 @@ export const Route = createRootRouteWithContext<{
       },
     ],
   }),
-  pendingComponent: RootPending,
-  errorComponent: RootError,
   component: RootComponent,
 });
 
 function RootComponent() {
   return (
     <RootDocument>
-      <AppProviders>
+      <Providers>
         <Outlet />
         <Toaster />
-      </AppProviders>
+      </Providers>
     </RootDocument>
-  );
-}
-
-function RootPending() {
-  return <div className="bg-background min-h-screen" />;
-}
-
-function RootError() {
-  return (
-    <div className="bg-background text-foreground flex min-h-screen items-center justify-center p-6">
-      <p className="text-sm">Something went wrong while loading the app.</p>
-    </div>
   );
 }
 
