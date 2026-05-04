@@ -1,7 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import { authClient } from "~/auth/client";
-import { ZeroProvider } from "~/providers/zero-provider";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
@@ -22,11 +21,7 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function AuthenticatedLayout() {
-  return (
-    <ZeroProvider>
-      <Outlet />
-    </ZeroProvider>
-  );
+  return <Outlet />;
 }
 
 function AuthenticatedPending() {
