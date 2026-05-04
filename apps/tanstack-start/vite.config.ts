@@ -6,11 +6,6 @@ import { defineConfig } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  server: {
-    // Allow LAN access so Expo devices can reach the dev server.
-    host: true,
-    port: 3001,
-  },
   plugins: [
     tsConfigPaths({
       projects: ["./tsconfig.json"],
