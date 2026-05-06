@@ -1,20 +1,12 @@
-import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
-import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import SuperJSON from "superjson";
 
-import type { AppRouter } from "@fitzindustries/api";
-import type { Zero } from "@fitzindustries/zero-shared/zero";
-
-import { makeTRPCClient, TRPCProvider } from "~/lib/trpc";
 import { routeTree } from "./routeTree.gen";
 
 export interface RouterContext {
   queryClient: QueryClient;
-  trpc: TRPCOptionsProxy<AppRouter>;
-  zero: Zero;
 }
 
 export function getRouter() {
@@ -24,12 +16,6 @@ export function getRouter() {
       hydrate: { deserializeData: SuperJSON.deserialize },
     },
   });
-  const trpcClient = makeTRPCClient();
-  const trpc = createTRPCOptionsProxy({
-    client: trpcClient,
-    queryClient,
-  });
-
   const router = createRouter({
     routeTree,
     scrollRestoration: true,
@@ -43,16 +29,7 @@ export function getRouter() {
     defaultPreloadGcTime: 0,
     context: {
       queryClient,
-      trpc,
-      zero: undefined as unknown as Zero,
     } satisfies RouterContext,
-    Wrap: (props) => (
-      <TRPCProvider
-        trpcClient={trpcClient}
-        queryClient={queryClient}
-        {...props}
-      />
-    ),
   });
   setupRouterSsrQueryIntegration({
     router,

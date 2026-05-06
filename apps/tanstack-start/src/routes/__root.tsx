@@ -1,6 +1,5 @@
 /// <reference types="vite/client" />
 import type { QueryClient } from "@tanstack/react-query";
-import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import type * as React from "react";
 import {
   createRootRouteWithContext,
@@ -8,23 +7,18 @@ import {
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { z } from "zod/v4";
 
-import type { AppRouter } from "@fitzindustries/api";
-import type { Zero } from "@fitzindustries/zero-shared/zero";
-import { Toaster } from "@fitzindustries/ui/components/sonner";
 import appCss from "@fitzindustries/ui/global.css?url";
 
-import { env } from "~/env";
-import { Providers } from "~/providers";
-
-const zeroCacheURL = env.VITE_ZERO_CACHE_URL;
+const rootSearchSchema = z.object({
+  org: z.string().optional(),
+});
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
-  trpc: TRPCOptionsProxy<AppRouter>;
-  zero: Zero;
 }>()({
+  validateSearch: rootSearchSchema,
   head: () => ({
     meta: [
       {
@@ -43,10 +37,6 @@ export const Route = createRootRouteWithContext<{
         rel: "stylesheet",
         href: appCss,
       },
-      {
-        rel: "preconnect",
-        href: zeroCacheURL,
-      },
     ],
   }),
   component: RootComponent,
@@ -55,10 +45,7 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   return (
     <RootDocument>
-      <Providers>
-        <Outlet />
-        <Toaster />
-      </Providers>
+      <Outlet />
     </RootDocument>
   );
 }
@@ -71,8 +58,6 @@ function RootDocument({ children }: Readonly<{ children: React.ReactNode }>) {
       </head>
       <body className="bg-background text-foreground min-h-screen font-sans antialiased">
         {children}
-
-        <TanStackRouterDevtools position="bottom-right" />
         <Scripts />
       </body>
     </html>

@@ -45,7 +45,7 @@ export const mutators = defineMutators({
         conversationId: z.string().uuid(),
       }),
       async ({ args, ctx, tx }) => {
-        if (!ctx.organizationId || !ctx.membershipId) {
+        if (!ctx?.organizationId || !ctx.membershipId) {
           throw new Error("Organization context is required");
         }
 
@@ -74,7 +74,7 @@ export const mutators = defineMutators({
         content: z.string().min(1).max(10_000),
       }),
       async ({ args, ctx, tx }) => {
-        if (!ctx.organizationId || !ctx.membershipId) {
+        if (!ctx?.organizationId || !ctx.membershipId) {
           throw new Error("Organization context is required");
         }
 
@@ -117,7 +117,7 @@ export const mutators = defineMutators({
         status: z.enum(["open", "pending", "resolved", "closed"]),
       }),
       async ({ args, ctx, tx }) => {
-        if (!ctx.organizationId) {
+        if (!ctx?.organizationId) {
           throw new Error("Organization context is required");
         }
 
@@ -147,6 +147,10 @@ export const mutators = defineMutators({
         themeMode: z.enum(["light", "dark", "auto"]),
       }),
       async ({ args, ctx, tx }) => {
+        if (!ctx) {
+          throw new Error("User context is required");
+        }
+
         const existingUser = await tx.run(
           zql.user.where("id", ctx.userId).one(),
         );

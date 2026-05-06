@@ -769,10 +769,6 @@ app.use(
 app.post("/api/zero/query", async (c) => {
   const ctx = await getZeroContext(c.req.raw);
 
-  if (!ctx) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
   const result = await handleQueryRequest(
     (name, args) => {
       const query = mustGetQuery(queries, name);

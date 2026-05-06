@@ -8,6 +8,14 @@ const inboxArgsSchema = z.object({
   status: z.enum(["open", "pending", "resolved", "closed"]).optional(),
 });
 
+const noConversationRows = () => zql.conversation.where(({ or }) => or());
+const noCustomerRows = () => zql.customer.where(({ or }) => or());
+const noTicketRows = () => zql.ticket.where(({ or }) => or());
+const noMemberRows = () =>
+  zql.organizationMember.where(({ or }) => or());
+const noOrganizationRows = () => zql.organization.where(({ or }) => or());
+const noUserRows = () => zql.user.where(({ or }) => or());
+
 export const queries = defineQueries({
   posts: {
     all: defineQuery(() => zql.Post),
@@ -16,7 +24,11 @@ export const queries = defineQueries({
   support: {
     inbox: defineQuery(inboxArgsSchema, ({ args, ctx }) => {
       let query = zql.conversation
-        .where("organizationId", ctx.organizationId)
+        .where((operators) =>
+          ctx?.organizationId
+            ? operators.cmp("organizationId", ctx.organizationId)
+            : operators.or(),
+        )
         .related("customer")
         .related("assignedAgent")
         .related("messages", (messageQuery) =>
@@ -25,9 +37,9 @@ export const queries = defineQueries({
         .orderBy("lastMessageAt", "desc");
 
       if (args.scope === "my") {
-        query = ctx.membershipId
+        query = ctx?.membershipId
           ? query.where("assignedAgentId", ctx.membershipId)
-          : query.where("id", "__no-membership__");
+          : query.where(({ or }) => or());
       }
 
       if (args.status) {
@@ -38,9 +50,13 @@ export const queries = defineQueries({
     }),
 
     conversation: defineQuery(z.string(), ({ args, ctx }) =>
-      zql.conversation
+      (ctx ? zql.conversation : noConversationRows())
         .where("id", args)
-        .where("organizationId", ctx.organizationId)
+        .where((operators) =>
+          ctx?.organizationId
+            ? operators.cmp("organizationId", ctx.organizationId)
+            : operators.or(),
+        )
         .related("customer")
         .related("assignedAgent")
         .related("tickets", (ticketQuery) =>
@@ -53,8 +69,12 @@ export const queries = defineQueries({
     ),
 
     customers: defineQuery(({ ctx }) =>
-      zql.customer
-        .where("organizationId", ctx.organizationId)
+      (ctx ? zql.customer : noCustomerRows())
+        .where((operators) =>
+          ctx?.organizationId
+            ? operators.cmp("organizationId", ctx.organizationId)
+            : operators.or(),
+        )
         .related("conversations", (conversationQuery) =>
           conversationQuery.orderBy("lastMessageAt", "desc").limit(1),
         )
@@ -62,8 +82,12 @@ export const queries = defineQueries({
     ),
 
     tickets: defineQuery(({ ctx }) =>
-      zql.ticket
-        .where("organizationId", ctx.organizationId)
+      (ctx ? zql.ticket : noTicketRows())
+        .where((operators) =>
+          ctx?.organizationId
+            ? operators.cmp("organizationId", ctx.organizationId)
+            : operators.or(),
+        )
         .related("conversation", (conversationQuery) =>
           conversationQuery.related("customer").one(),
         )
@@ -71,15 +95,23 @@ export const queries = defineQueries({
     ),
 
     members: defineQuery(({ ctx }) =>
-      zql.organizationMember
-        .where("organizationId", ctx.organizationId)
+      (ctx ? zql.organizationMember : noMemberRows())
+        .where((operators) =>
+          ctx?.organizationId
+            ? operators.cmp("organizationId", ctx.organizationId)
+            : operators.or(),
+        )
         .related("organization")
         .orderBy("createdAt", "asc"),
     ),
 
     channels: defineQuery(({ ctx }) =>
-      zql.organization
-        .where("id", ctx.organizationId)
+      (ctx ? zql.organization : noOrganizationRows())
+        .where((operators) =>
+          ctx?.organizationId
+            ? operators.cmp("id", ctx.organizationId)
+            : operators.or(),
+        )
         .related("whatsappChannels")
         .related("emailChannels")
         .one(),
@@ -88,7 +120,11 @@ export const queries = defineQueries({
 
   preferences: {
     currentUser: defineQuery(({ ctx }) =>
-      zql.user.where("id", ctx.userId).one(),
+      (ctx ? zql.user : noUserRows())
+        .where((operators) =>
+          ctx?.userId ? operators.cmp("id", ctx.userId) : operators.or(),
+        )
+        .one(),
     ),
   },
 

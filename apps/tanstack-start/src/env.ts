@@ -2,11 +2,9 @@ import { createEnv } from "@t3-oss/env-core";
 import { vercel } from "@t3-oss/env-core/presets-zod";
 import { z } from "zod/v4";
 
-import { authEnv } from "@fitzindustries/auth/env";
-
 export const env = createEnv({
   clientPrefix: "VITE_",
-  extends: [authEnv(), vercel()],
+  extends: [vercel()],
   shared: {
     NODE_ENV: z
       .enum(["development", "production", "test"])
@@ -16,9 +14,7 @@ export const env = createEnv({
    * Specify your server-side environment variables schema here.
    * This way you can ensure the app isn't built with invalid env vars.
    */
-  server: {
-    POSTGRES_URL: z.url(),
-  },
+  server: {},
 
   /**
    * Specify your client-side environment variables schema here.

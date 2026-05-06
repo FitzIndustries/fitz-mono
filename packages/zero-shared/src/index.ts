@@ -6,7 +6,7 @@ export interface ZeroContext {
 
 declare module "@rocicorp/zero" {
   interface DefaultTypes {
-    context: ZeroContext;
+    context: ZeroContext | undefined;
   }
 }
 

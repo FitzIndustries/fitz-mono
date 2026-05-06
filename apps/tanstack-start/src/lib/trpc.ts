@@ -1,37 +1,37 @@
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
-import {
-  createTRPCClient,
-  httpBatchStreamLink,
-  loggerLink,
-  unstable_localLink,
-} from "@trpc/client";
+import { createTRPCClient, httpBatchStreamLink, loggerLink } from "@trpc/client";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
 import SuperJSON from "superjson";
 
-import * as Api from "@fitzindustries/api";
+import type { AppRouter } from "@fitzindustries/api";
 
-import { auth } from "~/auth/server";
 import { env } from "~/env";
 
 export const makeTRPCClient = createIsomorphicFn()
   .server(() => {
-    return createTRPCClient<Api.AppRouter>({
+    return createTRPCClient<AppRouter>({
       links: [
-        unstable_localLink({
-          router: Api.appRouter,
+        httpBatchStreamLink({
           transformer: SuperJSON,
-          createContext: () => {
+          url: env.VITE_API_URL + "/api/trpc",
+          fetch(url, options) {
+            return fetch(url, {
+              ...options,
+              credentials: "include",
+            });
+          },
+          headers() {
             const headers = new Headers(getRequestHeaders());
             headers.set("x-trpc-source", "tanstack-start-server");
-            return Api.createTRPCContext({ auth, headers });
+            return headers;
           },
         }),
       ],
     });
   })
   .client(() => {
-    return createTRPCClient<Api.AppRouter>({
+    return createTRPCClient<AppRouter>({
       links: [
         loggerLink({
           enabled: (op) =>
@@ -57,4 +57,4 @@ export const makeTRPCClient = createIsomorphicFn()
     });
   });
 
-export const { useTRPC, TRPCProvider } = createTRPCContext<Api.AppRouter>();
+export const { useTRPC, TRPCProvider } = createTRPCContext<AppRouter>();
