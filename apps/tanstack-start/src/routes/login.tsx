@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+
+import { authClient } from "~/auth/client";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
 function LoginPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -13,7 +16,7 @@ function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
 
@@ -39,10 +42,33 @@ function LoginPage() {
 
     setIsSubmitting(true);
 
-    window.setTimeout(() => {
+    try {
+      const response =
+        mode === "signin"
+          ? await authClient.signIn.email({
+              email: email.trim(),
+              password,
+              callbackURL: "/",
+            })
+          : await authClient.signUp.email({
+              name: name.trim(),
+              email: email.trim(),
+              password,
+              callbackURL: "/",
+            });
+
+      if (response.error) {
+        setError(response.error.message ?? "Authentication failed.");
+        return;
+      }
+
+      await navigate({ to: "/", replace: true });
+    } catch (err) {
+      console.error("Authentication request failed", err);
+      setError("Authentication failed. Please try again.");
+    } finally {
       setIsSubmitting(false);
-      setError("Local validation passed. Auth is not connected yet.");
-    }, 400);
+    }
   };
 
   return (
@@ -88,8 +114,7 @@ function LoginPage() {
                 {mode === "signin" ? "Sign in" : "Sign up"}
               </h2>
               <p className="mt-3 text-sm leading-6 text-slate-600">
-                This form is local-only for now. Auth will be added in the next
-                step after this renders reliably.
+                Use your account credentials to access the support workspace.
               </p>
             </div>
 
@@ -152,7 +177,7 @@ function LoginPage() {
                 className="w-full rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
               >
                 {isSubmitting
-                  ? "Checking..."
+                  ? "Please wait..."
                   : mode === "signin"
                     ? "Sign in"
                     : "Create account"}
