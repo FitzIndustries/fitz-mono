@@ -1,7 +1,10 @@
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import SuperJSON from "superjson";
+
+import { makeTRPCClient, TRPCProvider } from "~/lib/trpc";
+import { Providers } from "~/providers";
 
 import { routeTree } from "./routeTree.gen";
 
@@ -16,6 +19,7 @@ export function getRouter() {
       hydrate: { deserializeData: SuperJSON.deserialize },
     },
   });
+  const trpcClient = makeTRPCClient();
   const router = createRouter({
     routeTree,
     scrollRestoration: true,
@@ -30,6 +34,13 @@ export function getRouter() {
     context: {
       queryClient,
     } satisfies RouterContext,
+    Wrap: ({ children }) => (
+      <QueryClientProvider client={queryClient}>
+        <TRPCProvider queryClient={queryClient} trpcClient={trpcClient}>
+          <Providers>{children}</Providers>
+        </TRPCProvider>
+      </QueryClientProvider>
+    ),
   });
   setupRouterSsrQueryIntegration({
     router,

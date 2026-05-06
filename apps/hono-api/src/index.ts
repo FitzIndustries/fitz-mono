@@ -65,10 +65,38 @@ app.use(
 app.get("/health", (c) => c.json({ status: "ok" }));
 
 app.get("/api/viewer", async (c) => {
-  const state = await ensureViewerOrganization(c);
+  let state = await getViewerState(c);
   if (!state) {
     return c.json({ error: "Unauthorized" }, 401);
   }
+
+  const organizationKey = c.req.query("org")?.trim();
+  if (organizationKey) {
+    const preferredOrganization = state.viewer.organizations.find(
+      (membership) =>
+        membership.organizationId === organizationKey ||
+        membership.organization.slug === organizationKey,
+    );
+
+    if (!preferredOrganization) {
+      return c.json({ error: "Organization not found" }, 404);
+    }
+
+    state = await getViewerStateFromRequest(
+      c.req.raw,
+      preferredOrganization.organizationId,
+    );
+
+    if (!state) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+  }
+
+  if (!state.viewer.currentOrganizationId) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  persistCurrentOrganization(c, state.viewer.currentOrganizationId);
 
   return c.json(state.viewer);
 });
