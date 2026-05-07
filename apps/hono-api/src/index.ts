@@ -840,11 +840,7 @@ serve({ fetch: app.fetch, port }, (info) => {
 async function getZeroContext(request: Request) {
   const state = await getViewerStateFromRequest(request);
 
-  if (!state) {
-    return undefined;
-  }
-
-  if (!state.viewer.currentOrganizationId) {
+  if (!state?.viewer.currentOrganizationId) {
     return undefined;
   }
 

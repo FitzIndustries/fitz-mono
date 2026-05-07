@@ -8,13 +8,14 @@ const inboxArgsSchema = z.object({
   status: z.enum(["open", "pending", "resolved", "closed"]).optional(),
 });
 
-const noConversationRows = () => zql.conversation.where(({ or }) => or());
-const noCustomerRows = () => zql.customer.where(({ or }) => or());
-const noTicketRows = () => zql.ticket.where(({ or }) => or());
-const noMemberRows = () =>
+// Zero docs recommend denying reads by returning an empty `or()` query.
+const emptyConversationQuery = () => zql.conversation.where(({ or }) => or());
+const emptyCustomerQuery = () => zql.customer.where(({ or }) => or());
+const emptyTicketQuery = () => zql.ticket.where(({ or }) => or());
+const emptyMemberQuery = () =>
   zql.organizationMember.where(({ or }) => or());
-const noOrganizationRows = () => zql.organization.where(({ or }) => or());
-const noUserRows = () => zql.user.where(({ or }) => or());
+const emptyOrganizationQuery = () => zql.organization.where(({ or }) => or());
+const emptyUserQuery = () => zql.user.where(({ or }) => or());
 
 export const queries = defineQueries({
   posts: {
@@ -50,7 +51,7 @@ export const queries = defineQueries({
     }),
 
     conversation: defineQuery(z.string(), ({ args, ctx }) =>
-      (ctx ? zql.conversation : noConversationRows())
+      (ctx ? zql.conversation : emptyConversationQuery())
         .where("id", args)
         .where((operators) =>
           ctx?.organizationId
@@ -69,7 +70,7 @@ export const queries = defineQueries({
     ),
 
     customers: defineQuery(({ ctx }) =>
-      (ctx ? zql.customer : noCustomerRows())
+      (ctx ? zql.customer : emptyCustomerQuery())
         .where((operators) =>
           ctx?.organizationId
             ? operators.cmp("organizationId", ctx.organizationId)
@@ -82,7 +83,7 @@ export const queries = defineQueries({
     ),
 
     tickets: defineQuery(({ ctx }) =>
-      (ctx ? zql.ticket : noTicketRows())
+      (ctx ? zql.ticket : emptyTicketQuery())
         .where((operators) =>
           ctx?.organizationId
             ? operators.cmp("organizationId", ctx.organizationId)
@@ -95,7 +96,7 @@ export const queries = defineQueries({
     ),
 
     members: defineQuery(({ ctx }) =>
-      (ctx ? zql.organizationMember : noMemberRows())
+      (ctx ? zql.organizationMember : emptyMemberQuery())
         .where((operators) =>
           ctx?.organizationId
             ? operators.cmp("organizationId", ctx.organizationId)
@@ -106,7 +107,7 @@ export const queries = defineQueries({
     ),
 
     channels: defineQuery(({ ctx }) =>
-      (ctx ? zql.organization : noOrganizationRows())
+      (ctx ? zql.organization : emptyOrganizationQuery())
         .where((operators) =>
           ctx?.organizationId
             ? operators.cmp("id", ctx.organizationId)
@@ -120,7 +121,7 @@ export const queries = defineQueries({
 
   preferences: {
     currentUser: defineQuery(({ ctx }) =>
-      (ctx ? zql.user : noUserRows())
+      (ctx ? zql.user : emptyUserQuery())
         .where((operators) =>
           ctx?.userId ? operators.cmp("id", ctx.userId) : operators.or(),
         )

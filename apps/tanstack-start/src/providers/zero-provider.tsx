@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { createContext, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Zero } from "@rocicorp/zero";
 
-import type { ZeroContext } from "@fitzindustries/zero-shared";
 import { schema } from "@fitzindustries/zero-shared";
 import { ZeroProvider as RocicorpZeroProvider } from "@fitzindustries/zero-shared/react";
 
@@ -10,7 +8,11 @@ import { authClient } from "~/auth/client";
 import { env } from "~/env";
 import { getViewer } from "~/lib/viewer";
 
-type AppZero = Zero<typeof schema, undefined, ZeroContext>;
+const ZeroReadyContext = createContext(false);
+
+export function useIsZeroReady() {
+  return useContext(ZeroReadyContext);
+}
 
 function ZeroProvider({ children }: { children: React.ReactNode }) {
   const sessionQuery = authClient.useSession();
@@ -51,30 +53,26 @@ function ActiveZeroProvider({
   organizationId: string;
   membershipId: string | null;
 }) {
-  const [zero] = useState<AppZero>(() => {
-    return new Zero({
-      cacheURL: env.VITE_ZERO_CACHE_URL,
-      userID: userId,
-      storageKey: organizationId,
-      schema,
-      queryURL: `${env.VITE_API_URL}/api/zero/query`,
-      mutateURL: `${env.VITE_API_URL}/api/zero/mutate`,
-      logLevel: env.VITE_PUBLIC_ZERO_LOG_LEVEL,
-      context: {
-        userId,
-        organizationId,
-        membershipId,
-      },
-    });
-  });
-
-  useEffect(() => {
-    return () => {
-      void zero.close();
-    };
-  }, [zero]);
-
-  return <RocicorpZeroProvider zero={zero}>{children}</RocicorpZeroProvider>;
+  return (
+    <ZeroReadyContext value={true}>
+      <RocicorpZeroProvider
+        cacheURL={env.VITE_ZERO_CACHE_URL}
+        userID={userId}
+        storageKey={organizationId}
+        schema={schema}
+        queryURL={`${env.VITE_API_URL}/api/zero/query`}
+        mutateURL={`${env.VITE_API_URL}/api/zero/mutate`}
+        logLevel={env.VITE_PUBLIC_ZERO_LOG_LEVEL}
+        context={{
+          userId,
+          organizationId,
+          membershipId,
+        }}
+      >
+        {children}
+      </RocicorpZeroProvider>
+    </ZeroReadyContext>
+  );
 }
 
 export { ZeroProvider };
