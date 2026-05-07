@@ -26,7 +26,11 @@ function ZeroProvider({ children }: { children: React.ReactNode }) {
   });
   const viewer = viewerQuery.data;
 
-  if (typeof window === "undefined" || !userId || !viewer?.currentOrganizationId) {
+  if (
+    typeof window === "undefined" ||
+    !userId ||
+    !viewer?.currentOrganizationId
+  ) {
     return children;
   }
 

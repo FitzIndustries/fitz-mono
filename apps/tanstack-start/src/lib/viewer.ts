@@ -36,9 +36,12 @@ export const getViewer = createIsomorphicFn()
 
     const queryString = searchParams.toString();
 
-    const response = await fetch(`${env.VITE_API_URL}/api/viewer${queryString ? `?${queryString}` : ""}`, {
-      headers: cookie ? { cookie } : undefined,
-    });
+    const response = await fetch(
+      `${env.VITE_API_URL}/api/viewer${queryString ? `?${queryString}` : ""}`,
+      {
+        headers: cookie ? { cookie } : undefined,
+      },
+    );
 
     if (response.status === 401) {
       return null;
@@ -59,5 +62,7 @@ export const getViewer = createIsomorphicFn()
 
     const queryString = searchParams.toString();
 
-    return apiFetch<Viewer>(`/api/viewer${queryString ? `?${queryString}` : ""}`);
+    return apiFetch<Viewer>(
+      `/api/viewer${queryString ? `?${queryString}` : ""}`,
+    );
   });

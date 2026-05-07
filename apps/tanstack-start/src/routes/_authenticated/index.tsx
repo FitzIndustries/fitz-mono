@@ -50,7 +50,7 @@ function DashboardSummary({
           Dashboard
         </p>
         <h1 className="mt-4 text-3xl font-bold">Organization overview</h1>
-        <p className="mt-4 break-all text-sm text-slate-600">User: {userId}</p>
+        <p className="mt-4 text-sm break-all text-slate-600">User: {userId}</p>
         <ZeroOrganizationSummary fallbackName={fallbackOrganizationName} />
       </div>
     </section>
@@ -69,7 +69,11 @@ function ZeroOrganizationSummary({ fallbackName }: { fallbackName: string }) {
   return <ActiveZeroOrganizationSummary fallbackName={fallbackName} />;
 }
 
-function ActiveZeroOrganizationSummary({ fallbackName }: { fallbackName: string }) {
+function ActiveZeroOrganizationSummary({
+  fallbackName,
+}: {
+  fallbackName: string;
+}) {
   const [organization] = useZeroQuery(queries.support.channels());
 
   if (!organization) {

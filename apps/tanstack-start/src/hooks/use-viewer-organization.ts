@@ -98,7 +98,9 @@ export function useViewerOrganization(options?: UseViewerOrganizationOptions) {
       return;
     }
 
-    void setCurrentOrganization.mutateAsync(requestedOrganization.organizationId);
+    void setCurrentOrganization.mutateAsync(
+      requestedOrganization.organizationId,
+    );
   }, [
     options?.syncUrlSelection,
     organizationQuery.data,

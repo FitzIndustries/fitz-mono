@@ -58,7 +58,7 @@ function AuthenticatedLayout() {
           <p className="truncate text-sm font-medium text-slate-900">
             {userLabel}
           </p>
-          <p className="mt-1 break-all text-xs text-slate-500">
+          <p className="mt-1 text-xs break-all text-slate-500">
             {session.user.id}
           </p>
           <button
@@ -104,7 +104,13 @@ function AuthenticatedLayout() {
   );
 }
 
-function ShellLink({ children, to }: { children: React.ReactNode; to: string }) {
+function ShellLink({
+  children,
+  to,
+}: {
+  children: React.ReactNode;
+  to: string;
+}) {
   return (
     <Link
       to={to}

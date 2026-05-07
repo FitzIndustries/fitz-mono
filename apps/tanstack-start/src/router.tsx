@@ -5,7 +5,6 @@ import SuperJSON from "superjson";
 
 import { makeTRPCClient, TRPCProvider } from "~/lib/trpc";
 import { Providers } from "~/providers";
-
 import { routeTree } from "./routeTree.gen";
 
 export interface RouterContext {

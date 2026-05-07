@@ -12,8 +12,7 @@ const inboxArgsSchema = z.object({
 const emptyConversationQuery = () => zql.conversation.where(({ or }) => or());
 const emptyCustomerQuery = () => zql.customer.where(({ or }) => or());
 const emptyTicketQuery = () => zql.ticket.where(({ or }) => or());
-const emptyMemberQuery = () =>
-  zql.organizationMember.where(({ or }) => or());
+const emptyMemberQuery = () => zql.organizationMember.where(({ or }) => or());
 const emptyOrganizationQuery = () => zql.organization.where(({ or }) => or());
 const emptyUserQuery = () => zql.user.where(({ or }) => or());
 

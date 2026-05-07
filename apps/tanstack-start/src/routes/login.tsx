@@ -129,7 +129,7 @@ function LoginPage() {
                     value={name}
                     onChange={(event) => setName(event.target.value)}
                     autoComplete="name"
-                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
+                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm transition outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
                     placeholder="Jane Smith"
                   />
                 </label>
@@ -144,7 +144,7 @@ function LoginPage() {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   autoComplete="email"
-                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm transition outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
                   placeholder="you@example.com"
                 />
               </label>
@@ -160,7 +160,7 @@ function LoginPage() {
                   autoComplete={
                     mode === "signin" ? "current-password" : "new-password"
                   }
-                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm transition outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
                   placeholder="••••••••"
                 />
               </label>
