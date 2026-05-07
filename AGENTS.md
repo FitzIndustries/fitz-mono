@@ -95,7 +95,7 @@
 
 - Read the nearest `package.json`, `eslint.config.*`, and relevant source files before editing.
 - Prefer targeted workspace commands over full-repo commands.
-- Run `lint` and `typecheck` for touched workspaces before finishing.
+- Run `lint`, `format`, and `typecheck` for touched workspaces before finishing.
 - Run `build` for touched buildable packages when the change affects runtime or packaging.
 - Avoid modifying generated files unless the source change requires regeneration.
 
@@ -175,6 +175,7 @@
 ## Verification Checklist
 
 - `pnpm --filter <touched-workspace> lint`
+- `pnpm --filter <touched-workspace> format`
 - `pnpm --filter <touched-workspace> typecheck`
 - `pnpm --filter <touched-workspace> build` when relevant
 - Run generation commands for DB/auth/schema changes when required

@@ -2,7 +2,6 @@
  * Re-exports from @rocicorp/zero/react.
  */
 export {
-  useConnectionState,
   useQuery,
   useZero,
   ZeroProvider,

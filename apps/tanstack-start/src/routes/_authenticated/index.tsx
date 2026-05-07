@@ -2,10 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod/v4";
 
 import { queries } from "@fitzindustries/zero-shared";
-import {
-  useConnectionState,
-  useQuery as useZeroQuery,
-} from "@fitzindustries/zero-shared/react";
+import { useQuery as useZeroQuery } from "@fitzindustries/zero-shared/react";
 
 import { getViewer } from "~/lib/viewer";
 import { useIsZeroReady } from "~/providers/zero-provider";
@@ -30,58 +27,79 @@ function DashboardPage() {
   const { viewer } = Route.useLoaderData();
 
   return (
-    <BaselinePage
-      title="Dashboard route is rendering"
+    <DashboardSummary
       userId={userId}
-      organizationName={viewer?.currentOrganization?.name ?? "No organization"}
+      fallbackOrganizationName={
+        viewer?.currentOrganization?.name ?? "Organization"
+      }
     />
   );
 }
 
-function BaselinePage({
-  title,
+function DashboardSummary({
   userId,
-  organizationName,
+  fallbackOrganizationName,
 }: {
-  title: string;
   userId: string;
-  organizationName: string;
+  fallbackOrganizationName: string;
 }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-white px-6 text-slate-950">
-      <div className="max-w-md rounded-2xl border border-slate-200 p-8 shadow-sm">
+    <section className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="max-w-3xl">
         <p className="text-sm font-semibold tracking-[0.2em] text-slate-500 uppercase">
-          Baseline Render Check
+          Dashboard
         </p>
-        <h1 className="mt-4 text-3xl font-bold">{title}</h1>
+        <h1 className="mt-4 text-3xl font-bold">Organization overview</h1>
         <p className="mt-4 break-all text-sm text-slate-600">User: {userId}</p>
-        <p className="mt-2 text-sm text-slate-600">
-          Organization: {organizationName}
-        </p>
-        <ZeroReadCheck />
+        <ZeroOrganizationSummary fallbackName={fallbackOrganizationName} />
       </div>
-    </main>
+    </section>
   );
 }
 
-function ZeroReadCheck() {
+function ZeroOrganizationSummary({ fallbackName }: { fallbackName: string }) {
   const isZeroReady = useIsZeroReady();
 
   if (!isZeroReady) {
-    return <p className="mt-2 text-sm text-slate-500">Zero: initializing</p>;
+    return (
+      <p className="mt-6 text-sm text-slate-500">Loading {fallbackName}...</p>
+    );
   }
 
-  return <ActiveZeroReadCheck />;
+  return <ActiveZeroOrganizationSummary fallbackName={fallbackName} />;
 }
 
-function ActiveZeroReadCheck() {
-  const connectionState = useConnectionState();
+function ActiveZeroOrganizationSummary({ fallbackName }: { fallbackName: string }) {
   const [organization] = useZeroQuery(queries.support.channels());
 
+  if (!organization) {
+    return (
+      <p className="mt-6 text-sm text-slate-500">Loading {fallbackName}...</p>
+    );
+  }
+
   return (
-    <div className="mt-2 space-y-1 text-sm text-slate-600">
-      <p>Zero connection: {connectionState.name}</p>
-      <p>Zero organization: {organization?.name ?? "No row returned"}</p>
+    <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      <SummaryStat label="Organization" value={organization.name} />
+      <SummaryStat
+        label="WhatsApp channels"
+        value={String(organization.whatsappChannels.length)}
+      />
+      <SummaryStat
+        label="Email channels"
+        value={String(organization.emailChannels.length)}
+      />
+    </div>
+  );
+}
+
+function SummaryStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <p className="text-xs font-semibold tracking-[0.16em] text-slate-500 uppercase">
+        {label}
+      </p>
+      <p className="mt-2 text-xl font-bold text-slate-950">{value}</p>
     </div>
   );
 }
