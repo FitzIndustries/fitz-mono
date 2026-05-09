@@ -34,26 +34,28 @@ export const mutators = defineMutators({
           throw new Error("Organization context is required");
         }
 
-        const membership = await tx.run(
-          zql.organizationMember
-            .where("id", ctx.membershipId)
-            .where("organizationId", ctx.organizationId)
-            .where("isActive", true)
-            .one(),
-        );
-
-        if (membership?.role !== "owner" && membership?.role !== "admin") {
-          throw new Error(
-            "You do not have permission to update this organization",
+        if (tx.location === "server") {
+          const membership = await tx.run(
+            zql.organizationMember
+              .where("id", ctx.membershipId)
+              .where("organizationId", ctx.organizationId)
+              .where("isActive", true)
+              .one(),
           );
-        }
 
-        const existingWithSlug = await tx.run(
-          zql.organization.where("slug", args.slug).one(),
-        );
+          if (membership?.role !== "owner" && membership?.role !== "admin") {
+            throw new Error(
+              "You do not have permission to update this organization",
+            );
+          }
 
-        if (existingWithSlug && existingWithSlug.id !== ctx.organizationId) {
-          throw new Error("Subdomain is already in use");
+          const existingWithSlug = await tx.run(
+            zql.organization.where("slug", args.slug).one(),
+          );
+
+          if (existingWithSlug && existingWithSlug.id !== ctx.organizationId) {
+            throw new Error("Subdomain is already in use");
+          }
         }
 
         await tx.mutate.organization.update({
@@ -77,19 +79,21 @@ export const mutators = defineMutators({
           throw new Error("Organization context is required");
         }
 
-        const currentMembership = await tx.run(
-          zql.organizationMember
-            .where("id", ctx.membershipId)
-            .where("organizationId", ctx.organizationId)
-            .where("isActive", true)
-            .one(),
-        );
+        if (tx.location === "server") {
+          const currentMembership = await tx.run(
+            zql.organizationMember
+              .where("id", ctx.membershipId)
+              .where("organizationId", ctx.organizationId)
+              .where("isActive", true)
+              .one(),
+          );
 
-        if (
-          currentMembership?.role !== "owner" &&
-          currentMembership?.role !== "admin"
-        ) {
-          throw new Error("You do not have permission to update team roles");
+          if (
+            currentMembership?.role !== "owner" &&
+            currentMembership?.role !== "admin"
+          ) {
+            throw new Error("You do not have permission to update team roles");
+          }
         }
 
         const targetMembership = await tx.run(
@@ -127,16 +131,18 @@ export const mutators = defineMutators({
           throw new Error("Organization context is required");
         }
 
-        const membership = await tx.run(
-          zql.organizationMember
-            .where("id", ctx.membershipId)
-            .where("organizationId", ctx.organizationId)
-            .where("isActive", true)
-            .one(),
-        );
+        if (tx.location === "server") {
+          const membership = await tx.run(
+            zql.organizationMember
+              .where("id", ctx.membershipId)
+              .where("organizationId", ctx.organizationId)
+              .where("isActive", true)
+              .one(),
+          );
 
-        if (membership?.role !== "owner" && membership?.role !== "admin") {
-          throw new Error("You do not have permission to update channels");
+          if (membership?.role !== "owner" && membership?.role !== "admin") {
+            throw new Error("You do not have permission to update channels");
+          }
         }
 
         const channel = await tx.run(
@@ -168,16 +174,18 @@ export const mutators = defineMutators({
           throw new Error("Organization context is required");
         }
 
-        const membership = await tx.run(
-          zql.organizationMember
-            .where("id", ctx.membershipId)
-            .where("organizationId", ctx.organizationId)
-            .where("isActive", true)
-            .one(),
-        );
+        if (tx.location === "server") {
+          const membership = await tx.run(
+            zql.organizationMember
+              .where("id", ctx.membershipId)
+              .where("organizationId", ctx.organizationId)
+              .where("isActive", true)
+              .one(),
+          );
 
-        if (membership?.role !== "owner" && membership?.role !== "admin") {
-          throw new Error("You do not have permission to update channels");
+          if (membership?.role !== "owner" && membership?.role !== "admin") {
+            throw new Error("You do not have permission to update channels");
+          }
         }
 
         const channel = await tx.run(
@@ -317,6 +325,39 @@ export const mutators = defineMutators({
         await tx.mutate.conversation.update({
           id: args.conversationId,
           status: args.status,
+          updatedAt: Date.now(),
+        });
+      },
+    ),
+
+    updateTicketStatus: defineMutator(
+      z.object({
+        ticketId: z.string().uuid(),
+        status: z.enum(["open", "in_progress", "resolved", "closed"]),
+      }),
+      async ({ args, ctx, tx }) => {
+        if (!ctx?.organizationId) {
+          throw new Error("Organization context is required");
+        }
+
+        const existingTicket = await tx.run(
+          zql.ticket
+            .where("id", args.ticketId)
+            .where("organizationId", ctx.organizationId)
+            .one(),
+        );
+
+        if (!existingTicket) {
+          throw new Error("Ticket not found");
+        }
+
+        await tx.mutate.ticket.update({
+          id: args.ticketId,
+          status: args.status,
+          resolvedAt:
+            args.status === "resolved" || args.status === "closed"
+              ? Date.now()
+              : null,
           updatedAt: Date.now(),
         });
       },
