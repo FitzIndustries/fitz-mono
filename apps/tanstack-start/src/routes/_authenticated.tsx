@@ -1,13 +1,16 @@
+import { useQuery } from "@tanstack/react-query";
 import {
   createFileRoute,
   Link,
   Outlet,
   redirect,
+  useLocation,
   useNavigate,
 } from "@tanstack/react-router";
 
 import { authClient } from "~/auth/client";
 import { getAuthSession } from "~/lib/auth-session";
+import { getViewer } from "~/lib/viewer";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
@@ -29,8 +32,23 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthenticatedLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { session } = Route.useRouteContext();
   const userLabel = session.user.name || session.user.email;
+  const viewerQuery = useQuery({
+    queryKey: ["shell-viewer", session.user.id],
+    queryFn: () => getViewer(),
+    staleTime: 30_000,
+  });
+  const viewer = viewerQuery.data;
+
+  const handleOrganizationChange = async (slug: string) => {
+    await navigate({
+      to: location.pathname,
+      search: (prev) => ({ ...prev, org: slug }),
+      replace: true,
+    });
+  };
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -46,6 +64,14 @@ function AuthenticatedLayout() {
           </p>
           <h1 className="mt-2 text-xl font-bold">Support Platform</h1>
         </div>
+
+        <OrganizationSwitcher
+          className="mt-6"
+          currentOrganizationId={viewer?.currentOrganizationId ?? null}
+          isLoading={viewerQuery.isLoading}
+          organizations={viewer?.organizations ?? []}
+          onChange={(slug) => void handleOrganizationChange(slug)}
+        />
 
         <nav className="mt-8 space-y-1">
           <ShellLink to="/">Dashboard</ShellLink>
@@ -87,6 +113,13 @@ function AuthenticatedLayout() {
             Sign out
           </button>
         </div>
+        <OrganizationSwitcher
+          className="mt-4"
+          currentOrganizationId={viewer?.currentOrganizationId ?? null}
+          isLoading={viewerQuery.isLoading}
+          organizations={viewer?.organizations ?? []}
+          onChange={(slug) => void handleOrganizationChange(slug)}
+        />
         <nav className="mt-4 flex gap-2 overflow-x-auto">
           <ShellLink to="/">Dashboard</ShellLink>
           <ShellLink to="/customers">Customers</ShellLink>
@@ -101,6 +134,65 @@ function AuthenticatedLayout() {
         </div>
       </main>
     </div>
+  );
+}
+
+function OrganizationSwitcher({
+  className,
+  currentOrganizationId,
+  isLoading,
+  onChange,
+  organizations,
+}: {
+  className?: string;
+  currentOrganizationId: string | null;
+  isLoading: boolean;
+  onChange: (slug: string) => void;
+  organizations: {
+    organizationId: string;
+    organization: {
+      name: string;
+      slug: string;
+    };
+  }[];
+}) {
+  if (isLoading) {
+    return (
+      <p className={`${className ?? ""} text-sm text-slate-500`}>
+        Loading organizations...
+      </p>
+    );
+  }
+
+  if (organizations.length === 0) {
+    return null;
+  }
+
+  return (
+    <label className={`${className ?? ""} block space-y-2`}>
+      <span className="text-xs font-semibold tracking-[0.16em] text-slate-500 uppercase">
+        Organization
+      </span>
+      <select
+        value={currentOrganizationId ?? ""}
+        onChange={(event) => {
+          const selected = organizations.find(
+            (item) => item.organizationId === event.target.value,
+          );
+
+          if (selected) {
+            onChange(selected.organization.slug);
+          }
+        }}
+        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 transition outline-none focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+      >
+        {organizations.map((item) => (
+          <option key={item.organizationId} value={item.organizationId}>
+            {item.organization.name}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
 

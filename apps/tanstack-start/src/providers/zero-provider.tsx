@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { schema } from "@fitzindustries/zero-shared";
+import { mutators, schema } from "@fitzindustries/zero-shared";
 import { ZeroProvider as RocicorpZeroProvider } from "@fitzindustries/zero-shared/react";
 
 import { authClient } from "~/auth/client";
@@ -64,6 +64,7 @@ function ActiveZeroProvider({
         userID={userId}
         storageKey={organizationId}
         schema={schema}
+        mutators={mutators}
         queryURL={`${env.VITE_API_URL}/api/zero/query`}
         mutateURL={`${env.VITE_API_URL}/api/zero/mutate`}
         logLevel={env.VITE_PUBLIC_ZERO_LOG_LEVEL}

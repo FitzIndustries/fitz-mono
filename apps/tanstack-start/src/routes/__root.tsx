@@ -9,7 +9,9 @@ import {
 } from "@tanstack/react-router";
 import { z } from "zod/v4";
 
+import { Toaster } from "@fitzindustries/ui/components/sonner";
 import appCss from "@fitzindustries/ui/global.css?url";
+import { ThemeProvider } from "@fitzindustries/ui/theme";
 
 const rootSearchSchema = z.object({
   org: z.string().optional(),
@@ -57,7 +59,10 @@ function RootDocument({ children }: Readonly<{ children: React.ReactNode }>) {
         <HeadContent />
       </head>
       <body className="bg-background text-foreground min-h-screen font-sans antialiased">
-        {children}
+        <ThemeProvider>
+          {children}
+          <Toaster />
+        </ThemeProvider>
         <Scripts />
       </body>
     </html>

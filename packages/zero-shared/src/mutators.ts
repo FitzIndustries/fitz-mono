@@ -18,6 +18,54 @@ function generateId() {
 }
 
 export const mutators = defineMutators({
+  organization: {
+    updateProfile: defineMutator(
+      z.object({
+        name: z.string().trim().min(1).max(255),
+        slug: z
+          .string()
+          .trim()
+          .min(1)
+          .max(100)
+          .regex(/^[a-z0-9-]+$/),
+      }),
+      async ({ args, ctx, tx }) => {
+        if (!ctx?.organizationId || !ctx.membershipId) {
+          throw new Error("Organization context is required");
+        }
+
+        const membership = await tx.run(
+          zql.organizationMember
+            .where("id", ctx.membershipId)
+            .where("organizationId", ctx.organizationId)
+            .where("isActive", true)
+            .one(),
+        );
+
+        if (membership?.role !== "owner" && membership?.role !== "admin") {
+          throw new Error(
+            "You do not have permission to update this organization",
+          );
+        }
+
+        const existingWithSlug = await tx.run(
+          zql.organization.where("slug", args.slug).one(),
+        );
+
+        if (existingWithSlug && existingWithSlug.id !== ctx.organizationId) {
+          throw new Error("Subdomain is already in use");
+        }
+
+        await tx.mutate.organization.update({
+          id: ctx.organizationId,
+          name: args.name,
+          slug: args.slug,
+          updatedAt: Date.now(),
+        });
+      },
+    ),
+  },
+
   posts: {
     create: defineMutator(
       z.object({

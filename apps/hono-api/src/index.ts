@@ -55,7 +55,7 @@ app.use(
       "x-trpc-source",
       "Cookie",
     ],
-    allowMethods: ["POST", "GET", "OPTIONS"],
+    allowMethods: ["POST", "GET", "PUT", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
     maxAge: 600,
     credentials: true,
