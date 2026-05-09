@@ -66,6 +66,140 @@ export const mutators = defineMutators({
     ),
   },
 
+  team: {
+    updateMemberRole: defineMutator(
+      z.object({
+        memberId: z.string().uuid(),
+        role: z.enum(["owner", "admin", "agent", "viewer"]),
+      }),
+      async ({ args, ctx, tx }) => {
+        if (!ctx?.organizationId || !ctx.membershipId) {
+          throw new Error("Organization context is required");
+        }
+
+        const currentMembership = await tx.run(
+          zql.organizationMember
+            .where("id", ctx.membershipId)
+            .where("organizationId", ctx.organizationId)
+            .where("isActive", true)
+            .one(),
+        );
+
+        if (
+          currentMembership?.role !== "owner" &&
+          currentMembership?.role !== "admin"
+        ) {
+          throw new Error("You do not have permission to update team roles");
+        }
+
+        const targetMembership = await tx.run(
+          zql.organizationMember
+            .where("id", args.memberId)
+            .where("organizationId", ctx.organizationId)
+            .one(),
+        );
+
+        if (!targetMembership) {
+          throw new Error("Team member not found");
+        }
+
+        if (targetMembership.userId === ctx.userId) {
+          throw new Error("You cannot change your own role");
+        }
+
+        await tx.mutate.organizationMember.update({
+          id: args.memberId,
+          role: args.role,
+          updatedAt: Date.now(),
+        });
+      },
+    ),
+  },
+
+  channels: {
+    setEmailActive: defineMutator(
+      z.object({
+        channelId: z.string().uuid(),
+        isActive: z.boolean(),
+      }),
+      async ({ args, ctx, tx }) => {
+        if (!ctx?.organizationId || !ctx.membershipId) {
+          throw new Error("Organization context is required");
+        }
+
+        const membership = await tx.run(
+          zql.organizationMember
+            .where("id", ctx.membershipId)
+            .where("organizationId", ctx.organizationId)
+            .where("isActive", true)
+            .one(),
+        );
+
+        if (membership?.role !== "owner" && membership?.role !== "admin") {
+          throw new Error("You do not have permission to update channels");
+        }
+
+        const channel = await tx.run(
+          zql.emailChannel
+            .where("id", args.channelId)
+            .where("organizationId", ctx.organizationId)
+            .one(),
+        );
+
+        if (!channel) {
+          throw new Error("Email channel not found");
+        }
+
+        await tx.mutate.emailChannel.update({
+          id: args.channelId,
+          isActive: args.isActive,
+          updatedAt: Date.now(),
+        });
+      },
+    ),
+
+    setWhatsappActive: defineMutator(
+      z.object({
+        channelId: z.string().uuid(),
+        isActive: z.boolean(),
+      }),
+      async ({ args, ctx, tx }) => {
+        if (!ctx?.organizationId || !ctx.membershipId) {
+          throw new Error("Organization context is required");
+        }
+
+        const membership = await tx.run(
+          zql.organizationMember
+            .where("id", ctx.membershipId)
+            .where("organizationId", ctx.organizationId)
+            .where("isActive", true)
+            .one(),
+        );
+
+        if (membership?.role !== "owner" && membership?.role !== "admin") {
+          throw new Error("You do not have permission to update channels");
+        }
+
+        const channel = await tx.run(
+          zql.whatsappChannel
+            .where("id", args.channelId)
+            .where("organizationId", ctx.organizationId)
+            .one(),
+        );
+
+        if (!channel) {
+          throw new Error("WhatsApp channel not found");
+        }
+
+        await tx.mutate.whatsappChannel.update({
+          id: args.channelId,
+          isActive: args.isActive,
+          updatedAt: Date.now(),
+        });
+      },
+    ),
+  },
+
   posts: {
     create: defineMutator(
       z.object({
