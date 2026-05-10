@@ -89,7 +89,7 @@ export const queries = defineQueries({
             : operators.or(),
         )
         .related("conversation", (conversationQuery) =>
-          conversationQuery.related("customer").one(),
+          conversationQuery.related("customer").related("assignedAgent").one(),
         )
         .orderBy("createdAt", "desc"),
     ),

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { mutators, queries } from "@fitzindustries/zero-shared";
 import {
@@ -41,6 +41,9 @@ function TicketList() {
   const [tickets] = useZeroQuery(queries.support.tickets());
   const zero = useZero();
   const [savingTicketId, setSavingTicketId] = useState<string | null>(null);
+  const [assigningTicketId, setAssigningTicketId] = useState<string | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
 
   if (tickets.length === 0) {
@@ -63,23 +66,33 @@ function TicketList() {
       ) : null}
 
       <div className="overflow-hidden rounded-xl border border-slate-200">
-        <div className="grid grid-cols-[1.1fr_0.8fr_0.8fr_1.2fr] bg-slate-50 px-4 py-3 text-xs font-semibold tracking-[0.14em] text-slate-500 uppercase">
+        <div className="grid grid-cols-[1.1fr_0.7fr_0.8fr_1fr_0.9fr] bg-slate-50 px-4 py-3 text-xs font-semibold tracking-[0.14em] text-slate-500 uppercase">
           <span>Type</span>
           <span>Priority</span>
           <span>Status</span>
           <span>Customer</span>
+          <span>Assigned</span>
         </div>
         <div className="divide-y divide-slate-200">
           {tickets.map((ticket) => (
             <div
               key={ticket.id}
-              className="grid grid-cols-[1.1fr_0.8fr_0.8fr_1.2fr] items-center px-4 py-4 text-sm"
+              className="grid grid-cols-[1.1fr_0.7fr_0.8fr_1fr_0.9fr] items-center px-4 py-4 text-sm"
             >
               <div>
                 <p className="font-semibold text-slate-950">
                   {formatLabel(ticket.ticketType)}
                 </p>
                 <p className="mt-1 text-xs text-slate-500">{ticket.id}</p>
+                {ticket.conversationId ? (
+                  <Link
+                    to="/tickets/$ticketId"
+                    params={{ ticketId: ticket.id }}
+                    className="mt-2 inline-flex text-xs font-semibold text-slate-700 underline-offset-4 hover:underline"
+                  >
+                    Open conversation
+                  </Link>
+                ) : null}
               </div>
               <p className="text-slate-600">{formatLabel(ticket.priority)}</p>
               <TicketStatusSelect
@@ -96,6 +109,28 @@ function TicketList() {
                 <p className="mt-1 text-xs">
                   {ticket.conversation?.customer?.email ?? "No email"}
                 </p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-slate-600">
+                  {ticket.conversation?.assignedAgent?.userId ?? "Unassigned"}
+                </p>
+                {ticket.conversationId ? (
+                  <button
+                    type="button"
+                    disabled={assigningTicketId === ticket.id}
+                    onClick={() =>
+                      void assignTicketToSelf({
+                        conversationId: ticket.conversationId,
+                        ticketId: ticket.id,
+                      })
+                    }
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500"
+                  >
+                    {assigningTicketId === ticket.id
+                      ? "Assigning..."
+                      : "Assign to me"}
+                  </button>
+                ) : null}
               </div>
             </div>
           ))}
@@ -131,6 +166,36 @@ function TicketList() {
       );
     } finally {
       setSavingTicketId(null);
+    }
+  }
+
+  async function assignTicketToSelf({
+    conversationId,
+    ticketId,
+  }: {
+    conversationId: string;
+    ticketId: string;
+  }) {
+    setError(null);
+    setAssigningTicketId(ticketId);
+
+    try {
+      const write = zero.mutate(
+        mutators.support.assignSelf({ conversationId }),
+      );
+      const result = await write.client;
+
+      if (result.type === "error") {
+        setError(result.error.message);
+      }
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Unable to assign ticket",
+      );
+    } finally {
+      setAssigningTicketId(null);
     }
   }
 }

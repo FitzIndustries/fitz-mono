@@ -16,6 +16,7 @@ import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedTicketsTicketIdRouteImport } from './routes/_authenticated/tickets.$ticketId'
 import { Route as AuthenticatedSettingsTeamRouteImport } from './routes/_authenticated/settings/team'
 import { Route as AuthenticatedSettingsOrganizationRouteImport } from './routes/_authenticated/settings/organization'
 import { Route as AuthenticatedSettingsIntegrationsRouteImport } from './routes/_authenticated/settings/integrations'
@@ -57,6 +58,12 @@ const AuthenticatedSettingsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
+const AuthenticatedTicketsTicketIdRoute =
+  AuthenticatedTicketsTicketIdRouteImport.update({
+    id: '/$ticketId',
+    path: '/$ticketId',
+    getParentRoute: () => AuthenticatedTicketsRoute,
+  } as any)
 const AuthenticatedSettingsTeamRoute =
   AuthenticatedSettingsTeamRouteImport.update({
     id: '/team',
@@ -92,25 +99,27 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/settings': typeof AuthenticatedSettingsRouteWithChildren
-  '/tickets': typeof AuthenticatedTicketsRoute
+  '/tickets': typeof AuthenticatedTicketsRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
   '/settings/billing': typeof AuthenticatedSettingsBillingRoute
   '/settings/channels': typeof AuthenticatedSettingsChannelsRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
   '/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/tickets/$ticketId': typeof AuthenticatedTicketsTicketIdRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/customers': typeof AuthenticatedCustomersRoute
-  '/tickets': typeof AuthenticatedTicketsRoute
+  '/tickets': typeof AuthenticatedTicketsRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
   '/settings/billing': typeof AuthenticatedSettingsBillingRoute
   '/settings/channels': typeof AuthenticatedSettingsChannelsRoute
   '/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
   '/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/tickets/$ticketId': typeof AuthenticatedTicketsTicketIdRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
 }
 export interface FileRoutesById {
@@ -119,13 +128,14 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteWithChildren
-  '/_authenticated/tickets': typeof AuthenticatedTicketsRoute
+  '/_authenticated/tickets': typeof AuthenticatedTicketsRouteWithChildren
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/settings/billing': typeof AuthenticatedSettingsBillingRoute
   '/_authenticated/settings/channels': typeof AuthenticatedSettingsChannelsRoute
   '/_authenticated/settings/integrations': typeof AuthenticatedSettingsIntegrationsRoute
   '/_authenticated/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
   '/_authenticated/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/_authenticated/tickets/$ticketId': typeof AuthenticatedTicketsTicketIdRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
 }
 export interface FileRouteTypes {
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/settings/integrations'
     | '/settings/organization'
     | '/settings/team'
+    | '/tickets/$ticketId'
     | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/settings/integrations'
     | '/settings/organization'
     | '/settings/team'
+    | '/tickets/$ticketId'
     | '/settings'
   id:
     | '__root__'
@@ -167,6 +179,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/integrations'
     | '/_authenticated/settings/organization'
     | '/_authenticated/settings/team'
+    | '/_authenticated/tickets/$ticketId'
     | '/_authenticated/settings/'
   fileRoutesById: FileRoutesById
 }
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/'
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
+    }
+    '/_authenticated/tickets/$ticketId': {
+      id: '/_authenticated/tickets/$ticketId'
+      path: '/$ticketId'
+      fullPath: '/tickets/$ticketId'
+      preLoaderRoute: typeof AuthenticatedTicketsTicketIdRouteImport
+      parentRoute: typeof AuthenticatedTicketsRoute
     }
     '/_authenticated/settings/team': {
       id: '/_authenticated/settings/team'
@@ -289,17 +309,28 @@ const AuthenticatedSettingsRouteWithChildren =
     AuthenticatedSettingsRouteChildren,
   )
 
+interface AuthenticatedTicketsRouteChildren {
+  AuthenticatedTicketsTicketIdRoute: typeof AuthenticatedTicketsTicketIdRoute
+}
+
+const AuthenticatedTicketsRouteChildren: AuthenticatedTicketsRouteChildren = {
+  AuthenticatedTicketsTicketIdRoute: AuthenticatedTicketsTicketIdRoute,
+}
+
+const AuthenticatedTicketsRouteWithChildren =
+  AuthenticatedTicketsRoute._addFileChildren(AuthenticatedTicketsRouteChildren)
+
 interface AuthenticatedRouteChildren {
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRouteWithChildren
-  AuthenticatedTicketsRoute: typeof AuthenticatedTicketsRoute
+  AuthenticatedTicketsRoute: typeof AuthenticatedTicketsRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRouteWithChildren,
-  AuthenticatedTicketsRoute: AuthenticatedTicketsRoute,
+  AuthenticatedTicketsRoute: AuthenticatedTicketsRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 
