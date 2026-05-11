@@ -30,7 +30,7 @@ function DashboardPage() {
     <DashboardSummary
       userId={userId}
       fallbackOrganizationName={
-        viewer?.currentOrganization?.name ?? "Organization"
+        viewer.currentOrganization?.name ?? "Organization"
       }
     />
   );

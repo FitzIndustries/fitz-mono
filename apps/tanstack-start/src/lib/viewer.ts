@@ -1,8 +1,6 @@
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { getRequestHeaders } from "@tanstack/react-start/server";
 
-import { env } from "~/env";
-import { apiFetch } from "~/lib/api";
+import { makeTRPCClient } from "~/lib/trpc";
 
 export interface Viewer {
   currentMembershipId: string | null;
@@ -24,45 +22,48 @@ export interface Viewer {
   }[];
 }
 
+type ViewerResult = Awaited<
+  ReturnType<
+    Awaited<
+      ReturnType<typeof makeTRPCClient>
+    >["organization"]["viewer"]["query"]
+  >
+>;
+
+function toViewer(viewer: ViewerResult): Viewer {
+  return {
+    currentMembershipId: viewer.currentMembershipId,
+    currentOrganizationId: viewer.currentOrganizationId,
+    currentOrganization: viewer.currentOrganization
+      ? {
+          id: viewer.currentOrganization.id,
+          name: viewer.currentOrganization.name,
+          slug: viewer.currentOrganization.slug,
+        }
+      : null,
+    organizations: viewer.organizations.map((membership) => ({
+      membershipId: membership.membershipId,
+      organizationId: membership.organizationId,
+      role: membership.role,
+      organization: {
+        id: membership.organization.id,
+        name: membership.organization.name,
+        slug: membership.organization.slug,
+      },
+    })),
+  };
+}
+
 export const getViewer = createIsomorphicFn()
   .server(async (organizationSlug?: string) => {
-    const requestHeaders = new Headers(getRequestHeaders());
-    const cookie = requestHeaders.get("cookie");
-    const searchParams = new URLSearchParams();
-
-    if (organizationSlug) {
-      searchParams.set("org", organizationSlug);
-    }
-
-    const queryString = searchParams.toString();
-
-    const response = await fetch(
-      `${env.VITE_API_URL}/api/viewer${queryString ? `?${queryString}` : ""}`,
-      {
-        headers: cookie ? { cookie } : undefined,
-      },
+    const trpc = makeTRPCClient();
+    return toViewer(
+      await trpc.organization.viewer.query({ org: organizationSlug }),
     );
-
-    if (response.status === 401) {
-      return null;
-    }
-
-    if (!response.ok) {
-      throw new Error(`Viewer request failed: ${String(response.status)}`);
-    }
-
-    return response.json() as Promise<Viewer>;
   })
   .client(async (organizationSlug?: string) => {
-    const searchParams = new URLSearchParams();
-
-    if (organizationSlug) {
-      searchParams.set("org", organizationSlug);
-    }
-
-    const queryString = searchParams.toString();
-
-    return apiFetch<Viewer>(
-      `/api/viewer${queryString ? `?${queryString}` : ""}`,
+    const trpc = makeTRPCClient();
+    return toViewer(
+      await trpc.organization.viewer.query({ org: organizationSlug }),
     );
   });
