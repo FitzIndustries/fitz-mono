@@ -55,6 +55,7 @@ app.use(
     createContext: (_opts, c) =>
       createTRPCContext({
         auth,
+        encryptionKey: env.ENCRYPTION_KEY,
         headers: c.req.raw.headers,
       }),
     onError: ({ error, path }) => {

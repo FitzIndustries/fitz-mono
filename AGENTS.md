@@ -140,6 +140,14 @@
 - In UI async flows, catch failures and present safe user-facing errors.
 - Keep `console.error` messages specific when logging unexpected failures.
 
+## API Boundaries
+
+- App data reads/writes should use Zero wherever live queries, optimistic updates, or local-first behavior are appropriate.
+- Standard request/response app operations that are not live/local-first should use tRPC endpoints from `packages/api`.
+- Do not add app-owned REST/Hono endpoints for normal product features when Zero or tRPC can handle the flow.
+- Use Hono routes directly only for boundary/integration concerns such as auth handlers, external webhooks, Zero query/mutate endpoints, health checks, and other protocol-specific callbacks.
+- If a feature seems to need Hono directly, verify that it cannot reasonably be implemented as a tRPC procedure or Zero mutator before adding a route.
+
 ## Naming
 
 - Components: PascalCase.
@@ -153,9 +161,11 @@
 
 - Prefer function components and keep state close to usage.
 - Avoid one-off abstractions unless they remove real duplication.
-- Reuse `@fitzindustries/ui` components before adding app-local primitives.
+- Use shadcn-style components from `@fitzindustries/ui` wherever possible before adding app-local primitives.
+- Style UI with Tailwind utilities and the shared design tokens; avoid ad hoc CSS unless there is a concrete need.
 - Use the shared `cn(...)` helper for class composition.
-- Hono handlers usually validate auth early and return `401` when missing.
+- tRPC procedures should live in `packages/api`; Zero queries/mutators should live in `packages/zero-shared`.
+- Hono handlers should be reserved for auth, webhooks, Zero endpoints, health checks, and other integration boundaries.
 - Keep handler responses JSON-shaped and predictable.
 - Use shared package exports from `@fitzindustries/api`, `@fitzindustries/db`, and `@fitzindustries/zero-shared` instead of reimplementing logic locally.
 

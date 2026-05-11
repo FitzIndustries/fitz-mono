@@ -750,6 +750,85 @@ const organizationTable = {
   },
   primaryKey: ["id"],
 } as const;
+const organizationInviteTable = {
+  name: "organizationInvite",
+  columns: {
+    id: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    organizationId: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "organization_id",
+    },
+    email: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+    },
+    role: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as "agent" | "admin" | "viewer",
+    },
+    tokenHash: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "token_hash",
+    },
+    invitedBy: {
+      type: "string",
+      optional: false,
+      customType: null as unknown as string,
+      serverName: "invited_by",
+    },
+    status: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as
+        | "pending"
+        | "accepted"
+        | "revoked"
+        | "expired",
+    },
+    expiresAt: {
+      type: "number",
+      optional: false,
+      customType: null as unknown as number,
+      serverName: "expires_at",
+    },
+    acceptedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "accepted_at",
+    },
+    acceptedBy: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "accepted_by",
+    },
+    createdAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "created_at",
+    },
+    updatedAt: {
+      type: "number",
+      optional: true,
+      customType: null as unknown as number,
+      serverName: "updated_at",
+    },
+  },
+  primaryKey: ["id"],
+  serverName: "organization_invite",
+} as const;
 const organizationMemberTable = {
   name: "organizationMember",
   columns: {
@@ -773,7 +852,7 @@ const organizationMemberTable = {
     role: {
       type: "string",
       optional: true,
-      customType: null as unknown as "agent" | "owner" | "admin" | "viewer",
+      customType: null as unknown as "agent" | "admin" | "viewer" | "owner",
     },
     invitedBy: {
       type: "string",
@@ -1351,6 +1430,16 @@ const messageRelationships = {
     },
   ],
 } as const;
+const organizationInviteRelationships = {
+  organization: [
+    {
+      sourceField: ["organizationId"],
+      destField: ["id"],
+      destSchema: "organization",
+      cardinality: "one",
+    },
+  ],
+} as const;
 const organizationMemberRelationships = {
   organization: [
     {
@@ -1367,6 +1456,14 @@ const organizationRelationships = {
       sourceField: ["id"],
       destField: ["organizationId"],
       destSchema: "organizationMember",
+      cardinality: "many",
+    },
+  ],
+  invites: [
+    {
+      sourceField: ["id"],
+      destField: ["organizationId"],
+      destSchema: "organizationInvite",
       cardinality: "many",
     },
   ],
@@ -1535,6 +1632,7 @@ export const schema = {
     internalNote: internalNoteTable,
     message: messageTable,
     organization: organizationTable,
+    organizationInvite: organizationInviteTable,
     organizationMember: organizationMemberTable,
     session: sessionTable,
     team: teamTable,
@@ -1554,6 +1652,7 @@ export const schema = {
     emailChannel: emailChannelRelationships,
     internalNote: internalNoteRelationships,
     message: messageRelationships,
+    organizationInvite: organizationInviteRelationships,
     organizationMember: organizationMemberRelationships,
     organization: organizationRelationships,
     session: sessionRelationships,
@@ -1633,6 +1732,13 @@ export type Message = Row<(typeof schema)["tables"]["message"]>;
  * This type is auto-generated from your Drizzle schema definition.
  */
 export type Organization = Row<(typeof schema)["tables"]["organization"]>;
+/**
+ * Represents a row from the "organizationInvite" table.
+ * This type is auto-generated from your Drizzle schema definition.
+ */
+export type OrganizationInvite = Row<
+  (typeof schema)["tables"]["organizationInvite"]
+>;
 /**
  * Represents a row from the "organizationMember" table.
  * This type is auto-generated from your Drizzle schema definition.

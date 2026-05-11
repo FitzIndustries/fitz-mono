@@ -72,6 +72,38 @@ export const organizationMember = pgTable(
   ],
 );
 
+export const organizationInvite = pgTable(
+  "organization_invite",
+  {
+    id: uuid().notNull().primaryKey().defaultRandom(),
+    organizationId: uuid().notNull(),
+    email: varchar({ length: 255 }).notNull(),
+    role: varchar({ length: 20 })
+      .$type<"admin" | "agent" | "viewer">()
+      .default("agent")
+      .notNull(),
+    tokenHash: text().notNull().unique(),
+    invitedBy: text().notNull(),
+    status: varchar({ length: 20 })
+      .$type<"pending" | "accepted" | "revoked" | "expired">()
+      .default("pending")
+      .notNull(),
+    expiresAt: timestamp().notNull(),
+    acceptedAt: timestamp(),
+    acceptedBy: text(),
+    createdAt: timestamp().defaultNow().notNull(),
+    updatedAt: timestamp()
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (t) => [
+    index("org_invite_org_idx").on(t.organizationId),
+    index("org_invite_email_idx").on(t.email),
+    index("org_invite_status_idx").on(t.status),
+  ],
+);
+
 // ============================================
 // CHANNELS
 // ============================================
@@ -436,6 +468,22 @@ export const CreateOrganizationMemberSchema = createInsertSchema(
   updatedAt: true,
 });
 
+export const CreateOrganizationInviteSchema = createInsertSchema(
+  organizationInvite,
+  {
+    email: z.string().email().max(255),
+    role: z.enum(["admin", "agent", "viewer"]),
+  },
+).omit({
+  id: true,
+  tokenHash: true,
+  status: true,
+  acceptedAt: true,
+  acceptedBy: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const CreateWhatsappChannelSchema = createInsertSchema(whatsappChannel, {
   name: z.string().min(1).max(100),
   phoneNumber: z.string().min(1).max(20),
@@ -557,6 +605,7 @@ export const CreateArticleSchema = createInsertSchema(article, {
 
 export const organizationRelations = relations(organization, ({ many }) => ({
   members: many(organizationMember),
+  invites: many(organizationInvite),
   teams: many(team),
   customers: many(customer),
   conversations: many(conversation),
@@ -572,6 +621,16 @@ export const organizationMemberRelations = relations(
   ({ one }) => ({
     organization: one(organization, {
       fields: [organizationMember.organizationId],
+      references: [organization.id],
+    }),
+  }),
+);
+
+export const organizationInviteRelations = relations(
+  organizationInvite,
+  ({ one }) => ({
+    organization: one(organization, {
+      fields: [organizationInvite.organizationId],
       references: [organization.id],
     }),
   }),

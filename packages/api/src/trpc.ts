@@ -41,6 +41,7 @@ interface AuthProvider {
 export const createTRPCContext = async (opts: {
   headers: Headers;
   auth: AuthProvider;
+  encryptionKey?: string;
 }) => {
   const session = await opts.auth.api.getSession({
     headers: opts.headers,
@@ -48,6 +49,7 @@ export const createTRPCContext = async (opts: {
   return {
     session,
     db,
+    encryptionKey: opts.encryptionKey,
   };
 };
 /**
