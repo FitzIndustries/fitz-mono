@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@fitzindustries/db": "workspace:*",
+    "@fitzindustries/email": "workspace:*",
     "@fitzindustries/validators": "workspace:*",
     "@trpc/server": "catalog:",
     "superjson": "2.2.3",

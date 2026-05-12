@@ -1,0 +1,37 @@
+{
+  "name": "@fitzindustries/email",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "email dev --dir src/templates",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint --flag unstable_native_nodejs_ts_config",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@react-email/components": "latest",
+    "@react-email/render": "latest",
+    "react": "catalog:react19",
+    "resend": "latest"
+  },
+  "devDependencies": {
+    "@fitzindustries/eslint-config": "workspace:*",
+    "@fitzindustries/prettier-config": "workspace:*",
+    "@fitzindustries/tsconfig": "workspace:*",
+    "@types/react": "catalog:react19",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "react-email": "latest",
+    "typescript": "catalog:"
+  },
+  "prettier": "@fitzindustries/prettier-config"
+}

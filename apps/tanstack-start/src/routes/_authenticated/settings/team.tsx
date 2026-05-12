@@ -225,11 +225,17 @@ function InvitePanel({
         email,
         role,
       });
-      const link = `${window.location.origin}/accept-invite?token=${result.token}`;
+      const link = result.inviteLink;
 
       setInviteLink(link);
       setEmail("");
-      onMessage("Invite link created. Email delivery will be wired in next.");
+      onMessage(
+        result.emailDeliveryStatus === "sent"
+          ? "Invite email sent. The manual link is available below."
+          : result.emailDeliveryStatus === "not_configured"
+            ? "Invite link created. Platform email delivery is not configured yet."
+            : "Invite link created, but the email could not be sent. Check the API logs for the Resend error.",
+      );
       onInvitesChange([
         {
           id: result.invite.id,

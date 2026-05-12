@@ -54,9 +54,12 @@ app.use(
     router: appRouter,
     createContext: (_opts, c) =>
       createTRPCContext({
+        appUrl: env.WEB_APP_URL,
         auth,
         encryptionKey: env.ENCRYPTION_KEY,
         headers: c.req.raw.headers,
+        platformEmailFrom: env.PLATFORM_EMAIL_FROM,
+        resendApiKey: env.RESEND_API_KEY,
       }),
     onError: ({ error, path }) => {
       console.error(`>>> tRPC Error on '${path}'`, error);
