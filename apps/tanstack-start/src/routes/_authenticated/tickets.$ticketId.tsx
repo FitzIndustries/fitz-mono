@@ -7,6 +7,7 @@ import {
   useQuery as useZeroQuery,
 } from "@fitzindustries/zero-shared/react";
 
+import { makeTRPCClient } from "~/lib/trpc";
 import { useIsZeroReady } from "~/providers/zero-provider";
 
 export const Route = createFileRoute("/_authenticated/tickets/$ticketId")({
@@ -97,16 +98,8 @@ function ConversationView({
     setIsSending(true);
 
     try {
-      const write = zero.mutate(
-        mutators.support.sendMessage({ conversationId, content }),
-      );
-      const result = await write.client;
-
-      if (result.type === "error") {
-        setError(result.error.message);
-        return;
-      }
-
+      const trpc = makeTRPCClient();
+      await trpc.support.sendReply.mutate({ conversationId, content });
       setMessage("");
     } catch (caughtError) {
       setError(

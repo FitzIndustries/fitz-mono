@@ -7,6 +7,7 @@ import {
   conversation,
   customer,
   message,
+  ticket,
   whatsappChannel,
 } from "@fitzindustries/db/schema";
 
@@ -172,6 +173,7 @@ async function processIncomingWhatsAppMessage(
       channel: "whatsapp",
       channelId,
       status: "open",
+      subject: content.slice(0, 500),
       lastMessageAt: now,
       createdAt: now,
       updatedAt: now,
@@ -200,6 +202,44 @@ async function processIncomingWhatsAppMessage(
       updatedAt: now,
     })
     .where(eq(conversation.id, conversationId));
+
+  await ensureOpenTicket({ conversationId, organizationId, now });
+}
+
+async function ensureOpenTicket({
+  conversationId,
+  now,
+  organizationId,
+}: {
+  conversationId: string;
+  now: Date;
+  organizationId: string;
+}) {
+  const existingTicket = await db.query.ticket.findFirst({
+    where: and(
+      eq(ticket.organizationId, organizationId),
+      eq(ticket.conversationId, conversationId),
+    ),
+    orderBy: (tickets, { desc }) => [desc(tickets.createdAt)],
+  });
+
+  if (
+    existingTicket?.status === "open" ||
+    existingTicket?.status === "in_progress"
+  ) {
+    return;
+  }
+
+  await db.insert(ticket).values({
+    id: crypto.randomUUID(),
+    organizationId,
+    conversationId,
+    ticketType: "other",
+    priority: "medium",
+    status: "open",
+    createdAt: now,
+    updatedAt: now,
+  });
 }
 
 export async function sendWhatsAppMessage(

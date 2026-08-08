@@ -7,6 +7,7 @@ import {
   useQuery as useZeroQuery,
 } from "@fitzindustries/zero-shared/react";
 
+import { env } from "~/env";
 import { makeTRPCClient } from "~/lib/trpc";
 import { useIsZeroReady } from "~/providers/zero-provider";
 
@@ -27,6 +28,9 @@ function ChannelsPage() {
 function ChannelSettings() {
   const [organization] = useZeroQuery(queries.support.channels());
   const zero = useZero();
+  const [editingWhatsappChannelId, setEditingWhatsappChannelId] = useState<
+    string | null
+  >(null);
   const [savingChannelId, setSavingChannelId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -34,6 +38,11 @@ function ChannelSettings() {
   if (!organization) {
     return <p className="text-sm text-slate-500">Loading channels...</p>;
   }
+
+  const editingWhatsappChannel =
+    organization.whatsappChannels.find(
+      (channel) => channel.id === editingWhatsappChannelId,
+    ) ?? undefined;
 
   return (
     <div className="space-y-6">
@@ -57,8 +66,10 @@ function ChannelSettings() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <WhatsappChannelForm
-          channel={organization.whatsappChannels[0]}
+          key={editingWhatsappChannel?.id ?? "new-whatsapp-channel"}
+          channel={editingWhatsappChannel}
           organizationId={organization.id}
+          onCancelEdit={() => setEditingWhatsappChannelId(null)}
           onError={setError}
           onSuccess={setMessage}
         />
@@ -88,6 +99,7 @@ function ChannelSettings() {
                   isActive,
                 })
               }
+              onEdit={() => setEditingWhatsappChannelId(channel.id)}
             />
           ))}
         </ChannelGroup>
@@ -173,12 +185,14 @@ function ChannelSettings() {
 
 function WhatsappChannelForm({
   channel,
+  onCancelEdit,
   onError,
   onSuccess,
   organizationId,
 }: {
   channel:
     | {
+        id: string;
         name: string;
         phoneNumber: string;
         phoneNumberId: string;
@@ -186,6 +200,7 @@ function WhatsappChannelForm({
         isActive: boolean | null | undefined;
       }
     | undefined;
+  onCancelEdit: () => void;
   onError: (message: string | null) => void;
   onSuccess: (message: string | null) => void;
   organizationId: string;
@@ -201,6 +216,7 @@ function WhatsappChannelForm({
   );
   const [isActive, setIsActive] = useState(channel?.isActive ?? true);
   const [isSaving, setIsSaving] = useState(false);
+  const webhookUrl = `${env.VITE_API_URL}/api/webhooks/whatsapp`;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -212,6 +228,7 @@ function WhatsappChannelForm({
       const trpc = makeTRPCClient();
       await trpc.channels.upsertWhatsapp.mutate({
         organizationId,
+        channelId: channel?.id,
         name,
         phoneNumber,
         phoneNumberId,
@@ -220,6 +237,13 @@ function WhatsappChannelForm({
         isActive,
       });
       setAccessToken("");
+      if (!channel) {
+        setName("");
+        setPhoneNumber("");
+        setPhoneNumberId("");
+        setWebhookVerifyToken("");
+        setIsActive(true);
+      }
       onSuccess(
         "WhatsApp channel saved. Zero will sync the channel list shortly.",
       );
@@ -239,7 +263,37 @@ function WhatsappChannelForm({
       onSubmit={(event) => void handleSubmit(event)}
       className="rounded-xl border border-slate-200 bg-white p-5"
     >
-      <h3 className="text-lg font-semibold">WhatsApp setup</h3>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-lg font-semibold">WhatsApp setup</h3>
+          <p className="mt-1 text-sm text-slate-600">
+            {channel
+              ? `Editing ${channel.name}`
+              : "Add a WhatsApp Business number for this organization."}
+          </p>
+        </div>
+        {channel ? (
+          <button
+            type="button"
+            onClick={onCancelEdit}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+          >
+            New number
+          </button>
+        ) : null}
+      </div>
+      <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">
+        <p className="font-semibold text-slate-900">
+          Meta webhook callback URL
+        </p>
+        <p className="mt-2 font-mono text-xs break-all text-slate-700">
+          {webhookUrl}
+        </p>
+        <p className="mt-2">
+          In Meta, subscribe this callback to WhatsApp messages and use the same
+          verify token you enter below.
+        </p>
+      </div>
       <div className="mt-4 grid gap-3">
         <TextInput label="Name" value={name} onChange={setName} />
         <TextInput
@@ -448,12 +502,14 @@ function ChannelCard({
   disabled,
   details,
   isActive,
+  onEdit,
   onToggle,
   title,
 }: {
   disabled: boolean;
   details: string[];
   isActive: boolean;
+  onEdit?: () => void;
   onToggle: (isActive: boolean) => void;
   title: string;
 }) {
@@ -470,14 +526,25 @@ function ChannelCard({
           <p key={detail}>{detail}</p>
         ))}
       </div>
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() => onToggle(!isActive)}
-        className="mt-4 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500"
-      >
-        {disabled ? "Saving..." : isActive ? "Deactivate" : "Activate"}
-      </button>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {onEdit ? (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+          >
+            Edit
+          </button>
+        ) : null}
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => onToggle(!isActive)}
+          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500"
+        >
+          {disabled ? "Saving..." : isActive ? "Deactivate" : "Activate"}
+        </button>
+      </div>
     </div>
   );
 }

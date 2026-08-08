@@ -60,6 +60,7 @@ export const channelsRouter = {
     .input(
       z.object({
         organizationId: z.string().uuid(),
+        channelId: z.string().uuid().optional(),
         name: z.string().min(1).max(100),
         phoneNumber: z.string().min(1).max(20),
         phoneNumberId: z.string().min(1).max(100),
@@ -78,9 +79,37 @@ export const channelsRouter = {
         });
       }
 
-      const existingChannel = await ctx.db.query.whatsappChannel.findFirst({
-        where: eq(whatsappChannel.organizationId, input.organizationId),
-      });
+      const existingChannel = input.channelId
+        ? await ctx.db.query.whatsappChannel.findFirst({
+            where: and(
+              eq(whatsappChannel.id, input.channelId),
+              eq(whatsappChannel.organizationId, input.organizationId),
+            ),
+          })
+        : undefined;
+
+      if (input.channelId && !existingChannel) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "WhatsApp channel not found",
+        });
+      }
+
+      const duplicatePhoneNumberId =
+        await ctx.db.query.whatsappChannel.findFirst({
+          where: eq(whatsappChannel.phoneNumberId, input.phoneNumberId),
+        });
+
+      if (
+        duplicatePhoneNumberId &&
+        duplicatePhoneNumberId.id !== existingChannel?.id
+      ) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "That WhatsApp phone number ID is already configured",
+        });
+      }
+
       const accessTokenEncrypted = input.accessToken
         ? encryptChannelSecret(ctx.encryptionKey, input.accessToken)
         : (existingChannel?.accessTokenEncrypted ?? "");

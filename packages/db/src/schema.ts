@@ -129,6 +129,7 @@ export const whatsappChannel = pgTable(
   (t) => [
     index("wa_channel_org_idx").on(t.organizationId),
     index("wa_channel_phone_idx").on(t.phoneNumber),
+    unique("wa_channel_phone_number_id_unique").on(t.phoneNumberId),
   ],
 );
 
@@ -153,6 +154,7 @@ export const emailChannel = pgTable(
   (t) => [
     index("email_channel_org_idx").on(t.organizationId),
     index("email_channel_email_idx").on(t.emailAddress),
+    unique("email_channel_email_unique").on(t.emailAddress),
   ],
 );
 
