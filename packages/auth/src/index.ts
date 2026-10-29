@@ -11,9 +11,11 @@ export function initAuth<
   baseUrl: string;
   secret: string | undefined;
   extraPlugins?: TExtraPlugins;
+  trustedOrigins?: string[];
 }) {
   const trustedOrigins = [
     options.baseUrl,
+    ...(options.trustedOrigins ?? []),
     "expo://",
     "http://localhost:3000",
     "http://localhost:3001",

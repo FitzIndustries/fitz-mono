@@ -18,7 +18,7 @@ export const makeTRPCClient = createIsomorphicFn()
       links: [
         httpBatchStreamLink({
           transformer: SuperJSON,
-          url: env.VITE_API_URL + "/api/trpc",
+          url: env.API_INTERNAL_URL + "/api/trpc",
           fetch(url, options) {
             return fetch(url, {
               ...options,

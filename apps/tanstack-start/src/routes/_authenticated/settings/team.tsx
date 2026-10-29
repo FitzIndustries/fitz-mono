@@ -36,7 +36,6 @@ function TeamSettings() {
 
   useEffect(() => {
     if (!organizationId) {
-      setPendingInvites([]);
       return;
     }
 

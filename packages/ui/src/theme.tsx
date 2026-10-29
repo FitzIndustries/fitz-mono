@@ -73,7 +73,7 @@ function ThemeToggle() {
       aria-label={`Theme is ${themeMode}. Cycle light, dark, or system.`}
       onClick={() => {
         const index = THEME_CYCLE.indexOf(themeMode);
-        const next = THEME_CYCLE[(index + 1) % THEME_CYCLE.length]!;
+        const next = THEME_CYCLE[(index + 1) % THEME_CYCLE.length] ?? "auto";
         setTheme(next);
       }}
     >

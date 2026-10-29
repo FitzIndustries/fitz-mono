@@ -632,10 +632,7 @@ const messageTable = {
       type: "string",
       optional: true,
       customType: null as unknown as
-        | "text"
-        | "template"
-        | "attachment"
-        | "bot_response",
+        "text" | "template" | "attachment" | "bot_response",
       serverName: "content_type",
     },
     direction: {
@@ -790,10 +787,7 @@ const organizationInviteTable = {
       type: "string",
       optional: true,
       customType: null as unknown as
-        | "pending"
-        | "accepted"
-        | "revoked"
-        | "expired",
+        "pending" | "accepted" | "revoked" | "expired",
     },
     expiresAt: {
       type: "number",
@@ -1020,11 +1014,7 @@ const ticketTable = {
       type: "string",
       optional: false,
       customType: null as unknown as
-        | "booking"
-        | "refund"
-        | "info"
-        | "complaint"
-        | "other",
+        "booking" | "refund" | "info" | "complaint" | "other",
       serverName: "ticket_type",
     },
     priority: {
@@ -1036,10 +1026,7 @@ const ticketTable = {
       type: "string",
       optional: true,
       customType: null as unknown as
-        | "open"
-        | "resolved"
-        | "closed"
-        | "in_progress",
+        "open" | "resolved" | "closed" | "in_progress",
     },
     eventId: {
       type: "string",

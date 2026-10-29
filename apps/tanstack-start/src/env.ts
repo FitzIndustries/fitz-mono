@@ -14,7 +14,9 @@ export const env = createEnv({
    * Specify your server-side environment variables schema here.
    * This way you can ensure the app isn't built with invalid env vars.
    */
-  server: {},
+  server: {
+    API_INTERNAL_URL: z.url().default("http://127.0.0.1:3100"),
+  },
 
   /**
    * Specify your client-side environment variables schema here.

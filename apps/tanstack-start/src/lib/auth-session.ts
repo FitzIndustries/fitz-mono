@@ -15,9 +15,12 @@ export const getAuthSession = createIsomorphicFn()
       return null;
     }
 
-    const response = await fetch(`${env.VITE_API_URL}/api/auth/get-session`, {
-      headers: { cookie },
-    });
+    const response = await fetch(
+      `${env.API_INTERNAL_URL}/api/auth/get-session`,
+      {
+        headers: { cookie },
+      },
+    );
 
     if (!response.ok) {
       return null;

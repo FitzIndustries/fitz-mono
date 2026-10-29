@@ -93,10 +93,8 @@ export function MessageBubble({
         <div className="bg-muted flex size-7 shrink-0 items-center justify-center rounded-full text-xs">
           {senderType === "bot" ? (
             <Bot className="size-4" />
-          ) : initials ? (
-            initials
           ) : (
-            <User className="size-4" />
+            (initials ?? <User className="size-4" />)
           )}
         </div>
       )}

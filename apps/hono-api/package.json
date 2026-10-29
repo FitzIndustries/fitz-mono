@@ -16,11 +16,11 @@
     "@fitzindustries/auth": "workspace:*",
     "@fitzindustries/db": "workspace:*",
     "@fitzindustries/zero-shared": "workspace:*",
-    "@hono/node-server": "^1.14.1",
-    "@hono/trpc-server": "^0.3.4",
-    "@t3-oss/env-core": "^0.13.8",
+    "@hono/node-server": "^1.19.17",
+    "@hono/trpc-server": "^0.4.2",
+    "@t3-oss/env-core": "^0.13.11",
     "@trpc/server": "catalog:",
-    "hono": "^4.7.9",
+    "hono": "^4.13.14",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -31,7 +31,7 @@
     "dotenv-cli": "^10.0.0",
     "eslint": "catalog:",
     "prettier": "catalog:",
-    "tsx": "^4.20.5",
+    "tsx": "^4.23.15",
     "typescript": "catalog:"
   },
   "prettier": "@fitzindustries/prettier-config"

@@ -25,7 +25,11 @@ app.use(logger());
 app.use(
   "/api/*",
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://yoda0ne.exe.xyz:3000",
+    ],
     allowHeaders: [
       "Content-Type",
       "Authorization",

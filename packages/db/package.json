@@ -32,7 +32,8 @@
     "studio": "pnpm with-env drizzle-kit studio",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "with-env": "dotenv -e ../../.env --",
-    "destroy-db": "pnpm run stop-db && rimraf .sst/storage/postgres",
+    "destroy-db": "docker compose down --volumes",
+    "reset-db": "pnpm destroy-db && docker compose up -d --wait && pnpm push",
     "start-db": "docker compose up -d",
     "start-db-hard": "docker compose up -d --build",
     "stop-db": "docker compose down",
@@ -45,15 +46,15 @@
     "drizzle-orm": "^0.44.7",
     "drizzle-zero": "^0.17.3",
     "drizzle-zod": "^0.8.3",
-    "pg": "^8.18.0",
+    "pg": "^8.23.1",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@fitzindustries/eslint-config": "workspace:*",
     "@fitzindustries/prettier-config": "workspace:*",
     "@fitzindustries/tsconfig": "workspace:*",
-    "@types/pg": "^8.16.0",
-    "drizzle-kit": "^0.31.5",
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.11",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"

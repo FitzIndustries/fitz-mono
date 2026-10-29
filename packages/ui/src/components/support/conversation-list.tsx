@@ -64,8 +64,7 @@ export function ConversationListItem({
 
   const displayName =
     customer.name ?? customer.email ?? customer.phone ?? "Unknown";
-  const preview =
-    lastMessage?.content?.slice(0, 50) ?? subject ?? "No messages";
+  const preview = lastMessage?.content.slice(0, 50) ?? subject ?? "No messages";
 
   return (
     <button

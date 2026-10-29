@@ -2,17 +2,43 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig({
-  plugins: [
-    tsConfigPaths({
-      projects: ["./tsconfig.json"],
-    }),
-    nitro(),
-    tanstackStart(),
-    viteReact(),
-    tailwindcss(),
-  ],
+export default defineConfig(({ mode }) => {
+  const environment = loadEnv(mode, "../..", "");
+  const publicUrl = environment.WEB_APP_URL ?? "http://localhost:3000";
+
+  return {
+    server: {
+      host: "0.0.0.0",
+      port: 3000,
+      strictPort: true,
+      allowedHosts: ["yoda0ne.taila27a8e.ts.net", "yoda0ne.exe.xyz"],
+    },
+    plugins: [
+      {
+        name: "log-public-url",
+        configureServer(server) {
+          server.httpServer?.once("listening", () => {
+            server.config.logger.info(`  ➜  Public:  ${publicUrl}`);
+          });
+        },
+      },
+      tsConfigPaths({
+        projects: ["./tsconfig.json"],
+      }),
+      nitro({
+        devProxy: {
+          "/api/**": {
+            target: "http://127.0.0.1:3100",
+            changeOrigin: true,
+          },
+        },
+      }),
+      tanstackStart(),
+      viteReact(),
+      tailwindcss(),
+    ],
+  };
 });

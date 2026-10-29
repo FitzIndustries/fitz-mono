@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Mail, MessageCircle, MoreHorizontal, Phone, User } from "lucide-react";
+import { Mail, MoreHorizontal, Phone, User } from "lucide-react";
 
 import { cn } from "../../lib/utils";
 import { ChannelBadge, StatusBadge } from "./badges";
@@ -154,7 +154,7 @@ export function ConversationView({
       <div className="border-t p-4">
         <ChatInput
           onSend={onSendMessage}
-          disabled={disabled || status === "closed"}
+          disabled={disabled === true || status === "closed"}
           placeholder={
             status === "closed"
               ? "This conversation is closed"
