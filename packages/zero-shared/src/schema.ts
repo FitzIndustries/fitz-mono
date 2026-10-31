@@ -1090,12 +1090,6 @@ const userTable = {
       optional: true,
       customType: null as unknown as string,
     },
-    themeMode: {
-      type: "string",
-      optional: true,
-      customType: null as unknown as string,
-      serverName: "theme_mode",
-    },
     createdAt: {
       type: "number",
       optional: true,
@@ -1107,6 +1101,12 @@ const userTable = {
       optional: true,
       customType: null as unknown as number,
       serverName: "updated_at",
+    },
+    themeMode: {
+      type: "string",
+      optional: true,
+      customType: null as unknown as string,
+      serverName: "theme_mode",
     },
   },
   primaryKey: ["id"],

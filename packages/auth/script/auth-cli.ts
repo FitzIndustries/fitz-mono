@@ -5,7 +5,7 @@
  * DO NOT USE THIS FILE DIRECTLY IN YOUR APPLICATION.
  *
  * This configuration is consumed by the CLI command:
- * `pnpx @better-auth/cli generate --config script/auth-cli.ts --output ../db/src/auth-schema.ts`
+ * `pnpm generate`
  *
  * For actual authentication usage, import from "../src/index.ts" instead.
  */
@@ -20,5 +20,5 @@ import { initAuth } from "../src/index";
  */
 export const auth = initAuth({
   baseUrl: "http://localhost:3000",
-  secret: "secret",
+  secret: "better-auth-cli-schema-generation-only",
 });

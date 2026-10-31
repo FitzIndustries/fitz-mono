@@ -30,6 +30,16 @@ export function initAuth<
     emailAndPassword: {
       enabled: true,
     },
+    user: {
+      additionalFields: {
+        themeMode: {
+          type: "string",
+          required: true,
+          defaultValue: "auto",
+          input: false,
+        },
+      },
+    },
     plugins: [expo(), ...(options.extraPlugins ?? [])],
     trustedOrigins,
     onAPIError: {

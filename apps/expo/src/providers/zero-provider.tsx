@@ -1,5 +1,5 @@
 import type React from "react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Platform } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 
@@ -38,13 +38,25 @@ export function ZeroProvider({ children }: { children: React.ReactNode }) {
     };
   }, [userId, viewer]);
 
-  const cookie = useMemo(() => {
-    const ck = Platform.OS === "web" ? undefined : authClient.getCookie();
-    return ck ?? undefined;
-    // we force a re-render when the session changes, since getCookie is
-    // not reactive
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]);
+  const [cookie, setCookie] = useState<string>();
+
+  useEffect(() => {
+    let isActive = true;
+
+    const updateCookie = async () => {
+      const nextCookie =
+        Platform.OS === "web" ? undefined : await authClient.getCookie();
+      if (isActive) {
+        setCookie(nextCookie ?? undefined);
+      }
+    };
+
+    void updateCookie();
+
+    return () => {
+      isActive = false;
+    };
+  }, [session.data]);
 
   return (
     <RocicorpZeroProvider

@@ -7,12 +7,12 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
-  themeMode: text("theme_mode").default("auto").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
+  themeMode: text("theme_mode").default("auto").notNull(),
 });
 
 export const session = pgTable(

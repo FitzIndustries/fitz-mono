@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@fitzindustries/api": "workspace:*",
+    "@fitzindustries/auth": "workspace:*",
     "@fitzindustries/eslint-config": "workspace:*",
     "@fitzindustries/prettier-config": "workspace:*",
     "@fitzindustries/tailwind-config": "workspace:*",
