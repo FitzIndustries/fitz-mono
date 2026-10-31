@@ -3,7 +3,6 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import { defineConfig, loadEnv } from "vite";
-import tsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(({ mode }) => {
   const environment = loadEnv(mode, "../..", "");
@@ -16,6 +15,9 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       allowedHosts: ["yoda0ne.taila27a8e.ts.net", "yoda0ne.exe.xyz"],
     },
+    resolve: {
+      tsconfigPaths: true,
+    },
     plugins: [
       {
         name: "log-public-url",
@@ -25,9 +27,11 @@ export default defineConfig(({ mode }) => {
           });
         },
       },
-      tsConfigPaths({
-        projects: ["./tsconfig.json"],
+      tailwindcss(),
+      tanstackStart({
+        srcDirectory: "src",
       }),
+      viteReact(),
       nitro({
         devProxy: {
           "/api/**": {
@@ -36,9 +40,6 @@ export default defineConfig(({ mode }) => {
           },
         },
       }),
-      tanstackStart(),
-      viteReact(),
-      tailwindcss(),
     ],
   };
 });
