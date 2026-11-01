@@ -5,7 +5,7 @@ import type { Row } from "@rocicorp/zero";
 import type { CustomType } from "drizzle-zero";
 import { createBuilder } from "@rocicorp/zero";
 
-import type * as drizzleSchema from "../../db/src/schema";
+import type * as drizzleSchema from "@fitzindustries/db/schema";
 
 const postTable = {
   name: "Post",

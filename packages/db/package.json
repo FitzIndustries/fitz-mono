@@ -37,11 +37,10 @@
     "start-db": "docker compose up -d",
     "start-db-hard": "docker compose up -d --build",
     "stop-db": "docker compose down",
-    "generate": "drizzle-zero generate --output ../zero-shared/src/schema.ts --format",
+    "generate": "pnpm build && drizzle-zero generate --output ../zero-shared/src/schema.ts --format && node scripts/normalize-zero-schema.mjs",
     "postinstall": "pnpm generate"
   },
   "dependencies": {
-    "@fitzindustries/zero-shared": "workspace:*",
     "@rocicorp/zero": "catalog:",
     "drizzle-orm": "^0.45.4",
     "drizzle-zero": "^0.17.3",

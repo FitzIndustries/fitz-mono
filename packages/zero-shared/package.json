@@ -33,6 +33,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@fitzindustries/db": "workspace:*",
     "@rocicorp/zero": "catalog:",
     "drizzle-zero": "catalog:",
     "zod": "catalog:"

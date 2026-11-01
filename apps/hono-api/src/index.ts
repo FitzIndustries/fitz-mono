@@ -5,7 +5,6 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 
 import { appRouter, createTRPCContext } from "@fitzindustries/api";
-import { dbProvider } from "@fitzindustries/db/client";
 import { mutators, queries, schema } from "@fitzindustries/zero-shared";
 import {
   handleMutateRequest,
@@ -16,6 +15,7 @@ import { mustGetMutator, mustGetQuery } from "@fitzindustries/zero-shared/zero";
 import { env } from "~/env";
 import { auth } from "./auth";
 import { getViewerStateFromRequest } from "./lib/viewer";
+import { dbProvider } from "./lib/zero-db";
 import { handleEmailWebhook } from "./webhooks/email";
 import { handleWhatsAppWebhook } from "./webhooks/whatsapp";
 

@@ -1,8 +1,5 @@
 {
   "extends": "@fitzindustries/tsconfig/compiled-package.json",
-  "compilerOptions": {
-    "rootDir": ".."
-  },
   "include": ["src"],
   "exclude": ["node_modules"]
 }
