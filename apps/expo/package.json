@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@better-auth/expo": "catalog:",
+    "@fitzindustries/ui": "workspace:*",
     "@fitzindustries/zero-shared": "workspace:*",
     "@legendapp/list": "^2.0.14",
     "@tanstack/react-query": "catalog:",

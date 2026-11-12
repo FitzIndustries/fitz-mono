@@ -1,6 +1,7 @@
 {
   "extends": ["@fitzindustries/tsconfig/base.json"],
   "compilerOptions": {
+    "types": ["expo/types"],
     "jsx": "react-native",
     "checkJs": false,
     "moduleSuffixes": [".ios", ".android", ".native", ""],

@@ -138,6 +138,9 @@ importers:
       '@better-auth/expo':
         specifier: 'catalog:'
         version: 1.7.14(bb160906c080c5acd7a953b30f664800)
+      '@fitzindustries/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@fitzindustries/zero-shared':
         specifier: workspace:*
         version: link:../../packages/zero-shared
