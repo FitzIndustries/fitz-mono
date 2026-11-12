@@ -8,6 +8,11 @@
     },
     "dev": {
       "persistent": true
+    },
+    "test:tenant-queries": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "env": ["TEST_POSTGRES_URL"]
     }
   }
 }

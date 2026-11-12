@@ -8,15 +8,18 @@ const inboxArgsSchema = z.object({
   status: z.enum(["open", "pending", "resolved", "closed"]).optional(),
 });
 
-// Zero docs recommend denying reads by returning an empty `or()` query.
-const emptyConversationQuery = () => zql.conversation.where(({ or }) => or());
-const emptyCustomerQuery = () => zql.customer.where(({ or }) => or());
-const emptyTicketQuery = () => zql.ticket.where(({ or }) => or());
-const emptyMemberQuery = () => zql.organizationMember.where(({ or }) => or());
-const emptyOrganizationQuery = () => zql.organization.where(({ or }) => or());
-const emptyUserQuery = () => zql.user.where(({ or }) => or());
+// All primary keys are non-null. IS NULL denies reads without producing an
+// empty OR expression (which is invalid in the server Postgres adapter).
+const emptyConversationQuery = () => zql.conversation.where("id", "IS", null);
+const emptyCustomerQuery = () => zql.customer.where("id", "IS", null);
+const emptyTicketQuery = () => zql.ticket.where("id", "IS", null);
+const emptyMemberQuery = () => zql.organizationMember.where("id", "IS", null);
+const emptyOrganizationQuery = () => zql.organization.where("id", "IS", null);
+const emptyUserQuery = () => zql.user.where("id", "IS", null);
 
 export const queries = defineQueries({
+  // Legacy Expo demo content is intentionally global, not tenant-owned data.
+  // Do not store customer or organization records in this table.
   posts: {
     all: defineQuery(() => zql.Post),
   },
@@ -27,10 +30,22 @@ export const queries = defineQueries({
         .where((operators) =>
           ctx?.organizationId
             ? operators.cmp("organizationId", ctx.organizationId)
-            : operators.or(),
+            : operators.cmp("id", "IS", null),
         )
-        .related("customer")
-        .related("assignedAgent")
+        .related("customer", (customerQuery) =>
+          customerQuery.where((operators) =>
+            ctx?.organizationId
+              ? operators.cmp("organizationId", ctx.organizationId)
+              : operators.cmp("id", "IS", null),
+          ),
+        )
+        .related("assignedAgent", (memberQuery) =>
+          memberQuery.where((operators) =>
+            ctx?.organizationId
+              ? operators.cmp("organizationId", ctx.organizationId)
+              : operators.cmp("id", "IS", null),
+          ),
+        )
         .related("messages", (messageQuery) =>
           messageQuery.orderBy("createdAt", "desc").limit(1),
         )
@@ -39,7 +54,7 @@ export const queries = defineQueries({
       if (args.scope === "my") {
         query = ctx?.membershipId
           ? query.where("assignedAgentId", ctx.membershipId)
-          : query.where(({ or }) => or());
+          : query.where("id", "IS", null);
       }
 
       if (args.status) {
@@ -55,12 +70,30 @@ export const queries = defineQueries({
         .where((operators) =>
           ctx?.organizationId
             ? operators.cmp("organizationId", ctx.organizationId)
-            : operators.or(),
+            : operators.cmp("id", "IS", null),
         )
-        .related("customer")
-        .related("assignedAgent")
+        .related("customer", (customerQuery) =>
+          customerQuery.where((operators) =>
+            ctx?.organizationId
+              ? operators.cmp("organizationId", ctx.organizationId)
+              : operators.cmp("id", "IS", null),
+          ),
+        )
+        .related("assignedAgent", (memberQuery) =>
+          memberQuery.where((operators) =>
+            ctx?.organizationId
+              ? operators.cmp("organizationId", ctx.organizationId)
+              : operators.cmp("id", "IS", null),
+          ),
+        )
         .related("tickets", (ticketQuery) =>
-          ticketQuery.orderBy("createdAt", "desc"),
+          ticketQuery
+            .where((operators) =>
+              ctx?.organizationId
+                ? operators.cmp("organizationId", ctx.organizationId)
+                : operators.cmp("id", "IS", null),
+            )
+            .orderBy("createdAt", "desc"),
         )
         .related("messages", (messageQuery) =>
           messageQuery.orderBy("createdAt", "asc"),
@@ -73,10 +106,17 @@ export const queries = defineQueries({
         .where((operators) =>
           ctx?.organizationId
             ? operators.cmp("organizationId", ctx.organizationId)
-            : operators.or(),
+            : operators.cmp("id", "IS", null),
         )
         .related("conversations", (conversationQuery) =>
-          conversationQuery.orderBy("lastMessageAt", "desc").limit(1),
+          conversationQuery
+            .where((operators) =>
+              ctx?.organizationId
+                ? operators.cmp("organizationId", ctx.organizationId)
+                : operators.cmp("id", "IS", null),
+            )
+            .orderBy("lastMessageAt", "desc")
+            .limit(1),
         )
         .orderBy("createdAt", "desc"),
     ),
@@ -86,10 +126,30 @@ export const queries = defineQueries({
         .where((operators) =>
           ctx?.organizationId
             ? operators.cmp("organizationId", ctx.organizationId)
-            : operators.or(),
+            : operators.cmp("id", "IS", null),
         )
         .related("conversation", (conversationQuery) =>
-          conversationQuery.related("customer").related("assignedAgent").one(),
+          conversationQuery
+            .where((operators) =>
+              ctx?.organizationId
+                ? operators.cmp("organizationId", ctx.organizationId)
+                : operators.cmp("id", "IS", null),
+            )
+            .related("customer", (customerQuery) =>
+              customerQuery.where((operators) =>
+                ctx?.organizationId
+                  ? operators.cmp("organizationId", ctx.organizationId)
+                  : operators.cmp("id", "IS", null),
+              ),
+            )
+            .related("assignedAgent", (memberQuery) =>
+              memberQuery.where((operators) =>
+                ctx?.organizationId
+                  ? operators.cmp("organizationId", ctx.organizationId)
+                  : operators.cmp("id", "IS", null),
+              ),
+            )
+            .one(),
         )
         .orderBy("createdAt", "desc"),
     ),
@@ -99,7 +159,7 @@ export const queries = defineQueries({
         .where((operators) =>
           ctx?.organizationId
             ? operators.cmp("organizationId", ctx.organizationId)
-            : operators.or(),
+            : operators.cmp("id", "IS", null),
         )
         .related("organization")
         .orderBy("createdAt", "asc"),
@@ -110,7 +170,7 @@ export const queries = defineQueries({
         .where((operators) =>
           ctx?.organizationId
             ? operators.cmp("id", ctx.organizationId)
-            : operators.or(),
+            : operators.cmp("id", "IS", null),
         )
         .related("whatsappChannels")
         .related("emailChannels")
@@ -122,65 +182,153 @@ export const queries = defineQueries({
     currentUser: defineQuery(({ ctx }) =>
       (ctx ? zql.user : emptyUserQuery())
         .where((operators) =>
-          ctx?.userId ? operators.cmp("id", ctx.userId) : operators.or(),
+          ctx?.userId
+            ? operators.cmp("id", ctx.userId)
+            : operators.cmp("id", "IS", null),
         )
         .one(),
     ),
   },
 
   organizations: {
-    all: defineQuery(() => zql.organization),
+    all: defineQuery(({ ctx }) =>
+      zql.organization.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("id", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 
   organizationMembers: {
-    all: defineQuery(() => zql.organizationMember),
+    all: defineQuery(({ ctx }) =>
+      zql.organizationMember.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("organizationId", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 
   conversations: {
-    all: defineQuery(() => zql.conversation),
+    all: defineQuery(({ ctx }) =>
+      zql.conversation.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("organizationId", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 
   messages: {
-    all: defineQuery(() => zql.message),
+    all: defineQuery(({ ctx }) =>
+      zql.message.whereExists("conversation", (conversationQuery) =>
+        conversationQuery.where((operators) =>
+          ctx?.organizationId
+            ? operators.cmp("organizationId", ctx.organizationId)
+            : operators.cmp("id", "IS", null),
+        ),
+      ),
+    ),
   },
 
   customers: {
-    all: defineQuery(() => zql.customer),
+    all: defineQuery(({ ctx }) =>
+      zql.customer.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("organizationId", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 
   teams: {
-    all: defineQuery(() => zql.team),
+    all: defineQuery(({ ctx }) =>
+      zql.team.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("organizationId", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 
   tickets: {
-    all: defineQuery(() => zql.ticket),
+    all: defineQuery(({ ctx }) =>
+      zql.ticket.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("organizationId", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 
   internalNotes: {
-    all: defineQuery(() => zql.internalNote),
+    all: defineQuery(({ ctx }) =>
+      zql.internalNote.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("organizationId", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 
   cannedResponses: {
-    all: defineQuery(() => zql.cannedResponse),
+    all: defineQuery(({ ctx }) =>
+      zql.cannedResponse.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("organizationId", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 
   whatsappChannels: {
-    all: defineQuery(() => zql.whatsappChannel),
+    all: defineQuery(({ ctx }) =>
+      zql.whatsappChannel.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("organizationId", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 
   emailChannels: {
-    all: defineQuery(() => zql.emailChannel),
+    all: defineQuery(({ ctx }) =>
+      zql.emailChannel.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("organizationId", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 
   articles: {
-    all: defineQuery(() => zql.article),
+    all: defineQuery(({ ctx }) =>
+      zql.article.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("organizationId", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 
   auditLogs: {
-    all: defineQuery(() => zql.auditLog),
+    all: defineQuery(({ ctx }) =>
+      zql.auditLog.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("organizationId", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 
   conversationMetrics: {
-    all: defineQuery(() => zql.conversationMetric),
+    all: defineQuery(({ ctx }) =>
+      zql.conversationMetric.where((operators) =>
+        ctx?.organizationId
+          ? operators.cmp("organizationId", ctx.organizationId)
+          : operators.cmp("id", "IS", null),
+      ),
+    ),
   },
 });

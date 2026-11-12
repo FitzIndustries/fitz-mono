@@ -9,7 +9,8 @@
     "start": "dotenv -e ../../.env -- node ./dist/index.js",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint --flag unstable_native_nodejs_ts_config",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:tenant-queries": "node --import tsx --test tests/zero-tenant-queries.test.ts"
   },
   "dependencies": {
     "@fitzindustries/api": "workspace:*",
@@ -28,8 +29,11 @@
     "@fitzindustries/prettier-config": "workspace:*",
     "@fitzindustries/tsconfig": "workspace:*",
     "@types/node": "catalog:",
+    "@types/pg": "^8.23.1",
     "dotenv-cli": "^10.0.0",
+    "drizzle-orm": "^0.45.4",
     "eslint": "catalog:",
+    "pg": "^8.23.1",
     "prettier": "catalog:",
     "tsx": "^4.23.15",
     "typescript": "catalog:"
