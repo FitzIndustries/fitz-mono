@@ -65,8 +65,6 @@ function ActiveZeroProvider({
         storageKey={organizationId}
         schema={schema}
         mutators={mutators}
-        queryURL={`${env.VITE_API_URL}/api/zero/query`}
-        mutateURL={`${env.VITE_API_URL}/api/zero/mutate`}
         logLevel={env.VITE_PUBLIC_ZERO_LOG_LEVEL}
         context={{
           userId,

@@ -21,7 +21,7 @@ export function ZeroProvider({ children }: { children: React.ReactNode }) {
     enabled: Boolean(userId),
   });
   const viewer = viewerQuery.data;
-  const userID = userId ?? "anon";
+  const userID = userId;
 
   // Memoize context so the reference is stable across renders.
   // The ZeroProvider's internal useEffect re-runs when props change by

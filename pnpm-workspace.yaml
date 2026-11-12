@@ -6,7 +6,7 @@ packages:
 catalog:
   "@better-auth/expo": 1.7.14
   "@eslint/js": ^9.39.5
-  "@rocicorp/zero": ^1.1.1
+  "@rocicorp/zero": 1.11.3
   "@tailwindcss/postcss": ^4.3.3
   "@tailwindcss/vite": ^4.3.3
   "@tanstack/react-form": ^1.33.5
@@ -17,7 +17,7 @@ catalog:
   "@types/node": ^24.19.2
   "@vitejs/plugin-react": 6.1.2
   better-auth: 1.7.14
-  drizzle-zero: ^0.18.0
+  drizzle-zero: 0.21.0
   eslint: ^9.39.5
   prettier: ^3.9.10
   tailwindcss: ^4.3.3

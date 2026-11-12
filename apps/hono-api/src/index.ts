@@ -74,14 +74,19 @@ app.use(
 app.post("/api/zero/query", async (c) => {
   const ctx = await getZeroContext(c.req.raw);
 
-  const result = await handleQueryRequest(
-    (name, args) => {
+  if (!ctx) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const result = await handleQueryRequest({
+    handler: (name, args) => {
       const query = mustGetQuery(queries, name);
       return query.fn({ args, ctx });
     },
     schema,
-    c.req.raw,
-  );
+    request: c.req.raw,
+    userID: ctx.userId,
+  });
 
   return c.json(result);
 });
@@ -93,15 +98,16 @@ app.post("/api/zero/mutate", async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const result = await handleMutateRequest(
+  const result = await handleMutateRequest({
     dbProvider,
-    (transact) =>
+    handler: (transact) =>
       transact((tx, name, args) => {
         const mutator = mustGetMutator(mutators, name);
         return mutator.fn({ args, tx, ctx });
       }),
-    c.req.raw,
-  );
+    request: c.req.raw,
+    userID: ctx.userId,
+  });
 
   return c.json(result);
 });

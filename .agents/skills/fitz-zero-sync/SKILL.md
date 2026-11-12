@@ -3,12 +3,12 @@ name: fitz-zero-sync
 description: Work safely with Rocicorp Zero in the Fitz Industries monorepo. Use when changing Zero schemas, queries, mutators, cache configuration, authentication context, or debugging sync in web or Expo.
 metadata:
   library: "@rocicorp/zero"
-  project-version: "1.1.1"
+  project-version: "1.11.3"
 ---
 
 # Fitz Zero Sync
 
-This repository uses Rocicorp Zero `1.1.1`. Check `pnpm-workspace.yaml` and the lockfile before relying on APIs from newer Zero releases.
+This repository uses Rocicorp Zero `1.11.3` and `drizzle-zero` `0.21.0`. Check `pnpm-workspace.yaml` and the lockfile before relying on APIs from newer Zero releases.
 
 ## Authoritative sources
 
@@ -28,6 +28,8 @@ When documentation and installed types disagree, follow the installed version an
 - React/Expo provider helpers: `packages/zero-shared/src/react.ts`, `packages/zero-shared/src/expo-sqlite.ts`
 - Server query/mutate helpers: `packages/zero-shared/src/server.ts`
 - Hono Zero endpoints: `apps/hono-api/src/index.ts`
+- Server database adapter composition: `apps/hono-api/src/lib/zero-db.ts`
+- Generated DB import/checksum normalization: `packages/db/scripts/normalize-zero-schema.mjs`
 - Web provider: `apps/tanstack-start/src/providers/zero-provider.tsx`
 - Expo provider: `apps/expo/src/providers/zero-provider.tsx`
 - Zero Cache launcher: `apps/zero-cache/src/scripts/dev.ts`
@@ -53,6 +55,9 @@ Do not initialize authenticated Zero queries or mutators with only `userId`. Res
 - Keep client and server behavior in the shared definitions; do not add app-local duplicate queries or mutations.
 - Use tRPC for request/response operations that are not local-first or live; reserve direct Hono routes for protocol boundaries.
 - Validate external mutator arguments with Zod and enforce authorization again on the server transaction.
+- Use the options-object server helpers and pass the authenticated `userID` to both `handleQueryRequest` and `handleMutateRequest`.
+- Use `undefined` or `null` for logged-out `userID`, not the deprecated string `"anon"`.
+- Handle the `cached` query result and `initializing` connection states when switching on status values.
 
 ## Schema workflow
 
