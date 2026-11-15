@@ -1,0 +1,77 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    command:
+      [
+        postgres,
+        -c,
+        wal_level=logical,
+        -c,
+        max_replication_slots=10,
+        -c,
+        max_wal_senders=10,
+      ]
+    environment:
+      POSTGRES_DB: fitz_app_test
+      POSTGRES_USER: fitz_test
+      POSTGRES_PASSWORD: disposable-test-only
+    volumes:
+      - postgres:/var/lib/postgresql
+      - ./init.sql:/docker-entrypoint-initdb.d/00-test.sql:ro
+    ports:
+      - "127.0.0.1:${FITZ_TEST_PG_PORT}:5432"
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -h 127.0.0.1 -U fitz_test -d fitz_app_test]
+      interval: 1s
+      timeout: 3s
+      retries: 60
+  runtime:
+    image: ${FITZ_TEST_IMAGE}
+    init: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      POSTGRES_URL: postgres://fitz_test:disposable-test-only@postgres:5432/fitz_app_test
+      TEST_POSTGRES_URL: postgres://fitz_test:disposable-test-only@postgres:5432/fitz_app_test
+      ZERO_UPSTREAM_DB: postgres://fitz_test:disposable-test-only@postgres:5432/fitz_app_test
+      ZERO_CVR_DB: postgres://fitz_test:disposable-test-only@postgres:5432/fitz_zero_test
+      ZERO_CHANGE_DB: postgres://fitz_test:disposable-test-only@postgres:5432/fitz_zero_test
+      ZERO_APP_ID: ${FITZ_TEST_PROJECT}
+      ZERO_REPLICA_FILE: /test-zero/replica.sqlite
+      ZERO_QUERY_URL: http://127.0.0.1:3100/api/zero/query
+      ZERO_MUTATE_URL: http://127.0.0.1:3100/api/zero/mutate
+      ZERO_QUERY_FORWARD_COOKIES: "true"
+      ZERO_MUTATE_FORWARD_COOKIES: "true"
+      ZERO_NUM_SYNC_WORKERS: "1"
+      ZERO_ENABLE_TELEMETRY: "false"
+      DO_NOT_TRACK: "1"
+      ZERO_LOG_LEVEL: warn
+      ZERO_PORT: "4848"
+      AUTH_SECRET: disposable-integration-test-secret-not-for-production
+      ENCRYPTION_KEY: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      WEB_APP_URL: http://127.0.0.1:${FITZ_TEST_WEB_PORT}
+      VITE_API_URL: http://127.0.0.1:${FITZ_TEST_WEB_PORT}
+      API_INTERNAL_URL: http://127.0.0.1:3100
+      VITE_ZERO_CACHE_URL: http://127.0.0.1:${FITZ_TEST_ZERO_PORT}
+      TEST_WORKERS: "1"
+      FITZ_TEST_FAIL_START: ${FITZ_TEST_FAIL_START:-0}
+    volumes:
+      - zero:/test-zero
+    ports:
+      - "127.0.0.1:${FITZ_TEST_WEB_PORT}:3000"
+      - "127.0.0.1:${FITZ_TEST_API_PORT}:3100"
+      - "127.0.0.1:${FITZ_TEST_ZERO_PORT}:4848"
+    healthcheck:
+      test: [CMD, node, scripts/integration/health.mjs]
+      interval: 2s
+      timeout: 12s
+      retries: 90
+    stop_grace_period: 10s
+networks:
+  default:
+    internal: true
+volumes:
+  postgres:
+  zero:
