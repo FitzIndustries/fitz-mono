@@ -26,6 +26,28 @@
       "dependsOn": ["^topo", "^build"],
       "outputs": [".cache/tsbuildinfo.json"]
     },
+    "test:unit": {
+      "dependsOn": ["^build", "^test:unit"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/vitest.config.mts",
+        "$TURBO_ROOT$/vitest.shared.config.mts"
+      ],
+      "outputs": ["test-results/**"]
+    },
+    "test:unit:coverage": {
+      "dependsOn": ["^build", "^test:unit:coverage"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/vitest.config.mts",
+        "$TURBO_ROOT$/vitest.shared.config.mts"
+      ],
+      "outputs": ["test-results/**", "coverage/**"]
+    },
+    "test:unit:watch": {
+      "cache": false,
+      "persistent": true
+    },
     "clean": {
       "cache": false
     },

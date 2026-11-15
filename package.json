@@ -32,6 +32,9 @@
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
     "lint:ws": "pnpm dlx sherif@latest",
     "typecheck": "turbo run typecheck",
+    "test:unit": "turbo run test:unit",
+    "test:unit:watch": "vitest --watch",
+    "test:unit:coverage": "turbo run test:unit:coverage",
     "\n========== drizzle ==========": "",
     "db:generate": "pnpm --filter @fitzindustries/db generate",
     "db:push": "turbo -F @fitzindustries/db push",
@@ -46,11 +49,13 @@
   "devDependencies": {
     "@fitzindustries/prettier-config": "workspace:*",
     "@turbo/gen": "^2.11.10",
+    "@vitest/coverage-v8": "5.1.0",
     "baseline-browser-mapping": "^2.11.34",
     "dotenv-cli": "^10.0.0",
     "prettier": "catalog:",
     "turbo": "^2.11.10",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "prettier": "@fitzindustries/prettier-config"
 }
