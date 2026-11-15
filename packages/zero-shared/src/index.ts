@@ -1,3 +1,6 @@
+// Routing hint only: the API must validate membership before using this value.
+export const ZERO_ORGANIZATION_HEADER = "x-fitz-organization-id";
+
 export interface ZeroContext {
   userId: string;
   organizationId: string;

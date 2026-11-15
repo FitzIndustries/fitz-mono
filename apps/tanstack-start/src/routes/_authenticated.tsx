@@ -6,6 +6,7 @@ import {
   redirect,
   useLocation,
   useNavigate,
+  useSearch,
 } from "@tanstack/react-router";
 
 import { authClient } from "~/auth/client";
@@ -35,9 +36,13 @@ function AuthenticatedLayout() {
   const location = useLocation();
   const { session } = Route.useRouteContext();
   const userLabel = session.user.name || session.user.email;
+  const organizationSlug = useSearch({
+    strict: false,
+    select: (search) => search.org,
+  });
   const viewerQuery = useQuery({
-    queryKey: ["shell-viewer", session.user.id],
-    queryFn: () => getViewer(),
+    queryKey: ["zero-viewer", session.user.id, organizationSlug],
+    queryFn: () => getViewer(organizationSlug),
     staleTime: 30_000,
   });
   const viewer = viewerQuery.data;

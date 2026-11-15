@@ -48,6 +48,8 @@ interface ZeroContext {
 
 Do not initialize authenticated Zero queries or mutators with only `userId`. Resolve the current viewer organization first. Ensure every tenant-owned query and mutator constrains access using `organizationId`; verify membership server-side rather than trusting client context alone.
 
+Clients send `ZERO_ORGANIZATION_HEADER` (`x-fitz-organization-id`) in query/mutation headers. It is only a routing hint: Hono resolves the authenticated viewer and rejects an organization the user cannot access. Zero Cache must explicitly allow this header. Native clients also forward their Better Auth cookie through the allowed `Cookie` header; do not put a complete cookie string in Zero's bearer `auth` prop. Keep viewer/cookie query caches keyed by user/session, the Zero storage key scoped to organization, and provider/context/store-factory identities stable across normal renders.
+
 ## Reads and writes
 
 - Define reusable reads with `defineQuery`/`defineQueries` in `packages/zero-shared/src/queries.ts`.

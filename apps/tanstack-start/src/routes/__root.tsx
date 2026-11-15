@@ -13,6 +13,8 @@ import { Toaster } from "@fitzindustries/ui/components/sonner";
 import appCss from "@fitzindustries/ui/global.css?url";
 import { ThemeProvider } from "@fitzindustries/ui/theme";
 
+import { Providers } from "~/providers";
+
 const rootSearchSchema = z.object({
   org: z.string().optional(),
 });
@@ -60,7 +62,7 @@ function RootDocument({ children }: Readonly<{ children: React.ReactNode }>) {
       </head>
       <body className="bg-background text-foreground min-h-screen font-sans antialiased">
         <ThemeProvider>
-          {children}
+          <Providers>{children}</Providers>
           <Toaster />
         </ThemeProvider>
         <Scripts />

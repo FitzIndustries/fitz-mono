@@ -5,7 +5,12 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 
 import { appRouter, createTRPCContext } from "@fitzindustries/api";
-import { mutators, queries, schema } from "@fitzindustries/zero-shared";
+import {
+  mutators,
+  queries,
+  schema,
+  ZERO_ORGANIZATION_HEADER,
+} from "@fitzindustries/zero-shared";
 import {
   handleMutateRequest,
   handleQueryRequest,
@@ -36,6 +41,7 @@ app.use(
       "trpc-accept",
       "x-trpc-source",
       "Cookie",
+      ZERO_ORGANIZATION_HEADER,
     ],
     allowMethods: ["POST", "GET", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
@@ -121,9 +127,17 @@ serve({ fetch: app.fetch, port }, (info) => {
 });
 
 async function getZeroContext(request: Request) {
-  const state = await getViewerStateFromRequest(request);
+  const requestedOrganizationId = request.headers.get(ZERO_ORGANIZATION_HEADER);
+  const state = await getViewerStateFromRequest(
+    request,
+    requestedOrganizationId ?? undefined,
+  );
 
-  if (!state?.viewer.currentOrganizationId) {
+  if (
+    !state?.viewer.currentOrganizationId ||
+    (requestedOrganizationId !== null &&
+      state.viewer.currentOrganizationId !== requestedOrganizationId)
+  ) {
     return undefined;
   }
 

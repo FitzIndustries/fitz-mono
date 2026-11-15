@@ -1,7 +1,12 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearch } from "@tanstack/react-router";
 
-import { mutators, schema } from "@fitzindustries/zero-shared";
+import {
+  mutators,
+  schema,
+  ZERO_ORGANIZATION_HEADER,
+} from "@fitzindustries/zero-shared";
 import { ZeroProvider as RocicorpZeroProvider } from "@fitzindustries/zero-shared/react";
 
 import { authClient } from "~/auth/client";
@@ -18,9 +23,13 @@ function ZeroProvider({ children }: { children: React.ReactNode }) {
   const sessionQuery = authClient.useSession();
   const session = sessionQuery.data;
   const userId = session?.user.id;
+  const organizationSlug = useSearch({
+    strict: false,
+    select: (search) => search.org,
+  });
   const viewerQuery = useQuery({
-    queryKey: ["zero-viewer", userId],
-    queryFn: () => getViewer(),
+    queryKey: ["zero-viewer", userId, organizationSlug],
+    queryFn: () => getViewer(organizationSlug),
     enabled: Boolean(userId),
     staleTime: 30_000,
   });
@@ -57,6 +66,14 @@ function ActiveZeroProvider({
   organizationId: string;
   membershipId: string | null;
 }) {
+  const context = useMemo(
+    () => ({ userId, organizationId, membershipId }),
+    [userId, organizationId, membershipId],
+  );
+  const headers = useMemo(
+    () => ({ [ZERO_ORGANIZATION_HEADER]: organizationId }),
+    [organizationId],
+  );
   return (
     <ZeroReadyContext value={true}>
       <RocicorpZeroProvider
@@ -66,11 +83,9 @@ function ActiveZeroProvider({
         schema={schema}
         mutators={mutators}
         logLevel={env.VITE_PUBLIC_ZERO_LOG_LEVEL}
-        context={{
-          userId,
-          organizationId,
-          membershipId,
-        }}
+        context={context}
+        queryHeaders={headers}
+        mutateHeaders={headers}
       >
         {children}
       </RocicorpZeroProvider>

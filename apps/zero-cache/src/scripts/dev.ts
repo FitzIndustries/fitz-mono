@@ -17,6 +17,10 @@ const runZeroCacheDev = async (): Promise<void> => {
       ZERO_MUTATE_URL: "http://localhost:3100/api/zero/mutate",
       ZERO_QUERY_FORWARD_COOKIES: "true",
       ZERO_MUTATE_FORWARD_COOKIES: "true",
+      // Native clients supply their session cookie explicitly; organization is
+      // only a routing hint and is revalidated against membership by Hono.
+      ZERO_QUERY_ALLOWED_CLIENT_HEADERS: "Cookie,x-fitz-organization-id",
+      ZERO_MUTATE_ALLOWED_CLIENT_HEADERS: "Cookie,x-fitz-organization-id",
     },
   });
 

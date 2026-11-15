@@ -44,6 +44,8 @@ services:
       ZERO_MUTATE_URL: http://127.0.0.1:3100/api/zero/mutate
       ZERO_QUERY_FORWARD_COOKIES: "true"
       ZERO_MUTATE_FORWARD_COOKIES: "true"
+      ZERO_QUERY_ALLOWED_CLIENT_HEADERS: Cookie,x-fitz-organization-id
+      ZERO_MUTATE_ALLOWED_CLIENT_HEADERS: Cookie,x-fitz-organization-id
       ZERO_NUM_SYNC_WORKERS: "1"
       ZERO_ENABLE_TELEMETRY: "false"
       DO_NOT_TRACK: "1"
