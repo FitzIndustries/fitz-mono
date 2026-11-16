@@ -1,5 +1,5 @@
 {
-  "extends": ["@fitzindustries/tsconfig/base.json"],
+  "extends": ["@fitzindustries/tsconfig/base.json", "expo/tsconfig.base"],
   "compilerOptions": {
     "types": ["expo/types"],
     "jsx": "react-native",

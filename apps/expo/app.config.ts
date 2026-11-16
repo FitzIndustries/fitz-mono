@@ -7,13 +7,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   scheme: "expo",
   version: "0.1.0",
   orientation: "portrait",
+  // Preserve the client-only web app; SDK 58 Router otherwise defaults to SSR.
+  web: { output: "single" },
   icon: "./assets/icon-light.png",
   userInterfaceStyle: "automatic",
   updates: {
     fallbackToCacheTimeout: 0,
   },
-  newArchEnabled: true,
-  assetBundlePatterns: ["**/*"],
   ios: {
     bundleIdentifier: "your.bundle.identifier",
     supportsTablet: true,
@@ -28,7 +28,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: "./assets/icon-light.png",
       backgroundColor: "#1F104A",
     },
-    edgeToEdgeEnabled: true,
   },
   // extra: {
   //   eas: {
@@ -38,12 +37,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   experiments: {
     tsconfigPaths: true,
     typedRoutes: true,
-    reactCanary: true,
     reactCompiler: true,
   },
   plugins: [
     "expo-router",
     "expo-secure-store",
+    "expo-sqlite",
+    "expo-status-bar",
     "expo-web-browser",
     [
       "expo-splash-screen",
