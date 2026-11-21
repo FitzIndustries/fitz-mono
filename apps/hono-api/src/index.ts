@@ -122,9 +122,33 @@ const port = env.PORT;
 
 console.log(`Starting API server on port ${String(port)}`);
 
-serve({ fetch: app.fetch, port }, (info) => {
+const server = serve({ fetch: app.fetch, port }, (info) => {
   console.log(`API server running at http://localhost:${String(info.port)}`);
 });
+
+let isShuttingDown = false;
+
+function shutDown(signal: NodeJS.Signals) {
+  if (isShuttingDown) {
+    return;
+  }
+
+  isShuttingDown = true;
+  console.log(`Received ${signal}; shutting down API server`);
+
+  server.close((error) => {
+    if (error) {
+      console.error("Failed to shut down API server", error);
+      process.exit(1);
+    }
+
+    console.log("API server shut down");
+    process.exit(0);
+  });
+}
+
+process.once("SIGINT", shutDown);
+process.once("SIGTERM", shutDown);
 
 async function getZeroContext(request: Request) {
   const requestedOrganizationId = request.headers.get(ZERO_ORGANIZATION_HEADER);
