@@ -179,6 +179,7 @@
 ## Change Scope
 
 - Make the smallest correct change.
+- Make small, atomic commits often, using Conventional Commits-style messages.
 - Match the style already present in the touched file.
 - Do not add wrappers, helpers, or compatibility layers without a concrete need.
 
